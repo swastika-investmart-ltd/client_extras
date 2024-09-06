@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Middleware\**" />
+    <EmbeddedResource Remove="Middleware\**" />
+    <None Remove="Middleware\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="CampaignHub.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Abstractions" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.10" />
+    <PackageReference Include="NLog.Extensions.Logging" Version="1.6.5" />
+  </ItemGroup>
+
+</Project>

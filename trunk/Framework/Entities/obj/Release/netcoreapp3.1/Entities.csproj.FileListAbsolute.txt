@@ -1,0 +1,11 @@
+D:\Project2\jarvis_backend\trunk\Framework\Entities\bin\Release\netcoreapp3.1\Entities.deps.json
+D:\Project2\jarvis_backend\trunk\Framework\Entities\bin\Release\netcoreapp3.1\Entities.dll
+D:\Project2\jarvis_backend\trunk\Framework\Entities\bin\Release\netcoreapp3.1\Entities.pdb
+D:\Project2\jarvis_backend\trunk\Framework\Entities\obj\Release\netcoreapp3.1\Entities.csproj.AssemblyReference.cache
+D:\Project2\jarvis_backend\trunk\Framework\Entities\obj\Release\netcoreapp3.1\Entities.GeneratedMSBuildEditorConfig.editorconfig
+D:\Project2\jarvis_backend\trunk\Framework\Entities\obj\Release\netcoreapp3.1\Entities.AssemblyInfoInputs.cache
+D:\Project2\jarvis_backend\trunk\Framework\Entities\obj\Release\netcoreapp3.1\Entities.AssemblyInfo.cs
+D:\Project2\jarvis_backend\trunk\Framework\Entities\obj\Release\netcoreapp3.1\Entities.csproj.CoreCompileInputs.cache
+D:\Project2\jarvis_backend\trunk\Framework\Entities\obj\Release\netcoreapp3.1\Entities.sourcelink.json
+D:\Project2\jarvis_backend\trunk\Framework\Entities\obj\Release\netcoreapp3.1\Entities.dll
+D:\Project2\jarvis_backend\trunk\Framework\Entities\obj\Release\netcoreapp3.1\Entities.pdb

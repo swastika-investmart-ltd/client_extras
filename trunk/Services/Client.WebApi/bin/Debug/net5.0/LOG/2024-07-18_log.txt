@@ -1,0 +1,50 @@
+IP:  IP:   2024-07-18 11:42:07.3344 INFO IP: ::1 , Path: / , CorrelationId: 63856899727314016114
+IP:  IP:   2024-07-18 11:42:07.3874 INFO Request   with 63856899727314016114 : GET https localhost:51878/  
+IP:  IP:   2024-07-18 11:42:07.5912 WARN Response  with 63856899727314016114 : 404 : 
+IP:  IP:   2024-07-18 11:42:08.2605 INFO IP: ::1 , Path: /favicon.ico , CorrelationId: 63856899728260513211
+IP:  IP:   2024-07-18 11:42:08.2615 INFO Request   with 63856899728260513211 : GET https localhost:51878/favicon.ico  
+IP:  IP:   2024-07-18 11:42:08.2615 WARN Response  with 63856899728260513211 : 404 : 
+IP:  IP:   2024-07-18 11:42:38.7446 INFO IP: ::1 , Path: /api/WealthBagPortfolio/GetWealthBagDataByClientId , CorrelationId: 63856899758744661813
+IP:  IP:   2024-07-18 11:42:38.7553 INFO Request   with 63856899758744661813 : POST https localhost:51878/api/WealthBagPortfolio/GetWealthBagDataByClientId  {"ClientCode":"MF108"}
+IP:  IP:   2024-07-18 11:42:38.9028 WARN Response  with 63856899758744661813 : 401 : 
+IP:  IP:   2024-07-18 11:47:56.7492 INFO IP: ::1 , Path: /api/WealthBagPortfolio/GetWealthBagDataByClientId , CorrelationId: 63856900076749225111
+IP:  IP:   2024-07-18 11:47:56.7492 INFO Request   with 63856900076749225111 : POST https localhost:51878/api/WealthBagPortfolio/GetWealthBagDataByClientId  {"ClientCode":"MF108"}
+IP:  IP:   2024-07-18 11:47:56.7800 WARN Response  with 63856900076749225111 : 401 : 
+IP:  IP:   2024-07-18 11:48:11.5843 INFO IP: ::1 , Path: /api/WealthBagPortfolio/GetWealthBagDataByClientId , CorrelationId: 63856900091584320621
+IP:  IP:   2024-07-18 11:48:11.5843 INFO Request   with 63856900091584320621 : POST https localhost:51878/api/WealthBagPortfolio/GetWealthBagDataByClientId  {"ClientCode":"MF108"}
+IP:  IP:   2024-07-18 11:48:11.6114 WARN Response  with 63856900091584320621 : 401 : 
+IP:  IP:   2024-07-18 11:51:30.8198 INFO IP: ::1 , Path: / , CorrelationId: 63856900290801738811
+IP:  IP:   2024-07-18 11:51:30.8714 INFO Request   with 63856900290801738811 : GET https localhost:51878/  
+IP:  IP:   2024-07-18 11:51:30.9888 WARN Response  with 63856900290801738811 : 404 : 
+IP:  IP:   2024-07-18 11:52:08.0444 INFO IP: ::1 , Path: /api/WealthBagPortfolio/GetWealthBagDataByClientId , CorrelationId: 63856900328044377311
+IP:  IP:   2024-07-18 11:52:08.0549 INFO Request   with 63856900328044377311 : POST https localhost:51878/api/WealthBagPortfolio/GetWealthBagDataByClientId  {"clientCode":"MF108"}
+IP:  IP:   2024-07-18 11:52:08.1956 WARN Response  with 63856900328044377311 : 401 : 
+IP:  IP:   2024-07-18 11:55:08.0638 INFO IP: ::1 , Path: /api/WealthBagPortfolio/GetWealthBagDataByClientId , CorrelationId: 63856900508063722013
+IP:  IP:   2024-07-18 11:55:08.0638 INFO Request   with 63856900508063722013 : POST https localhost:51878/api/WealthBagPortfolio/GetWealthBagDataByClientId  {"clientCode":"MF108"}
+IP:  IP:   2024-07-18 11:55:08.1020 WARN Response  with 63856900508063722013 : 401 : 
+IP:  IP:   2024-07-18 11:55:17.0449 INFO IP: ::1 , Path: /api/WealthBagPortfolio/GetWealthBagDataByClientId , CorrelationId: 63856900517044887412
+IP:  IP:   2024-07-18 11:55:17.0449 INFO Request   with 63856900517044887412 : POST https localhost:51878/api/WealthBagPortfolio/GetWealthBagDataByClientId  {"clientCode":"MF108"}
+IP:  IP:   2024-07-18 11:55:17.0689 WARN Response  with 63856900517044887412 : 401 : 
+IP:  IP:   2024-07-18 12:28:57.8066 INFO IP: ::1 , Path: / , CorrelationId: 6385690253778760356
+IP:  IP:   2024-07-18 12:28:57.8677 INFO Request   with 6385690253778760356 : GET https localhost:51878/  
+IP:  IP:   2024-07-18 12:28:57.9924 WARN Response  with 6385690253778760356 : 404 : 
+IP:  IP:   2024-07-18 12:28:58.3492 INFO IP: ::1 , Path: /favicon.ico , CorrelationId: 63856902538349215012
+IP:  IP:   2024-07-18 12:28:58.3598 INFO Request   with 63856902538349215012 : GET https localhost:51878/favicon.ico  
+IP:  IP:   2024-07-18 12:28:58.3598 WARN Response  with 63856902538349215012 : 404 : 
+IP:  IP:   2024-07-18 12:29:35.4829 INFO IP: ::1 , Path: /api/WealthBagPortfolio/GetWealthBagDataByClientId , CorrelationId: 63856902575482864616
+IP:  IP:   2024-07-18 12:29:35.4940 INFO Request   with 63856902575482864616 : POST https localhost:51878/api/WealthBagPortfolio/GetWealthBagDataByClientId  {"clientCode":"MF108"}
+IP:  IP:   2024-07-18 12:29:35.6358 WARN Response  with 63856902575482864616 : 401 : 
+IP:  IP:   2024-07-18 12:33:29.4471 INFO IP: ::1 , Path: / , CorrelationId: 6385690280943104397
+IP:  IP:   2024-07-18 12:33:29.5367 INFO Request   with 6385690280943104397 : GET https localhost:51878/  
+IP:  IP:   2024-07-18 12:33:29.7027 WARN Response  with 6385690280943104397 : 404 : 
+IP:  IP:   2024-07-18 12:33:58.3200 INFO IP: ::1 , Path: /api/WealthBagPortfolio/GetWealthBagDataByClientId , CorrelationId: 63856902838319977412
+IP:  IP:   2024-07-18 12:33:58.3200 INFO Request   with 63856902838319977412 : POST https localhost:51878/api/WealthBagPortfolio/GetWealthBagDataByClientId  {"clientCode":"MF108"}
+IP:  IP:   2024-07-18 12:34:17.7201 INFO  SavePortfolioDataInMemory: Wealthbag data fetched and stored in memory
+IP:  IP:   2024-07-18 12:34:26.8323 INFO Response  with 63856902838319977412 : {"statusCode":200,"message":"Request successful.","isError":false,"responseException":null,"result":{"datas":{"totalQuantity":5,"wealthBagStocks":[{"clientCode":"MF108","companyName":"Nippon India ETF Gold BEES","quantity":3,"symbol":"GOLDBEES","portfolioName":"Gullak"},{"clientCode":"MF108","companyName":"Nippon India ETF Nifty BEES","quantity":2,"symbol":"NIFTYBEES","portfolioName":"Gullak"}]}}}
+IP:  IP:   2024-07-18 12:35:57.2607 INFO IP: ::1 , Path: / , CorrelationId: 63856902957244166512
+IP:  IP:   2024-07-18 12:35:57.3191 INFO Request   with 63856902957244166512 : GET https localhost:51878/  
+IP:  IP:   2024-07-18 12:35:57.4380 WARN Response  with 63856902957244166512 : 404 : 
+IP:  IP:   2024-07-18 12:36:23.3453 INFO IP: ::1 , Path: /api/WealthBagPortfolio/GetWealthBagDataByClientId , CorrelationId: 6385690298334533855
+IP:  IP:   2024-07-18 12:36:23.3453 INFO Request   with 6385690298334533855 : POST https localhost:51878/api/WealthBagPortfolio/GetWealthBagDataByClientId  {"clientCode":"MF108"}
+IP:  IP:   2024-07-18 12:36:28.3393 INFO  SavePortfolioDataInMemory: Wealthbag data fetched and stored in memory
+IP:  IP:   2024-07-18 12:36:31.0512 INFO Response  with 6385690298334533855 : {"statusCode":200,"message":"Request successful.","isError":false,"responseException":null,"result":{"datas":{"totalQuantity":5,"wealthBagStocks":[{"clientCode":"MF108","companyName":"Nippon India ETF Gold BEES","quantity":3,"symbol":"GOLDBEES","portfolioName":"Gullak"},{"clientCode":"MF108","companyName":"Nippon India ETF Nifty BEES","quantity":2,"symbol":"NIFTYBEES","portfolioName":"Gullak"}]}}}

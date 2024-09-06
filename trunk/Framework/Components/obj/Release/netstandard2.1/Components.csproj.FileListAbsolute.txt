@@ -1,0 +1,11 @@
+D:\Project2\jarvis_backend\trunk\Framework\Components\bin\Release\netstandard2.1\Components.deps.json
+D:\Project2\jarvis_backend\trunk\Framework\Components\bin\Release\netstandard2.1\Components.dll
+D:\Project2\jarvis_backend\trunk\Framework\Components\bin\Release\netstandard2.1\Components.pdb
+D:\Project2\jarvis_backend\trunk\Framework\Components\obj\Release\netstandard2.1\Components.csproj.AssemblyReference.cache
+D:\Project2\jarvis_backend\trunk\Framework\Components\obj\Release\netstandard2.1\Components.GeneratedMSBuildEditorConfig.editorconfig
+D:\Project2\jarvis_backend\trunk\Framework\Components\obj\Release\netstandard2.1\Components.AssemblyInfoInputs.cache
+D:\Project2\jarvis_backend\trunk\Framework\Components\obj\Release\netstandard2.1\Components.AssemblyInfo.cs
+D:\Project2\jarvis_backend\trunk\Framework\Components\obj\Release\netstandard2.1\Components.csproj.CoreCompileInputs.cache
+D:\Project2\jarvis_backend\trunk\Framework\Components\obj\Release\netstandard2.1\Components.sourcelink.json
+D:\Project2\jarvis_backend\trunk\Framework\Components\obj\Release\netstandard2.1\Components.dll
+D:\Project2\jarvis_backend\trunk\Framework\Components\obj\Release\netstandard2.1\Components.pdb

@@ -1,0 +1,29 @@
+IP:  IP:   2024-07-19 12:04:38.8666 INFO  SavePortfolioDataInMemory: Wealthbag data fetched and stored in memory
+IP:  IP:   2024-07-19 12:04:41.7692 INFO IP: ::1 , Path: / , CorrelationId: 63856987481768616916
+IP:  IP:   2024-07-19 12:04:41.7830 INFO Request   with 63856987481768616916 : GET https localhost:51878/  
+IP:  IP:   2024-07-19 12:04:41.8916 WARN Response  with 63856987481768616916 : 404 : 
+IP:  IP:   2024-07-19 12:07:29.8290 INFO IP: ::1 , Path: /api/WealthBagPortfolio/GetWealthBagDataByClientId , CorrelationId: 63856987649829020110
+IP:  IP:   2024-07-19 12:07:29.8290 INFO Request   with 63856987649829020110 : POST https localhost:51878/api/WealthBagPortfolio/GetWealthBagDataByClientId  {"ClientCode":"GO28382"}
+IP:  IP:   2024-07-19 12:07:29.8966 WARN Response  with 63856987649829020110 : 401 : 
+IP:  IP:   2024-07-19 12:08:56.3860 INFO IP: ::1 , Path: /api/WealthBagPortfolio/GetWealthBagDataByClientId , CorrelationId: 63856987736386000816
+IP:  IP:   2024-07-19 12:08:56.3876 INFO Request   with 63856987736386000816 : POST https localhost:51878/api/WealthBagPortfolio/GetWealthBagDataByClientId  {"ClientCode":"GO28382"}
+IP:  IP:   2024-07-19 12:08:56.4017 WARN Response  with 63856987736386000816 : 401 : 
+IP:  IP:   2024-07-19 12:09:01.2647 INFO IP: ::1 , Path: /api/WealthBagPortfolio/GetWealthBagDataByClientId , CorrelationId: 63856987741264706911
+IP:  IP:   2024-07-19 12:09:01.2647 INFO Request   with 63856987741264706911 : POST https localhost:51878/api/WealthBagPortfolio/GetWealthBagDataByClientId  {"ClientCode":"GO28382"}
+IP:  IP:   2024-07-19 12:09:01.2772 WARN Response  with 63856987741264706911 : 401 : 
+IP:  IP:   2024-07-19 12:09:29.7068 INFO IP: ::1 , Path: /api/WealthBagPortfolio/GetWealthBagDataByClientId , CorrelationId: 63856987769706786216
+IP:  IP:   2024-07-19 12:09:29.7068 INFO Request   with 63856987769706786216 : POST https localhost:51878/api/WealthBagPortfolio/GetWealthBagDataByClientId  {"ClientCode":"GO28382"}
+IP:  IP:   2024-07-19 12:09:29.7243 WARN Response  with 63856987769706786216 : 401 : 
+IP:  IP:   2024-07-19 12:10:55.5578 INFO  SavePortfolioDataInMemory: Wealthbag data fetched and stored in memory
+IP:  IP:   2024-07-19 12:10:56.6210 INFO IP: ::1 , Path: / , CorrelationId: 63856987856620819719
+IP:  IP:   2024-07-19 12:10:56.6210 INFO Request   with 63856987856620819719 : GET https localhost:51878/  
+IP:  IP:   2024-07-19 12:10:56.7334 WARN Response  with 63856987856620819719 : 404 : 
+IP:  IP:   2024-07-19 12:11:10.4641 INFO IP: ::1 , Path: /api/WealthBagPortfolio/GetWealthBagDataByClientId , CorrelationId: 63856987870464113216
+IP:  IP:   2024-07-19 12:11:10.4641 INFO Request   with 63856987870464113216 : POST https localhost:51878/api/WealthBagPortfolio/GetWealthBagDataByClientId  {"clientCode":"string"}
+IP:  IP:   2024-07-19 12:11:26.3746 INFO Response  with 63856987870464113216 : {"statusCode":200,"message":"Request successful.","isError":false,"responseException":null,"result":{"datas":{"totalQuantity":0,"wealthBagStocks":[]}}}
+IP:  IP:   2024-07-19 14:56:17.8518 INFO IP: ::1 , Path: / , CorrelationId: 63856997777832211115
+IP:  IP:   2024-07-19 14:56:17.8932 INFO Request   with 63856997777832211115 : GET https localhost:51878/  
+IP:  IP:   2024-07-19 14:56:18.0224 WARN Response  with 63856997777832211115 : 404 : 
+IP:  IP:   2024-07-19 14:56:18.3413 INFO IP: ::1 , Path: /favicon.ico , CorrelationId: 63856997778341267611
+IP:  IP:   2024-07-19 14:56:18.3413 INFO Request   with 63856997778341267611 : GET https localhost:51878/favicon.ico  
+IP:  IP:   2024-07-19 14:56:18.3413 WARN Response  with 63856997778341267611 : 404 : 

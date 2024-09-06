@@ -1,0 +1,7 @@
+IP:  IP:   2024-07-31 12:57:59.7639 INFO  SavePortfolioDataInMemory: Wealthbag data fetched and stored in memory
+IP:  IP:   2024-07-31 12:58:05.9056 INFO IP: ::1 , Path: / , CorrelationId: 63858027485904662916
+IP:  IP:   2024-07-31 12:58:06.0020 INFO Request   with 63858027485904662916 : GET https localhost:51878/  
+IP:  IP:   2024-07-31 12:58:06.5499 WARN Response  with 63858027485904662916 : 404 : 
+IP:  IP:   2024-07-31 12:58:08.8489 INFO IP: ::1 , Path: /favicon.ico , CorrelationId: 63858027488848887314
+IP:  IP:   2024-07-31 12:58:08.8489 INFO Request   with 63858027488848887314 : GET https localhost:51878/favicon.ico  
+IP:  IP:   2024-07-31 12:58:08.8550 WARN Response  with 63858027488848887314 : 404 : 
