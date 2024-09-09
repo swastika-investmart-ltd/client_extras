@@ -8319,13 +8319,13 @@
     },
     "Components/1.0.0": {
       "type": "project",
-      "path": "../../../../Project2/Client_Extras/trunk/Framework/Components/Components.csproj",
-      "msbuildProject": "../../../../Project2/Client_Extras/trunk/Framework/Components/Components.csproj"
+      "path": "../../Framework/Components/Components.csproj",
+      "msbuildProject": "../../Framework/Components/Components.csproj"
     },
     "Entities/1.0.0": {
       "type": "project",
-      "path": "../../../../Project2/Client_Extras/trunk/Framework/Entities/Entities.csproj",
-      "msbuildProject": "../../../../Project2/Client_Extras/trunk/Framework/Entities/Entities.csproj"
+      "path": "../../Framework/Entities/Entities.csproj",
+      "msbuildProject": "../../Framework/Entities/Entities.csproj"
     }
   },
   "projectFileDependencyGroups": {
@@ -8370,11 +8370,11 @@
         "net5.0": {
           "targetAlias": "net5.0",
           "projectReferences": {
-            "D:\\Project2\\Client_Extras\\trunk\\Framework\\Components\\Components.csproj": {
-              "projectPath": "D:\\Project2\\Client_Extras\\trunk\\Framework\\Components\\Components.csproj"
+            "D:\\Client_Extras\\trunk\\Framework\\Components\\Components.csproj": {
+              "projectPath": "D:\\Client_Extras\\trunk\\Framework\\Components\\Components.csproj"
             },
-            "D:\\Project2\\Client_Extras\\trunk\\Framework\\Entities\\Entities.csproj": {
-              "projectPath": "D:\\Project2\\Client_Extras\\trunk\\Framework\\Entities\\Entities.csproj"
+            "D:\\Client_Extras\\trunk\\Framework\\Entities\\Entities.csproj": {
+              "projectPath": "D:\\Client_Extras\\trunk\\Framework\\Entities\\Entities.csproj"
             }
           }
         }

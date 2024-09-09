@@ -3,8 +3,8 @@
   "WorkspaceRootPath": "D:\\client_extras\\trunk\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{DC594399-EB2B-40A4-A76F-764086A74A75}|Framework\\Components\\Components.csproj|d:\\client_extras\\trunk\\framework\\components\\logger\\ilog.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{DC594399-EB2B-40A4-A76F-764086A74A75}|Framework\\Components\\Components.csproj|solutionrelative:framework\\components\\logger\\ilog.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{127DB3EB-F284-4142-83D4-BA48F1D5E12D}|Services\\Client.WebApi\\Client.WebApi.csproj|d:\\client_extras\\trunk\\services\\client.webapi\\client.webapi.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{127DB3EB-F284-4142-83D4-BA48F1D5E12D}|Services\\Client.WebApi\\Client.WebApi.csproj|solutionrelative:services\\client.webapi\\client.webapi.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
     },
     {
       "AbsoluteMoniker": "D:0:0:{DC594399-EB2B-40A4-A76F-764086A74A75}|Framework\\Components\\Components.csproj|d:\\client_extras\\trunk\\framework\\components\\components.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
@@ -13,10 +13,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{DC594399-EB2B-40A4-A76F-764086A74A75}|Framework\\Components\\Components.csproj|d:\\client_extras\\trunk\\framework\\components\\helpers\\sendsmsnmail.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{DC594399-EB2B-40A4-A76F-764086A74A75}|Framework\\Components\\Components.csproj|solutionrelative:framework\\components\\helpers\\sendsmsnmail.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{127DB3EB-F284-4142-83D4-BA48F1D5E12D}|Services\\Client.WebApi\\Client.WebApi.csproj|d:\\client_extras\\trunk\\services\\client.webapi\\client.webapi.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
-      "RelativeMoniker": "D:0:0:{127DB3EB-F284-4142-83D4-BA48F1D5E12D}|Services\\Client.WebApi\\Client.WebApi.csproj|solutionrelative:services\\client.webapi\\client.webapi.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
     },
     {
       "AbsoluteMoniker": "D:0:0:{127DB3EB-F284-4142-83D4-BA48F1D5E12D}|Services\\Client.WebApi\\Client.WebApi.csproj|d:\\client_extras\\trunk\\services\\client.webapi\\controllers\\wealthbagportfoliocontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -60,34 +56,8 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 7,
           "Children": [
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "ILog.cs",
-              "DocumentMoniker": "D:\\client_extras\\trunk\\Framework\\Components\\Logger\\ILog.cs",
-              "RelativeDocumentMoniker": "Framework\\Components\\Logger\\ILog.cs",
-              "ToolTip": "D:\\client_extras\\trunk\\Framework\\Components\\Logger\\ILog.cs",
-              "RelativeToolTip": "Framework\\Components\\Logger\\ILog.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAgAAAAlAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-09-09T11:31:01.694Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "Components",
-              "DocumentMoniker": "D:\\client_extras\\trunk\\Framework\\Components\\Components.csproj",
-              "RelativeDocumentMoniker": "Framework\\Components\\Components.csproj",
-              "ToolTip": "D:\\client_extras\\trunk\\Framework\\Components\\Components.csproj*",
-              "RelativeToolTip": "Framework\\Components\\Components.csproj*",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2024-09-09T11:24:06.778Z",
-              "EditorCaption": ""
-            },
             {
               "$type": "Bookmark",
               "Name": "ST:129:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
@@ -110,6 +80,19 @@
             },
             {
               "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Components.csproj",
+              "DocumentMoniker": "D:\\client_extras\\trunk\\Framework\\Components\\Components.csproj",
+              "RelativeDocumentMoniker": "Framework\\Components\\Components.csproj",
+              "ToolTip": "D:\\client_extras\\trunk\\Framework\\Components\\Components.csproj",
+              "RelativeToolTip": "Framework\\Components\\Components.csproj",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAQAAAASAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2024-09-09T11:24:06.778Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
               "DocumentIndex": 2,
               "Title": "SendSMSnMail.cs",
               "DocumentMoniker": "D:\\client_extras\\trunk\\Framework\\Components\\Helpers\\SendSMSnMail.cs",
@@ -118,25 +101,24 @@
               "RelativeToolTip": "Framework\\Components\\Helpers\\SendSMSnMail.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAEAAAAKAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-09-09T11:19:31.02Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-09-09T11:19:31.02Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "Client.WebApi",
+              "DocumentIndex": 0,
+              "Title": "Client.WebApi.csproj",
               "DocumentMoniker": "D:\\client_extras\\trunk\\Services\\Client.WebApi\\Client.WebApi.csproj",
               "RelativeDocumentMoniker": "Services\\Client.WebApi\\Client.WebApi.csproj",
               "ToolTip": "D:\\client_extras\\trunk\\Services\\Client.WebApi\\Client.WebApi.csproj",
               "RelativeToolTip": "Services\\Client.WebApi\\Client.WebApi.csproj",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAsAAAA6AAAA",
+              "ViewState": "AQIAAAkAAAAAAAAAAAAAABkAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
               "WhenOpened": "2024-09-09T11:09:37.873Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 6,
               "Title": "appsettings.json",
               "DocumentMoniker": "D:\\client_extras\\trunk\\Services\\Client.WebApi\\appsettings.json",
               "RelativeDocumentMoniker": "Services\\Client.WebApi\\appsettings.json",
@@ -144,12 +126,11 @@
               "RelativeToolTip": "Services\\Client.WebApi\\appsettings.json",
               "ViewState": "AQIAAAoAAAAAAAAAAAAWwBgAAAARAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2024-09-09T10:52:14.949Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-09-09T10:52:14.949Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 3,
               "Title": "WealthBagPortfolioController.cs",
               "DocumentMoniker": "D:\\client_extras\\trunk\\Services\\Client.WebApi\\Controllers\\WealthBagPortfolioController.cs",
               "RelativeDocumentMoniker": "Services\\Client.WebApi\\Controllers\\WealthBagPortfolioController.cs",
@@ -157,12 +138,11 @@
               "RelativeToolTip": "Services\\Client.WebApi\\Controllers\\WealthBagPortfolioController.cs",
               "ViewState": "AQIAACMAAAAAAAAAAAAnwDUAAAAMAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-09-09T06:34:40.24Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-09-09T06:34:40.24Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 9,
               "Title": "ReportsService.cs",
               "DocumentMoniker": "D:\\client_extras\\trunk\\Services\\Client.WebApi\\Services\\ReportsService.cs",
               "RelativeDocumentMoniker": "Services\\Client.WebApi\\Services\\ReportsService.cs",
@@ -170,12 +150,11 @@
               "RelativeToolTip": "Services\\Client.WebApi\\Services\\ReportsService.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAA8AAAAgAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-09-09T06:20:32.911Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-09-09T06:20:32.911Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 5,
               "Title": "ApiResponseMiddleware.cs",
               "DocumentMoniker": "D:\\client_extras\\trunk\\Services\\Client.WebApi\\Extensions\\ApiResponseMiddleware.cs",
               "RelativeDocumentMoniker": "Services\\Client.WebApi\\Extensions\\ApiResponseMiddleware.cs",
@@ -183,12 +162,11 @@
               "RelativeToolTip": "Services\\Client.WebApi\\Extensions\\ApiResponseMiddleware.cs",
               "ViewState": "AQIAAEIAAAAAAAAAAAAawFMAAAAYAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-09-09T06:19:18.505Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-09-09T06:19:18.505Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 10,
               "Title": "IHttpClientPostService.cs",
               "DocumentMoniker": "D:\\Project2\\Client_Extras\\trunk\\Framework\\Components\\Helpers\\IHttpClientPostService.cs",
               "RelativeDocumentMoniker": "..\\..\\Project2\\Client_Extras\\trunk\\Framework\\Components\\Helpers\\IHttpClientPostService.cs",
@@ -196,12 +174,11 @@
               "RelativeToolTip": "..\\..\\Project2\\Client_Extras\\trunk\\Framework\\Components\\Helpers\\IHttpClientPostService.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAB4AAAAtAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-09-08T14:20:18.397Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-09-08T14:20:18.397Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 8,
               "Title": "ILog.cs",
               "DocumentMoniker": "D:\\Project2\\Client_Extras\\trunk\\Framework\\Components\\Logger\\ILog.cs",
               "RelativeDocumentMoniker": "..\\..\\Project2\\Client_Extras\\trunk\\Framework\\Components\\Logger\\ILog.cs",
@@ -209,12 +186,11 @@
               "RelativeToolTip": "..\\..\\Project2\\Client_Extras\\trunk\\Framework\\Components\\Logger\\ILog.cs",
               "ViewState": "AQIAAB8AAAAAAAAAAADwvy0AAAAIAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-09-08T14:20:05.068Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-09-08T14:20:05.068Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 4,
               "Title": "WealthBagPortfolioService.cs",
               "DocumentMoniker": "D:\\client_extras\\trunk\\Services\\Client.WebApi\\Services\\WealthBagPortfolioService.cs",
               "RelativeDocumentMoniker": "Services\\Client.WebApi\\Services\\WealthBagPortfolioService.cs",
@@ -222,12 +198,11 @@
               "RelativeToolTip": "Services\\Client.WebApi\\Services\\WealthBagPortfolioService.cs",
               "ViewState": "AQIAACEAAAAAAAAAAAAwwDgAAAAIAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-09-08T14:17:58.777Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-09-08T14:17:58.777Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 7,
               "Title": "ApiKeyAuthorizationFilter.cs",
               "DocumentMoniker": "D:\\client_extras\\trunk\\Services\\Client.WebApi\\Extensions\\ApiKeyAuthorizationFilter.cs",
               "RelativeDocumentMoniker": "Services\\Client.WebApi\\Extensions\\ApiKeyAuthorizationFilter.cs",
@@ -235,12 +210,11 @@
               "RelativeToolTip": "Services\\Client.WebApi\\Extensions\\ApiKeyAuthorizationFilter.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAA0AAABHAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-09-09T06:57:25.237Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-09-09T06:57:25.237Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 12,
+              "DocumentIndex": 11,
               "Title": "Startup.cs",
               "DocumentMoniker": "D:\\client_extras\\trunk\\Services\\Client.WebApi\\Startup.cs",
               "RelativeDocumentMoniker": "Services\\Client.WebApi\\Startup.cs",
@@ -248,8 +222,7 @@
               "RelativeToolTip": "Services\\Client.WebApi\\Startup.cs",
               "ViewState": "AQIAABgAAAAAAAAAAADgvyMAAAARAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-09-08T14:05:14.467Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-09-08T14:05:14.467Z"
             }
           ]
         }

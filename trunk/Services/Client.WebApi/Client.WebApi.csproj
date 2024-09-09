@@ -29,8 +29,8 @@
   </ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\..\..\Project2\Client_Extras\trunk\Framework\Components\Components.csproj" />
-		<ProjectReference Include="..\..\..\..\Project2\Client_Extras\trunk\Framework\Entities\Entities.csproj" />
+		<ProjectReference Include="\Client_Extras\trunk\Framework\Components\Components.csproj" />
+		<ProjectReference Include="\Client_Extras\trunk\Framework\Entities\Entities.csproj" />
 	</ItemGroup>
 
  
