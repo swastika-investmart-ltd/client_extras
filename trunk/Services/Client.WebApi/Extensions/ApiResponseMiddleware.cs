@@ -346,7 +346,7 @@ namespace Client.WebApi
                 // Check if the header is using the Bearer scheme
                 if (authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
                 {
-                    accessToken = authHeader; //.Substring(Length).Trim();
+                    accessToken = authHeader.Substring("Bearer ".Length).Trim();
                 }
             }
 
@@ -356,10 +356,10 @@ namespace Client.WebApi
                 var jsonToken = tokenHandler.ReadToken(accessToken) as System.IdentityModel.Tokens.Jwt.JwtSecurityToken;
                 AES256 aes256 = new AES256();
                 // Access claims from the JWT token
-                var employeeId = aes256.Decrypt(jsonToken?.Claims.FirstOrDefault(c => c.Type == "EmployeeId")?.Value, _config["AES256:Key"]);
-                var employeeCode = jsonToken?.Claims.FirstOrDefault(c => c.Type == "EmployeeCode")?.Value;
-                var employeeName = jsonToken?.Claims.FirstOrDefault(c => c.Type == "EmployeeName")?.Value;
-                return " , RequesterId: " + employeeId + " , EmployeeCode: " + employeeCode + " , EmployeeName: " + employeeName + " ";
+              // var employeeId = aes256.Decrypt(jsonToken?.Claims.FirstOrDefault(c => c.Type == "EmployeeId")?.Value, _config["AES256:Key"]);
+              // var employeeCode = jsonToken?.Claims.FirstOrDefault(c => c.Type == "EmployeeCode")?.Value;
+              // var employeeName = jsonToken?.Claims.FirstOrDefault(c => c.Type == "EmployeeName")?.Value;
+             //   return " , RequesterId: " + employeeId + " , EmployeeCode: " + employeeCode + " , EmployeeName: " + employeeName + " ";
             }
 
             return "";
