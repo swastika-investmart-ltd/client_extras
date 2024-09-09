@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "4dsOVd3gQJ1brgnmSHGuUiEgL7wPNXCD1SXKdO1esZVz4Y8Q68rfYeB9h+nTOFR17bP1HAMIl4p9f4O3/+R0Dw==",
+  "dgSpecHash": "WC35z60i6Ioi14cM3KBAYdHSxUDRqq4u05AdJ6PMm0+X/6n/UlASulwDB9pDLtObw+DCLXVxHr6r4a/v2s5Ayw==",
   "success": true,
-  "projectFilePath": "D:\\Project2\\jarvis_backend\\trunk\\Framework\\Entities\\Entities.csproj",
+  "projectFilePath": "D:\\client_extras\\trunk\\Framework\\Entities\\Entities.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Admin\\.nuget\\packages\\microsoft.aspnetcore.http.abstractions\\2.2.0\\microsoft.aspnetcore.http.abstractions.2.2.0.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\microsoft.aspnetcore.http.features\\2.2.0\\microsoft.aspnetcore.http.features.2.2.0.nupkg.sha512",

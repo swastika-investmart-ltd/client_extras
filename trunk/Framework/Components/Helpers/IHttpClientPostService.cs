@@ -23,6 +23,7 @@ namespace Components
         Task<string> WebRequestStorePortfolioInMemory(WebRequestHeaders webRequestHeaders);
         Task<string> WebRequestGetSSOAuthToken(WebRequestHeadersSSOToken webRequestHeaders);
         Task<string> WebRequestGetSSOToken(WebRequestHeadersSSOToken webRequestHeaders);
+        Task<string> WebRequestGetClientCodeByMobileNo(WebRequestHeadersClientCode webRequestHeaders);
     }
     public class HttpClientPostService : IHttpClientPostService
     {
@@ -85,7 +86,7 @@ namespace Components
             request.ContentLength = dataBytes.Length;
             request.ContentType = "application/x-www-form-urlencoded";
             request.Method = "POST";
-            request.Headers.Add("X-API-Key", webRequestHeaders.XAPIKey);
+            request.Headers.Add("XAPIKey", webRequestHeaders.XAPIKey);
             request.Headers.Add("APIOwner", webRequestHeaders.APIOwner);
 
             //request.KeepAlive = false;
@@ -250,7 +251,7 @@ namespace Components
             }
         }
 
-
+  
 
         public async Task<string> WebRequestGetSSOAuthToken(WebRequestHeadersSSOToken webRequestHeaders)
         { 
@@ -297,6 +298,30 @@ namespace Components
                 return ex.Message.ToString();
             }
         }
+
+        public async Task<string> WebRequestGetClientCodeByMobileNo(WebRequestHeadersClientCode webRequestHeaders)
+        {
+            HttpRequestMessage request = new HttpRequestMessage();
+            try
+            {
+                var client = new HttpClient();
+                request = new HttpRequestMessage(HttpMethod.Post, webRequestHeaders.BaseUrl);
+                request.Headers.Add("X-API-Key", webRequestHeaders.XAPIKey);
+                request.Headers.Add("APIOwner", webRequestHeaders.APIOwner);
+                var content = new StringContent("{\r\n   \"ClientCode\":\"DT39008\"\r\n}", null, "application/json");
+                request.Content = content;
+                var response = await client.SendAsync(request);
+                response.EnsureSuccessStatusCode();
+                Console.WriteLine(await response.Content.ReadAsStringAsync());
+                return await response.Content.ReadAsStringAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.Log(NLog.LogLevel.Error, "WebRequestGetClientCodeByMobileNo - request: " + request.ToString() + " Error Message: " + ex.Message.ToString() + " - " + ex.StackTrace.ToString());
+                return ex.Message.ToString() + " - " + ex.StackTrace.ToString();
+            }
+        }
+
 
     }
 }

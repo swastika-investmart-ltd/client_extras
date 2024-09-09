@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "j+dlVnMPYobEQRu5ZetY5OZdo5s5qKmNBdjYRtHZwEr5ebD+y6UzpBT6YGhAEfdsiOIpFeOrC73OJr1KdYXayw==",
+  "dgSpecHash": "ZSMs1swR8soSgOxNrVjqBBVGQ4sBovQ/5ln9FlesuvVrXVrYllHItI5ImBPx6tlTVdjgTVKbRNWZEc6KvenEUw==",
   "success": true,
-  "projectFilePath": "D:\\Project2\\jarvis_backend\\trunk\\Framework\\Components\\Components.csproj",
+  "projectFilePath": "D:\\client_extras\\trunk\\Framework\\Components\\Components.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Admin\\.nuget\\packages\\microsoft.aspnetcore.authorization\\2.2.0\\microsoft.aspnetcore.authorization.2.2.0.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\microsoft.aspnetcore.connections.abstractions\\2.2.0\\microsoft.aspnetcore.connections.abstractions.2.2.0.nupkg.sha512",

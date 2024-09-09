@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Project2\\ClientExtras\\trunk\\Services\\Client.WebApi\\Client.WebApi.csproj": {}
+    "D:\\client_extras\\trunk\\Services\\Client.WebApi\\Client.WebApi.csproj": {}
   },
   "projects": {
-    "D:\\Project2\\ClientExtras\\trunk\\Services\\Client.WebApi\\Client.WebApi.csproj": {
+    "D:\\client_extras\\trunk\\Services\\Client.WebApi\\Client.WebApi.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Project2\\ClientExtras\\trunk\\Services\\Client.WebApi\\Client.WebApi.csproj",
+        "projectUniqueName": "D:\\client_extras\\trunk\\Services\\Client.WebApi\\Client.WebApi.csproj",
         "projectName": "Client.WebApi",
-        "projectPath": "D:\\Project2\\ClientExtras\\trunk\\Services\\Client.WebApi\\Client.WebApi.csproj",
+        "projectPath": "D:\\client_extras\\trunk\\Services\\Client.WebApi\\Client.WebApi.csproj",
         "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
-        "outputPath": "D:\\Project2\\ClientExtras\\trunk\\Services\\Client.WebApi\\obj\\",
+        "outputPath": "D:\\client_extras\\trunk\\Services\\Client.WebApi\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Admin\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -28,11 +28,11 @@
           "net5.0": {
             "targetAlias": "net5.0",
             "projectReferences": {
-              "D:\\Project2\\ClientExtras\\trunk\\Framework\\Components\\Components.csproj": {
-                "projectPath": "D:\\Project2\\ClientExtras\\trunk\\Framework\\Components\\Components.csproj"
+              "D:\\Project2\\Client_Extras\\trunk\\Framework\\Components\\Components.csproj": {
+                "projectPath": "D:\\Project2\\Client_Extras\\trunk\\Framework\\Components\\Components.csproj"
               },
-              "D:\\Project2\\ClientExtras\\trunk\\Framework\\Entities\\Entities.csproj": {
-                "projectPath": "D:\\Project2\\ClientExtras\\trunk\\Framework\\Entities\\Entities.csproj"
+              "D:\\Project2\\Client_Extras\\trunk\\Framework\\Entities\\Entities.csproj": {
+                "projectPath": "D:\\Project2\\Client_Extras\\trunk\\Framework\\Entities\\Entities.csproj"
               }
             }
           }
@@ -56,6 +56,10 @@
               "target": "Package",
               "version": "[4.0.2, )"
             },
+            "ClosedXML": {
+              "target": "Package",
+              "version": "[0.102.3, )"
+            },
             "Dapper": {
               "target": "Package",
               "version": "[2.0.35, )"
@@ -64,13 +68,17 @@
               "target": "Package",
               "version": "[2.1.2, )"
             },
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[3.1.10, )"
+            },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
               "version": "[5.6.3, )"
             },
-            "Worksheet.Parser.ClosedXML": {
+            "System.Data.SqlClient": {
               "target": "Package",
-              "version": "[2.0.0-beta.4, )"
+              "version": "[4.8.5, )"
             },
             "jose-jwt": {
               "target": "Package",
@@ -102,6 +110,174 @@
             "Microsoft.AspNetCore.App": {
               "privateAssets": "none"
             },
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.202\\RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "D:\\Project2\\Client_Extras\\trunk\\Framework\\Components\\Components.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "D:\\Project2\\Client_Extras\\trunk\\Framework\\Components\\Components.csproj",
+        "projectName": "Components",
+        "projectPath": "D:\\Project2\\Client_Extras\\trunk\\Framework\\Components\\Components.csproj",
+        "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
+        "outputPath": "D:\\Project2\\Client_Extras\\trunk\\Framework\\Components\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\Admin\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "netstandard2.1"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netstandard2.1": {
+            "targetAlias": "netstandard2.1",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "netstandard2.1": {
+          "targetAlias": "netstandard2.1",
+          "dependencies": {
+            "Microsoft.AspNetCore.SignalR.Core": {
+              "target": "Package",
+              "version": "[1.1.0, )"
+            },
+            "Microsoft.Extensions.Caching.StackExchangeRedis": {
+              "target": "Package",
+              "version": "[7.0.0, )"
+            },
+            "Microsoft.Extensions.Configuration.Abstractions": {
+              "target": "Package",
+              "version": "[7.0.0, )"
+            },
+            "Microsoft.Extensions.Http": {
+              "target": "Package",
+              "version": "[7.0.0, )"
+            },
+            "NLog.Extensions.Logging": {
+              "target": "Package",
+              "version": "[1.6.5, )"
+            },
+            "Newtonsoft.Json": {
+              "target": "Package",
+              "version": "[13.0.1, )"
+            },
+            "System.Data.OleDb": {
+              "target": "Package",
+              "version": "[5.0.0, )"
+            },
+            "System.Text.Json": {
+              "target": "Package",
+              "version": "[7.0.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "NETStandard.Library": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.202\\RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "D:\\Project2\\Client_Extras\\trunk\\Framework\\Entities\\Entities.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "D:\\Project2\\Client_Extras\\trunk\\Framework\\Entities\\Entities.csproj",
+        "projectName": "Entities",
+        "projectPath": "D:\\Project2\\Client_Extras\\trunk\\Framework\\Entities\\Entities.csproj",
+        "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
+        "outputPath": "D:\\Project2\\Client_Extras\\trunk\\Framework\\Entities\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\Admin\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "netcoreapp3.1"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netcoreapp3.1": {
+            "targetAlias": "netcoreapp3.1",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "netcoreapp3.1": {
+          "targetAlias": "netcoreapp3.1",
+          "dependencies": {
+            "Microsoft.AspNetCore.Mvc.Abstractions": {
+              "target": "Package",
+              "version": "[2.2.0, )"
+            },
+            "Microsoft.AspNetCore.Mvc.NewtonsoftJson": {
+              "target": "Package",
+              "version": "[3.1.10, )"
+            },
+            "NLog.Extensions.Logging": {
+              "target": "Package",
+              "version": "[1.6.5, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }

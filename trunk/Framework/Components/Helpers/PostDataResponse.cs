@@ -17,6 +17,13 @@ namespace Components
 
 
     }
+    public class WebRequestHeadersClientCode
+    {
+        public string XAPIKey { get; set; }
+        public string APIOwner { get; set; }
+        public string BaseUrl { get; set; }
+        public string MobileNo { get; set; } 
+    }
     public class DeseoLoginDataResponse
     {
         public string Response { get; set; }

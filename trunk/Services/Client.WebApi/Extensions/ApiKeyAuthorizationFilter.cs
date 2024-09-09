@@ -14,7 +14,7 @@ namespace Client.WebApi.Extensions
         public void OnAuthorization(AuthorizationFilterContext context)
         {
             string apiKey = context.HttpContext.Request.Headers["X-API-Key"];
-            string APIKeyOwner = context.HttpContext.Request.Headers["APIOwner"];
+            string APIKeyOwner = context.HttpContext.Request.Headers["APIKeyOwner"];
 
             if (!_apiKeyValidator.IsValid(apiKey, APIKeyOwner))
             {

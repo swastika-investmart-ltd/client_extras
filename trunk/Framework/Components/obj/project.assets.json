@@ -2612,11 +2612,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\Project2\\jarvis_backend\\trunk\\Framework\\Components\\Components.csproj",
+      "projectUniqueName": "D:\\client_extras\\trunk\\Framework\\Components\\Components.csproj",
       "projectName": "Components",
-      "projectPath": "D:\\Project2\\jarvis_backend\\trunk\\Framework\\Components\\Components.csproj",
+      "projectPath": "D:\\client_extras\\trunk\\Framework\\Components\\Components.csproj",
       "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
-      "outputPath": "D:\\Project2\\jarvis_backend\\trunk\\Framework\\Components\\obj\\",
+      "outputPath": "D:\\client_extras\\trunk\\Framework\\Components\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\Admin\\AppData\\Roaming\\NuGet\\NuGet.Config",

@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Project2\\jarvis_backend\\trunk\\Framework\\Entities\\Entities.csproj": {}
+    "D:\\client_extras\\trunk\\Framework\\Entities\\Entities.csproj": {}
   },
   "projects": {
-    "D:\\Project2\\jarvis_backend\\trunk\\Framework\\Entities\\Entities.csproj": {
+    "D:\\client_extras\\trunk\\Framework\\Entities\\Entities.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Project2\\jarvis_backend\\trunk\\Framework\\Entities\\Entities.csproj",
+        "projectUniqueName": "D:\\client_extras\\trunk\\Framework\\Entities\\Entities.csproj",
         "projectName": "Entities",
-        "projectPath": "D:\\Project2\\jarvis_backend\\trunk\\Framework\\Entities\\Entities.csproj",
+        "projectPath": "D:\\client_extras\\trunk\\Framework\\Entities\\Entities.csproj",
         "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
-        "outputPath": "D:\\Project2\\jarvis_backend\\trunk\\Framework\\Entities\\obj\\",
+        "outputPath": "D:\\client_extras\\trunk\\Framework\\Entities\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Admin\\AppData\\Roaming\\NuGet\\NuGet.Config",
