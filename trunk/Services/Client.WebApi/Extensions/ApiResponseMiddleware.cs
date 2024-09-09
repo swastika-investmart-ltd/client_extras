@@ -14,6 +14,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using DocumentFormat.OpenXml.Office2016.Excel;
 
 
 namespace Client.WebApi
@@ -35,6 +36,8 @@ namespace Client.WebApi
             // Generate a unique ID for the request
             var correlationId = string.Format("{0}{1}", DateTime.Now.Ticks, System.Threading.Thread.CurrentThread.ManagedThreadId);
             context.Request.Headers.Add("CorrelationId", correlationId);
+
+            var userId = GetUserIdFromToken(context);
 
             string clientIpAddress = context.Request.HttpContext.Connection.RemoteIpAddress.ToString();
 
@@ -70,13 +73,13 @@ namespace Client.WebApi
                                 var requestData = Encoding.UTF8.GetBytes(dataSource);
                                 stream = new MemoryStream(requestData);
                                 context.Request.Body = stream;
-                                _logger.Log(LogLevel.Info, $@"Request   with " + correlationId + " : " + dataSource);
+                                _logger.Log(LogLevel.Info, $@"Request " + ", CorrelationId: " + correlationId + ", IP: " + clientIpAddress + ", Path: " + context.Request.Path + userId + ", Request Body:" + dataSource);
                             }
                         }
                         else
                         {
-                            var request = await FormatRequest(context.Request);
-                            _logger.Log(LogLevel.Info, $@"Request   with " + correlationId + " : " + request);
+                            var request = await FormatRequest(context.Request); 
+                            _logger.Log(LogLevel.Info, $@"Request " + ", CorrelationId: " + correlationId + ", IP: " + clientIpAddress + ", Path: " + context.Request.Path + userId + ", Request Body:" + request);
                         }
                         await _next.Invoke(context);
                         context.Response.Body = originalBodyStream;
@@ -84,13 +87,13 @@ namespace Client.WebApi
                         {
                             var bodyAsText = await FormatResponse(bodyStream);
                             await HandleSuccessRequestAsync(context, bodyAsText, context.Response.StatusCode);
-                            //Responce body
-                            _logger.Log(LogLevel.Info, $@"Response  with " + correlationId + " : " + bodyAsText);
+                            //Responce body 
+                            _logger.Log(LogLevel.Info, $@"Response " + ", CorrelationId: " + correlationId + ", StatusCode:" + context.Response.StatusCode + ",IP: " + clientIpAddress + ",Path: " + context.Request.Path + userId + ",Response Body:" + bodyAsText);
                         }
                         else
                         {
                             var bodyAsText = await FormatResponse(bodyStream);
-                            _logger.Log(LogLevel.Warn, $@"Response  with " + correlationId + " : " + context.Response.StatusCode + " : " + bodyAsText);
+                            _logger.Log(LogLevel.Warn, $@"Response " + ", CorrelationId: " + correlationId + ", StatusCode:" + context.Response.StatusCode + ",IP: " + clientIpAddress + ",Path: " + context.Request.Path + userId + ",Response Body:" + bodyAsText);
                             if ((context.Response.StatusCode == (int)HttpStatusCode.NotFound || context.Response.StatusCode == (int)HttpStatusCode.BadRequest) && bodyAsText != null)
                                 await HandleNotSuccessRequestAsync(context, bodyAsText, context.Response.StatusCode);
                             else
@@ -98,8 +101,8 @@ namespace Client.WebApi
                         }
                     }
                     catch (Exception ex)
-                    {
-                        _logger.Log(LogLevel.Error, $@"Exception with " + correlationId + " : Stacktrace : " + ex.StackTrace);
+                    { 
+                        _logger.Log(LogLevel.Error, $@"Exception " + ", CorrelationId: " + correlationId + ",IP: " + clientIpAddress + ",Path: " + context.Request.Path + userId + " : Stacktrace : " + ex.StackTrace);
                         await HandleExceptionAsync(context, ex);
                         bodyStream.Seek(0, SeekOrigin.Begin);
                         await bodyStream.CopyToAsync(originalBodyStream);
@@ -329,6 +332,37 @@ namespace Client.WebApi
         private ApiResponse GetErrorResponse(int code, ApiError apiError)
         {
             return new ApiResponse(code, apiError);
+        }
+
+        private string GetUserIdFromToken(HttpContext context)
+        {
+            string accessToken = null;
+
+            // Check if the Authorization header is present
+            if (context.Request.Headers.ContainsKey("Authorization"))
+            {
+                var authHeader = context.Request.Headers["Authorization"].ToString();
+
+                // Check if the header is using the Bearer scheme
+                if (authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+                {
+                    accessToken = authHeader; //.Substring(Length).Trim();
+                }
+            }
+
+            if (!string.IsNullOrEmpty(accessToken))
+            {
+                var tokenHandler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
+                var jsonToken = tokenHandler.ReadToken(accessToken) as System.IdentityModel.Tokens.Jwt.JwtSecurityToken;
+                AES256 aes256 = new AES256();
+                // Access claims from the JWT token
+                var employeeId = aes256.Decrypt(jsonToken?.Claims.FirstOrDefault(c => c.Type == "EmployeeId")?.Value, _config["AES256:Key"]);
+                var employeeCode = jsonToken?.Claims.FirstOrDefault(c => c.Type == "EmployeeCode")?.Value;
+                var employeeName = jsonToken?.Claims.FirstOrDefault(c => c.Type == "EmployeeName")?.Value;
+                return " , RequesterId: " + employeeId + " , EmployeeCode: " + employeeCode + " , EmployeeName: " + employeeName + " ";
+            }
+
+            return "";
         }
     }
 
