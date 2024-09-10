@@ -42,7 +42,7 @@ namespace Client.WebApi
             string clientIpAddress = context.Request.HttpContext.Connection.RemoteIpAddress.ToString();
 
             //Request body with IP log
-            _logger.Log(LogLevel.Info, $@"IP: " + clientIpAddress + " , Path: " + context.Request.Path + " , CorrelationId: " + correlationId);
+            _logger.Log(LogLevel.Info, $@"IP: " + clientIpAddress + " , Path: " + context.Request.Path + userId + " , CorrelationId: " + correlationId);
 
             if (IsSwagger(context))
                 await this._next(context);
@@ -350,17 +350,16 @@ namespace Client.WebApi
                 }
             }
 
-            if (!string.IsNullOrEmpty(accessToken))
-            {
-                var tokenHandler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
-                var jsonToken = tokenHandler.ReadToken(accessToken) as System.IdentityModel.Tokens.Jwt.JwtSecurityToken;
-                AES256 aes256 = new AES256();
-                // Access claims from the JWT token
-              // var employeeId = aes256.Decrypt(jsonToken?.Claims.FirstOrDefault(c => c.Type == "EmployeeId")?.Value, _config["AES256:Key"]);
-              // var employeeCode = jsonToken?.Claims.FirstOrDefault(c => c.Type == "EmployeeCode")?.Value;
-              // var employeeName = jsonToken?.Claims.FirstOrDefault(c => c.Type == "EmployeeName")?.Value;
-             //   return " , RequesterId: " + employeeId + " , EmployeeCode: " + employeeCode + " , EmployeeName: " + employeeName + " ";
-            }
+            //if (!string.IsNullOrEmpty(accessToken))
+            //{
+            //    var tokenHandler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
+            //    var jsonToken = tokenHandler.ReadToken(accessToken) as System.IdentityModel.Tokens.Jwt.JwtSecurityToken;
+            //    AES256 aes256 = new AES256();
+            //    // Access claims from the JWT token
+
+            //    var ApiKey = jsonToken?.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name")?.Value;
+            //    return " , Api Key: " + ApiKey;
+            //}
 
             return "";
         }
