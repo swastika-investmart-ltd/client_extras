@@ -15,15 +15,12 @@ namespace Entities
         public string ResponseMessage { get; set; }
         public T Data { get; set; }
     }
-
     public class ResponseBaseSSModel<T>
     {
         public long ResponseId { get; set; }
         public string ResponseMessage { get; set; }
         public T Transfer { get; set; }
     }
-
-    
 
     public class ResponseBaseModelDD
     {
