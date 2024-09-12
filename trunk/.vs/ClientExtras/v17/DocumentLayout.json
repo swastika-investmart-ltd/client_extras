@@ -3,32 +3,44 @@
   "WorkspaceRootPath": "D:\\client_extras\\trunk\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{127DB3EB-F284-4142-83D4-BA48F1D5E12D}|Services\\Client.WebApi\\Client.WebApi.csproj|d:\\client_extras\\trunk\\services\\client.webapi\\client.webapi.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
-      "RelativeMoniker": "D:0:0:{127DB3EB-F284-4142-83D4-BA48F1D5E12D}|Services\\Client.WebApi\\Client.WebApi.csproj|solutionrelative:services\\client.webapi\\client.webapi.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+      "AbsoluteMoniker": "D:0:0:{127DB3EB-F284-4142-83D4-BA48F1D5E12D}|Services\\Client.WebApi\\Client.WebApi.csproj|d:\\client_extras\\trunk\\services\\client.webapi\\nlog.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{127DB3EB-F284-4142-83D4-BA48F1D5E12D}|Services\\Client.WebApi\\Client.WebApi.csproj|solutionrelative:services\\client.webapi\\nlog.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{127DB3EB-F284-4142-83D4-BA48F1D5E12D}|Services\\Client.WebApi\\Client.WebApi.csproj|d:\\client_extras\\trunk\\services\\client.webapi\\models\\reports\\tradesummaryreqmdl.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{127DB3EB-F284-4142-83D4-BA48F1D5E12D}|Services\\Client.WebApi\\Client.WebApi.csproj|solutionrelative:services\\client.webapi\\models\\reports\\tradesummaryreqmdl.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{127DB3EB-F284-4142-83D4-BA48F1D5E12D}|Services\\Client.WebApi\\Client.WebApi.csproj|d:\\client_extras\\trunk\\services\\client.webapi\\services\\wealthbagportfolioservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{127DB3EB-F284-4142-83D4-BA48F1D5E12D}|Services\\Client.WebApi\\Client.WebApi.csproj|solutionrelative:services\\client.webapi\\services\\wealthbagportfolioservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{127DB3EB-F284-4142-83D4-BA48F1D5E12D}|Services\\Client.WebApi\\Client.WebApi.csproj|d:\\client_extras\\trunk\\services\\client.webapi\\controllers\\wealthbagportfoliocontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{127DB3EB-F284-4142-83D4-BA48F1D5E12D}|Services\\Client.WebApi\\Client.WebApi.csproj|solutionrelative:services\\client.webapi\\controllers\\wealthbagportfoliocontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{127DB3EB-F284-4142-83D4-BA48F1D5E12D}|Services\\Client.WebApi\\Client.WebApi.csproj|d:\\client_extras\\trunk\\services\\client.webapi\\services\\reportsservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{127DB3EB-F284-4142-83D4-BA48F1D5E12D}|Services\\Client.WebApi\\Client.WebApi.csproj|solutionrelative:services\\client.webapi\\services\\reportsservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{127DB3EB-F284-4142-83D4-BA48F1D5E12D}|Services\\Client.WebApi\\Client.WebApi.csproj|d:\\client_extras\\trunk\\services\\client.webapi\\startup.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{127DB3EB-F284-4142-83D4-BA48F1D5E12D}|Services\\Client.WebApi\\Client.WebApi.csproj|solutionrelative:services\\client.webapi\\startup.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{127DB3EB-F284-4142-83D4-BA48F1D5E12D}|Services\\Client.WebApi\\Client.WebApi.csproj|d:\\client_extras\\trunk\\services\\client.webapi\\extensions\\apiresponsemiddleware.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{127DB3EB-F284-4142-83D4-BA48F1D5E12D}|Services\\Client.WebApi\\Client.WebApi.csproj|solutionrelative:services\\client.webapi\\extensions\\apiresponsemiddleware.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
+      "AbsoluteMoniker": "D:0:0:{127DB3EB-F284-4142-83D4-BA48F1D5E12D}|Services\\Client.WebApi\\Client.WebApi.csproj|d:\\client_extras\\trunk\\services\\client.webapi\\services\\clientreferralservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{127DB3EB-F284-4142-83D4-BA48F1D5E12D}|Services\\Client.WebApi\\Client.WebApi.csproj|solutionrelative:services\\client.webapi\\services\\clientreferralservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{127DB3EB-F284-4142-83D4-BA48F1D5E12D}|Services\\Client.WebApi\\Client.WebApi.csproj|d:\\client_extras\\trunk\\services\\client.webapi\\controllers\\wealthbagportfoliocontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{127DB3EB-F284-4142-83D4-BA48F1D5E12D}|Services\\Client.WebApi\\Client.WebApi.csproj|solutionrelative:services\\client.webapi\\controllers\\wealthbagportfoliocontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{127DB3EB-F284-4142-83D4-BA48F1D5E12D}|Services\\Client.WebApi\\Client.WebApi.csproj|d:\\client_extras\\trunk\\services\\client.webapi\\services\\wealthbagportfolioservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{127DB3EB-F284-4142-83D4-BA48F1D5E12D}|Services\\Client.WebApi\\Client.WebApi.csproj|solutionrelative:services\\client.webapi\\services\\wealthbagportfolioservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{127DB3EB-F284-4142-83D4-BA48F1D5E12D}|Services\\Client.WebApi\\Client.WebApi.csproj|d:\\client_extras\\trunk\\services\\client.webapi\\controllers\\clientreferraldashboardcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{127DB3EB-F284-4142-83D4-BA48F1D5E12D}|Services\\Client.WebApi\\Client.WebApi.csproj|solutionrelative:services\\client.webapi\\controllers\\clientreferraldashboardcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{127DB3EB-F284-4142-83D4-BA48F1D5E12D}|Services\\Client.WebApi\\Client.WebApi.csproj|d:\\client_extras\\trunk\\services\\client.webapi\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
       "RelativeMoniker": "D:0:0:{127DB3EB-F284-4142-83D4-BA48F1D5E12D}|Services\\Client.WebApi\\Client.WebApi.csproj|solutionrelative:services\\client.webapi\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{127DB3EB-F284-4142-83D4-BA48F1D5E12D}|Services\\Client.WebApi\\Client.WebApi.csproj|d:\\client_extras\\trunk\\services\\client.webapi\\models\\reports\\tradesummaryreqmdl.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{127DB3EB-F284-4142-83D4-BA48F1D5E12D}|Services\\Client.WebApi\\Client.WebApi.csproj|solutionrelative:services\\client.webapi\\models\\reports\\tradesummaryreqmdl.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{127DB3EB-F284-4142-83D4-BA48F1D5E12D}|Services\\Client.WebApi\\Client.WebApi.csproj|d:\\client_extras\\trunk\\services\\client.webapi\\services\\reportsservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{127DB3EB-F284-4142-83D4-BA48F1D5E12D}|Services\\Client.WebApi\\Client.WebApi.csproj|solutionrelative:services\\client.webapi\\services\\reportsservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{127DB3EB-F284-4142-83D4-BA48F1D5E12D}|Services\\Client.WebApi\\Client.WebApi.csproj|d:\\client_extras\\trunk\\services\\client.webapi\\extensions\\apikeyauthorizationfilter.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -48,8 +60,21 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 5,
+          "SelectedChildIndex": 0,
           "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "nlog.config",
+              "DocumentMoniker": "D:\\client_extras\\trunk\\Services\\Client.WebApi\\nlog.config",
+              "RelativeDocumentMoniker": "Services\\Client.WebApi\\nlog.config",
+              "ToolTip": "D:\\client_extras\\trunk\\Services\\Client.WebApi\\nlog.config",
+              "RelativeToolTip": "Services\\Client.WebApi\\nlog.config",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAkAAAANAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000601|",
+              "WhenOpened": "2024-09-12T11:54:35.14Z",
+              "EditorCaption": ""
+            },
             {
               "$type": "Bookmark",
               "Name": "ST:129:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
@@ -72,72 +97,111 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "Client.WebApi",
-              "DocumentMoniker": "D:\\client_extras\\trunk\\Services\\Client.WebApi\\Client.WebApi.csproj",
-              "RelativeDocumentMoniker": "Services\\Client.WebApi\\Client.WebApi.csproj",
-              "ToolTip": "D:\\client_extras\\trunk\\Services\\Client.WebApi\\Client.WebApi.csproj",
-              "RelativeToolTip": "Services\\Client.WebApi\\Client.WebApi.csproj",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAUAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2024-09-12T07:40:06.6Z",
+              "DocumentIndex": 3,
+              "Title": "ClientReferralService.cs",
+              "DocumentMoniker": "D:\\client_extras\\trunk\\Services\\Client.WebApi\\Services\\ClientReferralService.cs",
+              "RelativeDocumentMoniker": "Services\\Client.WebApi\\Services\\ClientReferralService.cs",
+              "ToolTip": "D:\\client_extras\\trunk\\Services\\Client.WebApi\\Services\\ClientReferralService.cs",
+              "RelativeToolTip": "Services\\Client.WebApi\\Services\\ClientReferralService.cs",
+              "ViewState": "AQIAAC4AAAAAAAAAAAAowM0AAABHAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-09-12T11:12:26.219Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
+              "Title": "Startup.cs",
+              "DocumentMoniker": "D:\\client_extras\\trunk\\Services\\Client.WebApi\\Startup.cs",
+              "RelativeDocumentMoniker": "Services\\Client.WebApi\\Startup.cs",
+              "ToolTip": "D:\\client_extras\\trunk\\Services\\Client.WebApi\\Startup.cs",
+              "RelativeToolTip": "Services\\Client.WebApi\\Startup.cs",
+              "ViewState": "AQIAACUAAAAAAAAAAAAlwC8AAAAtAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-09-12T10:09:35.377Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "D:\\client_extras\\trunk\\Services\\Client.WebApi\\appsettings.json",
+              "RelativeDocumentMoniker": "Services\\Client.WebApi\\appsettings.json",
+              "ToolTip": "D:\\client_extras\\trunk\\Services\\Client.WebApi\\appsettings.json",
+              "RelativeToolTip": "Services\\Client.WebApi\\appsettings.json",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABEAAAAKAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2024-09-12T10:10:13.628Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
               "Title": "TradeSummaryReqMdl.cs",
               "DocumentMoniker": "D:\\client_extras\\trunk\\Services\\Client.WebApi\\Models\\Reports\\TradeSummaryReqMdl.cs",
               "RelativeDocumentMoniker": "Services\\Client.WebApi\\Models\\Reports\\TradeSummaryReqMdl.cs",
               "ToolTip": "D:\\client_extras\\trunk\\Services\\Client.WebApi\\Models\\Reports\\TradeSummaryReqMdl.cs",
               "RelativeToolTip": "Services\\Client.WebApi\\Models\\Reports\\TradeSummaryReqMdl.cs",
-              "ViewState": "AQIAAA0AAAAAAAAAAAAQwBAAAAAuAAAA",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABcAAAAFAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-09-12T05:56:33.76Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "WealthBagPortfolioController.cs",
-              "DocumentMoniker": "D:\\client_extras\\trunk\\Services\\Client.WebApi\\Controllers\\WealthBagPortfolioController.cs",
-              "RelativeDocumentMoniker": "Services\\Client.WebApi\\Controllers\\WealthBagPortfolioController.cs",
-              "ToolTip": "D:\\client_extras\\trunk\\Services\\Client.WebApi\\Controllers\\WealthBagPortfolioController.cs",
-              "RelativeToolTip": "Services\\Client.WebApi\\Controllers\\WealthBagPortfolioController.cs",
-              "ViewState": "AQIAACMAAAAAAAAAAADwvzMAAABFAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-09-09T06:34:40.24Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 5,
               "Title": "WealthBagPortfolioService.cs",
               "DocumentMoniker": "D:\\client_extras\\trunk\\Services\\Client.WebApi\\Services\\WealthBagPortfolioService.cs",
               "RelativeDocumentMoniker": "Services\\Client.WebApi\\Services\\WealthBagPortfolioService.cs",
               "ToolTip": "D:\\client_extras\\trunk\\Services\\Client.WebApi\\Services\\WealthBagPortfolioService.cs",
               "RelativeToolTip": "Services\\Client.WebApi\\Services\\WealthBagPortfolioService.cs",
-              "ViewState": "AQIAAB4AAAAAAAAAAAAuwCwAAAA7AAAA",
+              "ViewState": "AQIAAB8AAAAAAAAAAAAmwCkAAAARAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-09-08T14:17:58.777Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "appsettings.json",
-              "DocumentMoniker": "D:\\client_extras\\trunk\\Services\\Client.WebApi\\appsettings.json",
-              "RelativeDocumentMoniker": "Services\\Client.WebApi\\appsettings.json",
-              "ToolTip": "D:\\client_extras\\trunk\\Services\\Client.WebApi\\appsettings.json",
-              "RelativeToolTip": "Services\\Client.WebApi\\appsettings.json",
-              "ViewState": "AQIAAAoAAAAAAAAAAAAWwBgAAAAbAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2024-09-09T10:52:14.949Z",
+              "DocumentIndex": 2,
+              "Title": "ApiResponseMiddleware.cs",
+              "DocumentMoniker": "D:\\client_extras\\trunk\\Services\\Client.WebApi\\Extensions\\ApiResponseMiddleware.cs",
+              "RelativeDocumentMoniker": "Services\\Client.WebApi\\Extensions\\ApiResponseMiddleware.cs",
+              "ToolTip": "D:\\client_extras\\trunk\\Services\\Client.WebApi\\Extensions\\ApiResponseMiddleware.cs",
+              "RelativeToolTip": "Services\\Client.WebApi\\Extensions\\ApiResponseMiddleware.cs",
+              "ViewState": "AQIAAA8AAAAAAAAAAAAAABoAAAA+AAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-09-09T06:19:18.505Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 4,
+              "Title": "WealthBagPortfolioController.cs",
+              "DocumentMoniker": "D:\\client_extras\\trunk\\Services\\Client.WebApi\\Controllers\\WealthBagPortfolioController.cs",
+              "RelativeDocumentMoniker": "Services\\Client.WebApi\\Controllers\\WealthBagPortfolioController.cs",
+              "ToolTip": "D:\\client_extras\\trunk\\Services\\Client.WebApi\\Controllers\\WealthBagPortfolioController.cs",
+              "RelativeToolTip": "Services\\Client.WebApi\\Controllers\\WealthBagPortfolioController.cs",
+              "ViewState": "AQIAACYAAAAAAAAAAAAmwC4AAAANAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-09-09T06:34:40.24Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "ClientReferralDashboardController.cs",
+              "DocumentMoniker": "D:\\client_extras\\trunk\\Services\\Client.WebApi\\Controllers\\ClientReferralDashboardController.cs",
+              "RelativeDocumentMoniker": "Services\\Client.WebApi\\Controllers\\ClientReferralDashboardController.cs",
+              "ToolTip": "D:\\client_extras\\trunk\\Services\\Client.WebApi\\Controllers\\ClientReferralDashboardController.cs",
+              "RelativeToolTip": "Services\\Client.WebApi\\Controllers\\ClientReferralDashboardController.cs",
+              "ViewState": "AQIAAB8AAAAAAAAAAAAQwCgAAABLAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-09-12T10:12:21.316Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
               "Title": "ReportsService.cs",
               "DocumentMoniker": "D:\\client_extras\\trunk\\Services\\Client.WebApi\\Services\\ReportsService.cs",
               "RelativeDocumentMoniker": "Services\\Client.WebApi\\Services\\ReportsService.cs",
@@ -150,20 +214,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "ApiResponseMiddleware.cs",
-              "DocumentMoniker": "D:\\client_extras\\trunk\\Services\\Client.WebApi\\Extensions\\ApiResponseMiddleware.cs",
-              "RelativeDocumentMoniker": "Services\\Client.WebApi\\Extensions\\ApiResponseMiddleware.cs",
-              "ToolTip": "D:\\client_extras\\trunk\\Services\\Client.WebApi\\Extensions\\ApiResponseMiddleware.cs",
-              "RelativeToolTip": "Services\\Client.WebApi\\Extensions\\ApiResponseMiddleware.cs",
-              "ViewState": "AQIAAEoBAAAAAAAAAAAwwFYBAAANAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-09-09T06:19:18.505Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 12,
               "Title": "IHttpClientPostService.cs",
               "DocumentMoniker": "D:\\Project2\\Client_Extras\\trunk\\Framework\\Components\\Helpers\\IHttpClientPostService.cs",
               "RelativeDocumentMoniker": "..\\..\\Project2\\Client_Extras\\trunk\\Framework\\Components\\Helpers\\IHttpClientPostService.cs",
@@ -176,7 +227,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 11,
               "Title": "ILog.cs",
               "DocumentMoniker": "D:\\Project2\\Client_Extras\\trunk\\Framework\\Components\\Logger\\ILog.cs",
               "RelativeDocumentMoniker": "..\\..\\Project2\\Client_Extras\\trunk\\Framework\\Components\\Logger\\ILog.cs",
@@ -189,7 +240,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 10,
               "Title": "ApiKeyAuthorizationFilter.cs",
               "DocumentMoniker": "D:\\client_extras\\trunk\\Services\\Client.WebApi\\Extensions\\ApiKeyAuthorizationFilter.cs",
               "RelativeDocumentMoniker": "Services\\Client.WebApi\\Extensions\\ApiKeyAuthorizationFilter.cs",
