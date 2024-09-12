@@ -9,7 +9,7 @@ D:\Project2\jarvis_backend\trunk\Framework\Entities\obj\Debug\netcoreapp3.1\Enti
 D:\Project2\jarvis_backend\trunk\Framework\Entities\obj\Debug\netcoreapp3.1\Entities.sourcelink.json
 D:\Project2\jarvis_backend\trunk\Framework\Entities\obj\Debug\netcoreapp3.1\Entities.dll
 D:\Project2\jarvis_backend\trunk\Framework\Entities\obj\Debug\netcoreapp3.1\Entities.pdb
-D:\Client_Extras\trunk\Framework\Entities\bin\Debug\netcoreapp3.1\Entities.deps.json
+D:\client_extras\trunk\Framework\Entities\bin\Debug\netcoreapp3.1\Entities.deps.json
 D:\client_extras\trunk\Framework\Entities\bin\Debug\netcoreapp3.1\Entities.dll
 D:\client_extras\trunk\Framework\Entities\bin\Debug\netcoreapp3.1\Entities.pdb
 D:\client_extras\trunk\Framework\Entities\obj\Debug\netcoreapp3.1\Entities.csproj.AssemblyReference.cache

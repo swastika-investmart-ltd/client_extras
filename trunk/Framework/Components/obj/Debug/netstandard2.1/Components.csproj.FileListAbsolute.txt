@@ -9,7 +9,7 @@ D:\Project2\jarvis_backend\trunk\Framework\Components\obj\Debug\netstandard2.1\C
 D:\Project2\jarvis_backend\trunk\Framework\Components\obj\Debug\netstandard2.1\Components.sourcelink.json
 D:\Project2\jarvis_backend\trunk\Framework\Components\obj\Debug\netstandard2.1\Components.dll
 D:\Project2\jarvis_backend\trunk\Framework\Components\obj\Debug\netstandard2.1\Components.pdb
-D:\client_extras\trunk\Framework\Components\bin\Debug\netstandard2.1\Components.deps.json
+D:\Client_Extras\trunk\Framework\Components\bin\Debug\netstandard2.1\Components.deps.json
 D:\client_extras\trunk\Framework\Components\bin\Debug\netstandard2.1\Components.dll
 D:\client_extras\trunk\Framework\Components\bin\Debug\netstandard2.1\Components.pdb
 D:\client_extras\trunk\Framework\Components\obj\Debug\netstandard2.1\Components.csproj.AssemblyReference.cache

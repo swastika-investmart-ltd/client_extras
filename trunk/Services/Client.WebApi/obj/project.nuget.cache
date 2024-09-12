@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "fUKnluT+aw+HTr/CKJz6cHGCkt5QUxLuwPMQO70W13OybpinMFyYh+I7N+U8t5vNS4PUQTEZvr/emrZBmRm1TA==",
+  "dgSpecHash": "X0jIxRh9G/cthuDvxkW9A7LklhRYRoAt86YXDCOAqO2+BeCHtFhha8oTRpIHZ9bgQRSUUYOBjJM24aAC0WBpVw==",
   "success": true,
   "projectFilePath": "D:\\client_extras\\trunk\\Services\\Client.WebApi\\Client.WebApi.csproj",
   "expectedPackageFiles": [
@@ -166,7 +166,7 @@
     "C:\\Users\\Admin\\.nuget\\packages\\system.xml.readerwriter\\4.3.0\\system.xml.readerwriter.4.3.0.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\system.xml.xdocument\\4.3.0\\system.xml.xdocument.4.3.0.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\xlparser\\1.5.2\\xlparser.1.5.2.nupkg.sha512",
-    "C:\\Users\\Admin\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\5.0.17\\microsoft.netcore.app.host.win-x64.5.0.17.nupkg.sha512"
+    "C:\\Users\\Admin\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\3.1.32\\microsoft.netcore.app.host.win-x64.3.1.32.nupkg.sha512"
   ],
   "logs": [
     {
@@ -176,7 +176,7 @@
       "message": "Package 'Microsoft.AspNetCore.Authentication.JwtBearer' 3.1.10 has a known moderate severity vulnerability, https://github.com/advisories/GHSA-q7cg-43mg-qp69",
       "libraryId": "Microsoft.AspNetCore.Authentication.JwtBearer",
       "targetGraphs": [
-        "net5.0"
+        ".NETCoreApp,Version=v3.1"
       ]
     },
     {
@@ -186,7 +186,7 @@
       "message": "Package 'System.Data.SqlClient' 4.8.5 has a known high severity vulnerability, https://github.com/advisories/GHSA-98g6-xh36-x2p7",
       "libraryId": "System.Data.SqlClient",
       "targetGraphs": [
-        "net5.0"
+        ".NETCoreApp,Version=v3.1"
       ]
     }
   ]

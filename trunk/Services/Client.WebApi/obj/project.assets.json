@@ -1,20 +1,20 @@
 {
   "version": 3,
   "targets": {
-    "net5.0": {
+    ".NETCoreApp,Version=v3.1": {
       "AspNetCoreRateLimit/4.0.2": {
         "type": "package",
         "dependencies": {
-          "Microsoft.Extensions.Caching.Abstractions": "5.0.0",
-          "Microsoft.Extensions.Logging.Abstractions": "5.0.0",
-          "Microsoft.Extensions.Options": "5.0.0",
+          "Microsoft.Extensions.Caching.Abstractions": "3.1.9",
+          "Microsoft.Extensions.Logging.Abstractions": "3.1.9",
+          "Microsoft.Extensions.Options": "3.1.9",
           "Newtonsoft.Json": "13.0.1"
         },
         "compile": {
-          "lib/net5.0/AspNetCoreRateLimit.dll": {}
+          "lib/netcoreapp3.1/AspNetCoreRateLimit.dll": {}
         },
         "runtime": {
-          "lib/net5.0/AspNetCoreRateLimit.dll": {}
+          "lib/netcoreapp3.1/AspNetCoreRateLimit.dll": {}
         },
         "frameworkReferences": [
           "Microsoft.AspNetCore.App"
@@ -1052,12 +1052,12 @@
           "System.IO.Pipelines": "5.0.0"
         },
         "compile": {
-          "lib/net5.0/Pipelines.Sockets.Unofficial.dll": {
+          "lib/netcoreapp3.1/Pipelines.Sockets.Unofficial.dll": {
             "related": ".xml"
           }
         },
         "runtime": {
-          "lib/net5.0/Pipelines.Sockets.Unofficial.dll": {
+          "lib/netcoreapp3.1/Pipelines.Sockets.Unofficial.dll": {
             "related": ".xml"
           }
         }
@@ -1329,12 +1329,12 @@
           "System.Diagnostics.PerformanceCounter": "5.0.0"
         },
         "compile": {
-          "lib/net5.0/StackExchange.Redis.dll": {
+          "lib/netcoreapp3.1/StackExchange.Redis.dll": {
             "related": ".xml"
           }
         },
         "runtime": {
-          "lib/net5.0/StackExchange.Redis.dll": {
+          "lib/netcoreapp3.1/StackExchange.Redis.dll": {
             "related": ".xml"
           }
         }
@@ -2509,12 +2509,12 @@
           "System.Windows.Extensions": "5.0.0"
         },
         "compile": {
-          "ref/net5.0/_._": {
+          "ref/netcoreapp3.0/_._": {
             "related": ".xml"
           }
         },
         "runtime": {
-          "lib/net5.0/System.Security.Permissions.dll": {
+          "lib/netcoreapp3.0/System.Security.Permissions.dll": {
             "related": ".xml"
           }
         }
@@ -8329,7 +8329,7 @@
     }
   },
   "projectFileDependencyGroups": {
-    "net5.0": [
+    ".NETCoreApp,Version=v3.1": [
       "AspNetCoreRateLimit >= 4.0.2",
       "ClosedXML >= 0.102.3",
       "Components >= 1.0.0",
@@ -8360,15 +8360,15 @@
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
-        "net5.0"
+        "netcoreapp3.1"
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
-        "net5.0": {
-          "targetAlias": "net5.0",
+        "netcoreapp3.1": {
+          "targetAlias": "netcoreapp3.1",
           "projectReferences": {
             "D:\\Client_Extras\\trunk\\Framework\\Components\\Components.csproj": {
               "projectPath": "D:\\Client_Extras\\trunk\\Framework\\Components\\Components.csproj"
@@ -8391,8 +8391,8 @@
       }
     },
     "frameworks": {
-      "net5.0": {
-        "targetAlias": "net5.0",
+      "netcoreapp3.1": {
+        "targetAlias": "netcoreapp3.1",
         "dependencies": {
           "AspNetCoreRateLimit": {
             "target": "Package",
@@ -8445,7 +8445,7 @@
         "downloadDependencies": [
           {
             "name": "Microsoft.NETCore.App.Host.win-x64",
-            "version": "[5.0.17, 5.0.17]"
+            "version": "[3.1.32, 3.1.32]"
           }
         ],
         "frameworkReferences": {
@@ -8468,7 +8468,7 @@
       "message": "Package 'Microsoft.AspNetCore.Authentication.JwtBearer' 3.1.10 has a known moderate severity vulnerability, https://github.com/advisories/GHSA-q7cg-43mg-qp69",
       "libraryId": "Microsoft.AspNetCore.Authentication.JwtBearer",
       "targetGraphs": [
-        "net5.0"
+        ".NETCoreApp,Version=v3.1"
       ]
     },
     {
@@ -8478,7 +8478,7 @@
       "message": "Package 'System.Data.SqlClient' 4.8.5 has a known high severity vulnerability, https://github.com/advisories/GHSA-98g6-xh36-x2p7",
       "libraryId": "System.Data.SqlClient",
       "targetGraphs": [
-        "net5.0"
+        ".NETCoreApp,Version=v3.1"
       ]
     }
   ]
