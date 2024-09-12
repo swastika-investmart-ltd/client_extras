@@ -15,6 +15,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using DocumentFormat.OpenXml.Office2016.Excel;
+using DocumentFormat.OpenXml.Spreadsheet;
 
 
 namespace Client.WebApi
@@ -37,13 +38,12 @@ namespace Client.WebApi
             var correlationId = string.Format("{0}{1}", DateTime.Now.Ticks, System.Threading.Thread.CurrentThread.ManagedThreadId);
             context.Request.Headers.Add("CorrelationId", correlationId);
 
-            var userId = GetUserIdFromToken(context);
+            //var userId = GetUserIdFromToken(context);
 
             string clientIpAddress = context.Request.HttpContext.Connection.RemoteIpAddress.ToString();
 
             //Request body with IP log
-            _logger.Log(LogLevel.Info, $@"IP: " + clientIpAddress + " , Path: " + context.Request.Path + userId + " , CorrelationId: " + correlationId);
-
+           // _logger.Log(LogLevel.Info, $@"Request " + ", CorrelationId: " + correlationId + ",IP: " + clientIpAddress + ",Path: " + context.Request.Path);
             if (IsSwagger(context))
                 await this._next(context);
             else if (IsElmah(context))
@@ -73,13 +73,13 @@ namespace Client.WebApi
                                 var requestData = Encoding.UTF8.GetBytes(dataSource);
                                 stream = new MemoryStream(requestData);
                                 context.Request.Body = stream;
-                                _logger.Log(LogLevel.Info, $@"Request " + ", CorrelationId: " + correlationId + ", IP: " + clientIpAddress + ", Path: " + context.Request.Path + userId + ", Request Body:" + dataSource);
+                                _logger.Log(LogLevel.Info, $@"Request " + ", CorrelationId: " + correlationId + ",IP: " + clientIpAddress + ",Path: " + context.Request.Path + ",Request Body:" + dataSource);
                             }
                         }
                         else
                         {
-                            var request = await FormatRequest(context.Request); 
-                            _logger.Log(LogLevel.Info, $@"Request " + ", CorrelationId: " + correlationId + ", IP: " + clientIpAddress + ", Path: " + context.Request.Path + userId + ", Request Body:" + request);
+                            var request = await FormatRequest(context.Request);  
+                            _logger.Log(LogLevel.Info, $@"Request " + ", CorrelationId: " + correlationId + ",IP: " + clientIpAddress + ",Path: " + context.Request.Path + ",Request Body:" + request);
                         }
                         await _next.Invoke(context);
                         context.Response.Body = originalBodyStream;
@@ -88,12 +88,13 @@ namespace Client.WebApi
                             var bodyAsText = await FormatResponse(bodyStream);
                             await HandleSuccessRequestAsync(context, bodyAsText, context.Response.StatusCode);
                             //Responce body 
-                            _logger.Log(LogLevel.Info, $@"Response " + ", CorrelationId: " + correlationId + ", StatusCode:" + context.Response.StatusCode + ",IP: " + clientIpAddress + ",Path: " + context.Request.Path + userId + ",Response Body:" + bodyAsText);
+                            _logger.Log(LogLevel.Info, $@"Response " + ", CorrelationId: " + correlationId + ", StatusCode:" + context.Response.StatusCode + ",IP: " + clientIpAddress + ",Path: " + context.Request.Path + ",Response Body:" + bodyAsText);
                         }
                         else
                         {
                             var bodyAsText = await FormatResponse(bodyStream);
-                            _logger.Log(LogLevel.Warn, $@"Response " + ", CorrelationId: " + correlationId + ", StatusCode:" + context.Response.StatusCode + ",IP: " + clientIpAddress + ",Path: " + context.Request.Path + userId + ",Response Body:" + bodyAsText);
+                            _logger.Log(LogLevel.Warn, $@"Response " + ", CorrelationId: " + correlationId + ", StatusCode:" + context.Response.StatusCode + ",IP: " + clientIpAddress + ",Path: " + context.Request.Path + ",Response Body:" + bodyAsText);
+
                             if ((context.Response.StatusCode == (int)HttpStatusCode.NotFound || context.Response.StatusCode == (int)HttpStatusCode.BadRequest) && bodyAsText != null)
                                 await HandleNotSuccessRequestAsync(context, bodyAsText, context.Response.StatusCode);
                             else
@@ -102,8 +103,8 @@ namespace Client.WebApi
                     }
                     catch (Exception ex)
                     { 
-                        _logger.Log(LogLevel.Error, $@"Exception " + ", CorrelationId: " + correlationId + ",IP: " + clientIpAddress + ",Path: " + context.Request.Path + userId + " : Stacktrace : " + ex.StackTrace);
-                        await HandleExceptionAsync(context, ex);
+                        _logger.Log(LogLevel.Error, $@"Exception " + ", CorrelationId: " + correlationId + ",IP: " + clientIpAddress + ",Path: " + context.Request.Path + " : Stacktrace : " + ex.StackTrace);
+                        await HandleExceptionAsync(context, ex, correlationId, clientIpAddress);
                         bodyStream.Seek(0, SeekOrigin.Begin);
                         await bodyStream.CopyToAsync(originalBodyStream);
                     }
@@ -136,7 +137,7 @@ namespace Client.WebApi
             return plainBodyText;
         }
 
-        private Task HandleExceptionAsync(HttpContext context, System.Exception exception)
+        private Task HandleExceptionAsync(HttpContext context, System.Exception exception, string correlationId, string clientIpAddress)
         {
             ApiError apiError = null;
             int code = 0;
@@ -152,7 +153,7 @@ namespace Client.WebApi
                     //    ReferenceDocumentLink = ex.ReferenceDocumentLink,
                     //};
 
-                    _logger.Log(LogLevel.Warn, $"[{ex.StatusCode}]: {ResponseMessageEnum.ValidationError.GetDescription()}", exception);
+                    _logger.Log(LogLevel.Warn, $@"CorrelationId: " + correlationId + ", StatusCode:" + ex.StatusCode + ",IP: " + clientIpAddress + ",Path: " + context.Request.Path + ",Warning:" + ResponseMessageEnum.ValidationError.GetDescription(), exception);
                 }
                 else
                 {
@@ -161,8 +162,8 @@ namespace Client.WebApi
                     //    ReferenceErrorCode = ex.ReferenceErrorCode,
                     //    ReferenceDocumentLink = ex.ReferenceDocumentLink,
                     //};
-
-                    _logger.Log(LogLevel.Warn, $"[{ex.StatusCode}]: {ResponseMessageEnum.Exception.GetDescription()}", exception);
+                     
+                    _logger.Log(LogLevel.Warn, $@" CorrelationId: " + correlationId + ", StatusCode:" + ex.StatusCode + ",IP: " + clientIpAddress + ",Path: " + context.Request.Path + ",Warning:" + ResponseMessageEnum.ValidationError.GetDescription(), exception);
                 }
 
                 code = ex.StatusCode;
@@ -174,8 +175,8 @@ namespace Client.WebApi
                 apiError = new ApiError(ResponseMessageEnum.UnAuthorized.GetDescription());
                 code = (int)HttpStatusCode.Unauthorized;
                 context.Response.StatusCode = code;
-
-                _logger.Log(LogLevel.Warn, $"[{code}]: {ResponseMessageEnum.UnAuthorized.GetDescription()}", exception);
+                 
+                _logger.Log(LogLevel.Warn, $@" CorrelationId: " + correlationId + ", StatusCode:" + code + ",IP: " + clientIpAddress + ",Path: " + context.Request.Path + ",Warning:" + ResponseMessageEnum.ValidationError.GetDescription(), exception);
             }
             else
             {
@@ -193,7 +194,7 @@ namespace Client.WebApi
                 code = (int)HttpStatusCode.InternalServerError;
                 context.Response.StatusCode = code;
 
-                _logger.Log(LogLevel.Error, $"[{code}]: {exceptionMessage}", exception);
+                _logger.Log(LogLevel.Error, $@" CorrelationId: " + correlationId + ", StatusCode:" + code + ",IP: " + clientIpAddress + ",Path: " + context.Request.Path + ",Exception:" + exceptionMessage, exception);
             }
 
             var jsonString = ConvertToJSONString(GetErrorResponse(code, apiError));

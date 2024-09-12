@@ -186,21 +186,21 @@
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
-          "netcoreapp3.1"
+          "net5.0"
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
-          "netcoreapp3.1": {
-            "targetAlias": "netcoreapp3.1",
+          "net5.0": {
+            "targetAlias": "net5.0",
             "projectReferences": {
-              "D:\\Client_Extras\\trunk\\Framework\\Components\\Components.csproj": {
-                "projectPath": "D:\\Client_Extras\\trunk\\Framework\\Components\\Components.csproj"
+              "D:\\client_extras\\trunk\\Framework\\Components\\Components.csproj": {
+                "projectPath": "D:\\client_extras\\trunk\\Framework\\Components\\Components.csproj"
               },
-              "D:\\Client_Extras\\trunk\\Framework\\Entities\\Entities.csproj": {
-                "projectPath": "D:\\Client_Extras\\trunk\\Framework\\Entities\\Entities.csproj"
+              "D:\\client_extras\\trunk\\Framework\\Entities\\Entities.csproj": {
+                "projectPath": "D:\\client_extras\\trunk\\Framework\\Entities\\Entities.csproj"
               }
             }
           }
@@ -217,8 +217,8 @@
         }
       },
       "frameworks": {
-        "netcoreapp3.1": {
-          "targetAlias": "netcoreapp3.1",
+        "net5.0": {
+          "targetAlias": "net5.0",
           "dependencies": {
             "AspNetCoreRateLimit": {
               "target": "Package",
@@ -271,7 +271,7 @@
           "downloadDependencies": [
             {
               "name": "Microsoft.NETCore.App.Host.win-x64",
-              "version": "[3.1.32, 3.1.32]"
+              "version": "[5.0.17, 5.0.17]"
             }
           ],
           "frameworkReferences": {
