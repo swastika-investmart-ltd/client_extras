@@ -20,3 +20,14 @@ D:\client_extras\trunk\Framework\Entities\obj\Debug\netcoreapp3.1\Entities.cspro
 D:\client_extras\trunk\Framework\Entities\obj\Debug\netcoreapp3.1\Entities.sourcelink.json
 D:\client_extras\trunk\Framework\Entities\obj\Debug\netcoreapp3.1\Entities.dll
 D:\client_extras\trunk\Framework\Entities\obj\Debug\netcoreapp3.1\Entities.pdb
+E:\client_extras\trunk\Framework\Entities\bin\Debug\netcoreapp3.1\Entities.deps.json
+E:\client_extras\trunk\Framework\Entities\bin\Debug\netcoreapp3.1\Entities.dll
+E:\client_extras\trunk\Framework\Entities\bin\Debug\netcoreapp3.1\Entities.pdb
+E:\client_extras\trunk\Framework\Entities\obj\Debug\netcoreapp3.1\Entities.csproj.AssemblyReference.cache
+E:\client_extras\trunk\Framework\Entities\obj\Debug\netcoreapp3.1\Entities.GeneratedMSBuildEditorConfig.editorconfig
+E:\client_extras\trunk\Framework\Entities\obj\Debug\netcoreapp3.1\Entities.AssemblyInfoInputs.cache
+E:\client_extras\trunk\Framework\Entities\obj\Debug\netcoreapp3.1\Entities.AssemblyInfo.cs
+E:\client_extras\trunk\Framework\Entities\obj\Debug\netcoreapp3.1\Entities.csproj.CoreCompileInputs.cache
+E:\client_extras\trunk\Framework\Entities\obj\Debug\netcoreapp3.1\Entities.sourcelink.json
+E:\client_extras\trunk\Framework\Entities\obj\Debug\netcoreapp3.1\Entities.dll
+E:\client_extras\trunk\Framework\Entities\obj\Debug\netcoreapp3.1\Entities.pdb

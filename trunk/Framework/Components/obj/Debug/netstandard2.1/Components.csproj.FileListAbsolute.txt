@@ -20,3 +20,14 @@ D:\client_extras\trunk\Framework\Components\obj\Debug\netstandard2.1\Components.
 D:\client_extras\trunk\Framework\Components\obj\Debug\netstandard2.1\Components.sourcelink.json
 D:\client_extras\trunk\Framework\Components\obj\Debug\netstandard2.1\Components.dll
 D:\client_extras\trunk\Framework\Components\obj\Debug\netstandard2.1\Components.pdb
+E:\Client_Extras\trunk\Framework\Components\bin\Debug\netstandard2.1\Components.deps.json
+E:\client_extras\trunk\Framework\Components\bin\Debug\netstandard2.1\Components.dll
+E:\client_extras\trunk\Framework\Components\bin\Debug\netstandard2.1\Components.pdb
+E:\client_extras\trunk\Framework\Components\obj\Debug\netstandard2.1\Components.csproj.AssemblyReference.cache
+E:\client_extras\trunk\Framework\Components\obj\Debug\netstandard2.1\Components.GeneratedMSBuildEditorConfig.editorconfig
+E:\client_extras\trunk\Framework\Components\obj\Debug\netstandard2.1\Components.AssemblyInfoInputs.cache
+E:\client_extras\trunk\Framework\Components\obj\Debug\netstandard2.1\Components.AssemblyInfo.cs
+E:\client_extras\trunk\Framework\Components\obj\Debug\netstandard2.1\Components.csproj.CoreCompileInputs.cache
+E:\client_extras\trunk\Framework\Components\obj\Debug\netstandard2.1\Components.sourcelink.json
+E:\client_extras\trunk\Framework\Components\obj\Debug\netstandard2.1\Components.dll
+E:\client_extras\trunk\Framework\Components\obj\Debug\netstandard2.1\Components.pdb

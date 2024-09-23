@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "D:\\client_extras\\trunk\\Services\\Client.WebApi\\Client.WebApi.csproj": {}
+    "E:\\Client_Extras\\trunk\\Services\\Client.WebApi\\Client.WebApi.csproj": {}
   },
   "projects": {
-    "D:\\client_extras\\trunk\\Framework\\Components\\Components.csproj": {
+    "E:\\client_extras\\trunk\\Framework\\Components\\Components.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\client_extras\\trunk\\Framework\\Components\\Components.csproj",
+        "projectUniqueName": "E:\\client_extras\\trunk\\Framework\\Components\\Components.csproj",
         "projectName": "Components",
-        "projectPath": "D:\\client_extras\\trunk\\Framework\\Components\\Components.csproj",
-        "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
-        "outputPath": "D:\\client_extras\\trunk\\Framework\\Components\\obj\\",
+        "projectPath": "E:\\client_extras\\trunk\\Framework\\Components\\Components.csproj",
+        "packagesPath": "C:\\Users\\DELL\\.nuget\\packages\\",
+        "outputPath": "E:\\client_extras\\trunk\\Framework\\Components\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\Admin\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\DELL\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -94,21 +94,21 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.202\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.204\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\client_extras\\trunk\\Framework\\Entities\\Entities.csproj": {
+    "E:\\client_extras\\trunk\\Framework\\Entities\\Entities.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\client_extras\\trunk\\Framework\\Entities\\Entities.csproj",
+        "projectUniqueName": "E:\\client_extras\\trunk\\Framework\\Entities\\Entities.csproj",
         "projectName": "Entities",
-        "projectPath": "D:\\client_extras\\trunk\\Framework\\Entities\\Entities.csproj",
-        "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
-        "outputPath": "D:\\client_extras\\trunk\\Framework\\Entities\\obj\\",
+        "projectPath": "E:\\client_extras\\trunk\\Framework\\Entities\\Entities.csproj",
+        "packagesPath": "C:\\Users\\DELL\\.nuget\\packages\\",
+        "outputPath": "E:\\client_extras\\trunk\\Framework\\Entities\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\Admin\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\DELL\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -168,21 +168,21 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.202\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.204\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\client_extras\\trunk\\Services\\Client.WebApi\\Client.WebApi.csproj": {
+    "E:\\Client_Extras\\trunk\\Services\\Client.WebApi\\Client.WebApi.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\client_extras\\trunk\\Services\\Client.WebApi\\Client.WebApi.csproj",
+        "projectUniqueName": "E:\\Client_Extras\\trunk\\Services\\Client.WebApi\\Client.WebApi.csproj",
         "projectName": "Client.WebApi",
-        "projectPath": "D:\\client_extras\\trunk\\Services\\Client.WebApi\\Client.WebApi.csproj",
-        "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
-        "outputPath": "D:\\client_extras\\trunk\\Services\\Client.WebApi\\obj\\",
+        "projectPath": "E:\\Client_Extras\\trunk\\Services\\Client.WebApi\\Client.WebApi.csproj",
+        "packagesPath": "C:\\Users\\DELL\\.nuget\\packages\\",
+        "outputPath": "E:\\Client_Extras\\trunk\\Services\\Client.WebApi\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\Admin\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\DELL\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -196,11 +196,11 @@
           "net5.0": {
             "targetAlias": "net5.0",
             "projectReferences": {
-              "D:\\client_extras\\trunk\\Framework\\Components\\Components.csproj": {
-                "projectPath": "D:\\client_extras\\trunk\\Framework\\Components\\Components.csproj"
+              "E:\\Client_Extras\\trunk\\Framework\\Components\\Components.csproj": {
+                "projectPath": "E:\\Client_Extras\\trunk\\Framework\\Components\\Components.csproj"
               },
-              "D:\\client_extras\\trunk\\Framework\\Entities\\Entities.csproj": {
-                "projectPath": "D:\\client_extras\\trunk\\Framework\\Entities\\Entities.csproj"
+              "E:\\Client_Extras\\trunk\\Framework\\Entities\\Entities.csproj": {
+                "projectPath": "E:\\Client_Extras\\trunk\\Framework\\Entities\\Entities.csproj"
               }
             }
           }
@@ -268,12 +268,6 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.NETCore.App.Host.win-x64",
-              "version": "[5.0.17, 5.0.17]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.AspNetCore.App": {
               "privateAssets": "none"
@@ -282,7 +276,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.202\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.204\\RuntimeIdentifierGraph.json"
         }
       }
     }
