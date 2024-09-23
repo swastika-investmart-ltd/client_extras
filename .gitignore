@@ -401,3 +401,7 @@ ASALocalRun/
 /trunk/.vs/ProjectEvaluation/clientextras.metadata.v7.bin
 /trunk/.vs/ProjectEvaluation/clientextras.projects.v7.bin
 /trunk/.vs/ClientExtras/v17/.futdcache.v2
+/trunk/Services/Client.WebApi/obj/Debug/net5.0/Client.WebApi.AssemblyInfo.cs
+/trunk/Services/Client.WebApi/obj/Debug/net5.0/Client.WebApi.AssemblyInfoInputs.cache
+/trunk/Services/Client.WebApi/obj/Debug/net5.0/Client.WebApi.csproj.AssemblyReference.cache
+/trunk/Services/Client.WebApi/obj/Debug/net5.0/Client.WebApi.RazorTargetAssemblyInfo.cache
