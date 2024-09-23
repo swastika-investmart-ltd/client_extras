@@ -406,3 +406,5 @@ ASALocalRun/
 /trunk/.vs/ProjectEvaluation/clientextras.projects.v7.bin
 /trunk/Framework/Entities/obj/Debug/netcoreapp3.1/Entities.AssemblyInfo.cs
 /trunk/Framework/Entities/obj/Debug/netcoreapp3.1/Entities.AssemblyInfoInputs.cache
+/trunk/Services/Client.WebApi/obj/Debug/net5.0/Client.WebApi.csproj.CoreCompileInputs.cache
+/trunk/Services/Client.WebApi/obj/Debug/net5.0/Client.WebApi.csproj.FileListAbsolute.txt
