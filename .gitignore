@@ -405,3 +405,5 @@ ASALocalRun/
 /trunk/Services/Client.WebApi/obj/Debug/net5.0/Client.WebApi.AssemblyInfoInputs.cache
 /trunk/Services/Client.WebApi/obj/Debug/net5.0/Client.WebApi.csproj.AssemblyReference.cache
 /trunk/Services/Client.WebApi/obj/Debug/net5.0/Client.WebApi.RazorTargetAssemblyInfo.cache
+/trunk/.vs/ClientExtras/v17/DocumentLayout.json
+/trunk/.vs/ClientExtras/v17/.suo
