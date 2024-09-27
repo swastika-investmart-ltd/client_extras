@@ -334,3 +334,16 @@ ASALocalRun/
 /trunk/Services/CRM.WebApi/APDashboardUploadedSheets
 /trunk/Services/Backoffice.WebApi/DisputedTradeUploadedDocs
 /trunk/Services/Backoffice.WebApi/DisputedTradeDocs
+/trunk/Services/Client.WebApi/obj/Debug/net5.0/Client.WebApi.GeneratedMSBuildEditorConfig.editorconfig
+/trunk/Services/Client.WebApi/obj/Debug/net5.0/Client.WebApi.csproj.AssemblyReference.cache
+/trunk/Services/Client.WebApi/obj/Debug/net5.0/Client.WebApi.assets.cache
+/trunk/Services/Client.WebApi/obj/Debug/net5.0/Client.WebApi.AssemblyInfoInputs.cache
+/trunk/Services/Client.WebApi/obj/Debug/net5.0/Client.WebApi.AssemblyInfo.cs
+/trunk/Framework/Entities/obj/Debug/netcoreapp3.1/Entities.GeneratedMSBuildEditorConfig.editorconfig
+/trunk/Framework/Entities/obj/Debug/netcoreapp3.1/Entities.assets.cache
+/trunk/Framework/Entities/obj/Debug/netcoreapp3.1/Entities.AssemblyInfoInputs.cache
+/trunk/Framework/Entities/obj/Debug/netcoreapp3.1/Entities.AssemblyInfo.cs
+/trunk/Framework/Components/obj/Debug/netstandard2.1/Components.GeneratedMSBuildEditorConfig.editorconfig
+/trunk/Framework/Components/obj/Debug/netstandard2.1/Components.assets.cache
+/trunk/Framework/Components/obj/Debug/netstandard2.1/Components.AssemblyInfoInputs.cache
+/trunk/Framework/Components/obj/Debug/netstandard2.1/Components.AssemblyInfo.cs
