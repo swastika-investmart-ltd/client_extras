@@ -408,3 +408,7 @@ ASALocalRun/
 /trunk/Framework/Entities/obj/Debug/netcoreapp3.1/Entities.AssemblyInfoInputs.cache
 /trunk/Services/Client.WebApi/obj/Debug/net5.0/Client.WebApi.csproj.CoreCompileInputs.cache
 /trunk/Services/Client.WebApi/obj/Debug/net5.0/Client.WebApi.csproj.FileListAbsolute.txt
+
+/trunk/Framework/Entities/obj/Debug/netcoreapp3.1/Entities.AssemblyInfoInputs.cache
+/trunk/Framework/Entities/obj/Debug/netcoreapp3.1/Entities.assets.cache
+/trunk/Framework/Entities/obj/Debug/netcoreapp3.1/Entities.GeneratedMSBuildEditorConfig.editorconfig
