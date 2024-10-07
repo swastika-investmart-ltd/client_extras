@@ -334,3 +334,11 @@ ASALocalRun/
 /trunk/Services/CRM.WebApi/APDashboardUploadedSheets
 /trunk/Services/Backoffice.WebApi/DisputedTradeUploadedDocs
 /trunk/Services/Backoffice.WebApi/DisputedTradeDocs
+/trunk/.vs/ClientExtras/v17/.suo
+/trunk/Framework/Components/obj/Debug/netstandard2.1/Components.AssemblyInfo.cs
+/trunk/Services/Client.WebApi/bin/Debug/net5.0/Components.dll
+/trunk/Services/Client.WebApi/bin/Debug/net5.0/Components.pdb
+/trunk/Services/Client.WebApi/bin/Debug/net5.0/Entities.dll
+/trunk/Services/Client.WebApi/bin/Debug/net5.0/Entities.pdb
+/trunk/Services/Client.WebApi/obj/Debug/net5.0/Client.WebApi.csproj.AssemblyReference.cache
+/trunk/Services/Client.WebApi/obj/Debug/net5.0/Client.WebApi.csproj.CoreCompileInputs.cache

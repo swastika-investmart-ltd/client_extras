@@ -1,7 +1,9 @@
-﻿using Components;
+﻿using Client.WebApi.Services;
+using Components;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using NLog;
+using Prometheus;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
@@ -33,43 +35,48 @@ namespace Client.WebApi
             httpRequest.Method = "POST";
             httpRequest.Accept = "application/json";
             httpRequest.ContentType = "application/json";
-            try
+            using (CommPickyAssistMetrics.SendMessageDuration.NewTimer())
             {
-                InputData[] senderList = new InputData[1];
-                senderList[0] = new InputData()
+                try
                 {
-                    number =  request.MobileNumber,
-                    message = "Message",
-                    template_message = new List<string>
+                    InputData[] senderList = new InputData[1];
+                    senderList[0] = new InputData()
                     {
-                       request.ClientId,
-                       request.Message,
-                       request.LTP
+                        number = request.MobileNumber,
+                        message = "Message",
+                        template_message = new List<string>
+             {
+                request.ClientId,
+                request.Message,
+                request.LTP
+             }
+                    };
+
+                    var data = new Whatsapp();
+                    data.token = _config["PickyAssist:token"];
+                    data.application = _config["PickyAssist:application"];
+                    data.interactive_type = _config["PickyAssist:interactive_type"];
+                    data.template_id = _config["PickyAssist:template_id"];
+                    data.data = senderList;
+
+                    using (var streamWriter = new StreamWriter(httpRequest.GetRequestStream()))
+                    {
+                        streamWriter.Write(JsonConvert.SerializeObject(data));
                     }
-                };
 
-                var data = new Whatsapp();
-                data.token = _config["PickyAssist:token"];
-                data.application =  _config["PickyAssist:application"];
-                data.interactive_type =  _config["PickyAssist:interactive_type"];
-                data.template_id =  _config["PickyAssist:template_id"];
-                data.data = senderList;
-
-                using (var streamWriter = new StreamWriter(httpRequest.GetRequestStream()))
-                {
-                    streamWriter.Write(JsonConvert.SerializeObject(data));
+                    var httpResponse = (HttpWebResponse)httpRequest.GetResponse();
+                    _logger.Log(LogLevel.Trace, $@"SendWhatsapp- " + httpResponse);
+                    using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
+                    {
+                        var result = streamReader.ReadToEnd();
+                    }
+                    CommPickyAssistMetrics.SendMessageSuccess.Inc();
                 }
-
-                var httpResponse = (HttpWebResponse)httpRequest.GetResponse();
-                _logger.Log(LogLevel.Trace, $@"SendWhatsapp- " + httpResponse);
-                using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
+                catch (System.Exception ex)
                 {
-                    var result = streamReader.ReadToEnd();
+                    _logger.Log(LogLevel.Error, $@"SendWhatsapp-Exception: " + ex.ToString());
+                    CommPickyAssistMetrics.SendMessageError.Inc();
                 }
-            }
-            catch (System.Exception ex)
-            {
-                _logger.Log(LogLevel.Error, $@"SendWhatsapp-Exception: " + ex.ToString());
             }
             return true;
         }
@@ -78,25 +85,30 @@ namespace Client.WebApi
         {
             using (var client = new HttpClient())
             {
-                try
+                using (CommTATATeleMetrics.SendTATAMessageDuration.NewTimer())
                 {
-                    var token = _config["TATA:TATAToken"];
-                    var LeadId = _config["TATA:LeadId"];
-                    string apiUrl = "https://api-smartflo.tatateleservices.com/v1/broadcast/lead/" + LeadId;
-                    if (!client.DefaultRequestHeaders.Contains("Authorization"))
+                    try
                     {
-                        client.DefaultRequestHeaders.Accept.Clear();
-                        client.DefaultRequestHeaders.Add("Authorization", token);
-                        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                        var token = _config["TATA:TATAToken"];
+                        var LeadId = _config["TATA:LeadId"];
+                        string apiUrl = "https://api-smartflo.tatateleservices.com/v1/broadcast/lead/" + LeadId;
+                        if (!client.DefaultRequestHeaders.Contains("Authorization"))
+                        {
+                            client.DefaultRequestHeaders.Accept.Clear();
+                            client.DefaultRequestHeaders.Add("Authorization", token);
+                            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                        }
+                        var content = "{\"field_0\":\"" + request.MobileNumber + "\", \"duplicate_option\": \"clone\"}";
+                        var resp = await client.PostAsync(apiUrl, new StringContent(content, Encoding.UTF8, "application/json")).ConfigureAwait(false);
+                        _logger.Log(LogLevel.Trace, $@"AddLeadInTATA- " + resp);
+                        var result = await resp.Content.ReadAsStringAsync();
+                        CommTATATeleMetrics.SendTATAMessageSuccess.Inc();
                     }
-                    var content = "{\"field_0\":\"" + request.MobileNumber + "\", \"duplicate_option\": \"clone\"}";
-                    var resp = await client.PostAsync(apiUrl, new StringContent(content, Encoding.UTF8, "application/json")).ConfigureAwait(false);
-                    _logger.Log(LogLevel.Trace, $@"AddLeadInTATA- " + resp);
-                    var result = await resp.Content.ReadAsStringAsync();
-                }
-                catch (System.Exception ex)
-                {
-                    _logger.Log(LogLevel.Error, $@"AddLeadInTATA-Exception: " + ex.ToString());
+                    catch (System.Exception ex)
+                    {
+                        _logger.Log(LogLevel.Error, $@"AddLeadInTATA-Exception: " + ex.ToString());
+                        CommTATATeleMetrics.SendTATAMessageError.Inc();
+                    }
                 }
             }
             return true;

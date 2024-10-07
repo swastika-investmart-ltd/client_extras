@@ -202,8 +202,7 @@ namespace Client.WebApi.Services
                             )
                         );
                     BrokerageDataStore.Reference.directIndirectClients = (await SqlMapper.QueryAsync<DirectCustomers>(_dbConnection, "GetDirectIndirectClients", commandType: CommandType.StoredProcedure, commandTimeout: 180)).ToList();
-                    _logger.Log(LogLevel.Info, "Client Referral DirectIndirect Data:" + Newtonsoft.Json.JsonConvert.SerializeObject(BrokerageDataStore.Reference.directIndirectClients).ToString());
-
+                    
                     BrokerageDataStore.Reference.topTwoEarners = result
                         .Where(x => x.ReferredBy != null)
                         .GroupBy(x => new { x.ReferredBy })
