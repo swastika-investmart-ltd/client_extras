@@ -5,6 +5,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="bin\**" />
+    <Content Remove="bin\**" />
+    <EmbeddedResource Remove="bin\**" />
+    <None Remove="bin\**" />
+  </ItemGroup>
+
+  <ItemGroup>
 	  <PackageReference Include="AspNetCoreRateLimit" Version="4.0.2" />
 	  <PackageReference Include="ClosedXML" Version="0.102.3" />
 	  <PackageReference Include="Dapper" Version="2.0.35" />
