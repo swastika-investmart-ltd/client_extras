@@ -347,7 +347,7 @@ ASALocalRun/
 /trunk/Framework/Components/obj/Debug/netstandard2.1/Components.assets.cache
 /trunk/Framework/Components/obj/Debug/netstandard2.1/Components.AssemblyInfoInputs.cache
 /trunk/Framework/Components/obj/Debug/netstandard2.1/Components.AssemblyInfo.cs
-/trunk/Services/Client.WebApi/bin/Debug/net5.0/Entities.pdb
+/trunk/Services/Client.WebApi/bin/
 /trunk/Services/Client.WebApi/bin/Debug/net5.0/Entities.dll
 /trunk/Services/Client.WebApi/bin/Debug/net5.0/Components.pdb
 /trunk/Services/Client.WebApi/bin/Debug/net5.0/Components.dll
@@ -392,3 +392,5 @@ ASALocalRun/
 /trunk/.vs/ClientExtras/v17/.futdcache.v2
 /trunk/.vs/ProjectEvaluation/clientextras.metadata.v7.bin
 /trunk/.vs/ProjectEvaluation/clientextras.projects.v7.bin
+/trunk/Services/Client.WebApi/obj/
+/trunk/Services/Client.WebApi/.config
