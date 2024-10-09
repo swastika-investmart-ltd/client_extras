@@ -1,18 +1,11 @@
-﻿using Client.WebApi.Extensions;
-using Components;
-using Entities;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
+﻿using Entities;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace Client.WebApi.Controllers
 {
-    //[AllowAnonymous]
     [ApiKeyAuthorize]
-    [Route("Communication/[action]")]
+    [Route("[controller]/[action]")]
     [ApiController]
     public class CommunicationController : Controller
     {

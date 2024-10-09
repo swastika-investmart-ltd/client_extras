@@ -8,9 +8,7 @@ using Microsoft.Extensions.Configuration;
 using System.Linq;
 using Dapper;
 using System.Data;
-using Entities;
 using System.IO;
-using System.Drawing;
 using ClosedXML.Excel;
 
 namespace Client.WebApi.Services

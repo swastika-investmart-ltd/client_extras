@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using static Client.WebApi.CustomValidators;
-
+using static Entities.CustomValidators;
 namespace Client.WebApi
 {
     public class BlkInsertBSESecurityReqMdl
     {
-
         [Required(ErrorMessage = "SecurityKey is required.")]
         public string SecurityKey { get; set; }
 

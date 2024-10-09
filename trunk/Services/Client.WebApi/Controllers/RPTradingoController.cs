@@ -1,13 +1,10 @@
 ﻿using Client.WebApi.Services;
 using Entities;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ResearchPanel.Entities;
 using System.Collections.Generic;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Caching.Memory;
@@ -15,7 +12,7 @@ using Microsoft.Extensions.Caching.Memory;
 namespace Client.WebApi.Controllers
 {
     [Authorize]
-    [Route("RPTradingo/[action]")]
+    [Route("[controller]/[action]")]
     [ApiController]
     public class RPTradingoController : ControllerBase
     {
@@ -28,7 +25,8 @@ namespace Client.WebApi.Controllers
             _config = config;
             _cacheManager = new CacheManager<ScripOrderbySegmentsRes>(memoryCache);
         }
-        [HttpPost]
+       
+        [HttpPost] //Note: Remove this after change - GetScripGeneralInfo
         public async Task<IActionResult> GetScripGeneral([FromBody] GSGeneralReq obj)
         {
             if (!ModelState.IsValid)
@@ -37,7 +35,18 @@ namespace Client.WebApi.Controllers
             var result = await _rpTradingoService.GetScripGeneral(obj.CompanyId);
             return Ok(new ApiResponse(ResponseMessageEnum.Success.GetDescription(), result, 200));
         }
+
         [HttpPost]
+        public async Task<IActionResult> GetScripGeneralInfo([FromBody] GSGeneralInfoReq obj)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(new ApiResponse(400, new ApiError(ResponseMessageEnum.ValidationError.GetDescription(), ModelStateExtension.AllErrors(ModelState))));
+
+            var result = await _rpTradingoService.GetScripGeneral(obj.CompanyId);
+            return Ok(new ApiResponse(ResponseMessageEnum.Success.GetDescription(), result, 200));
+        }
+
+        [HttpPost] //Note: Remove this after change - GetScripOffersInfo
         public async Task<IActionResult> GetScripOffers([FromBody] GSOffersReq obj)
         {
             if (!ModelState.IsValid)
@@ -47,8 +56,28 @@ namespace Client.WebApi.Controllers
             return Ok(new ApiResponse(ResponseMessageEnum.Success.GetDescription(), result, 200));
         }
 
-        [HttpPost()]
+        [HttpPost]
+        public async Task<IActionResult> GetScripOffersInfo([FromBody] GSOffersInfoReq obj)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(new ApiResponse(400, new ApiError(ResponseMessageEnum.ValidationError.GetDescription(), ModelStateExtension.AllErrors(ModelState))));
+
+            var result = await _rpTradingoService.GetScripOffers(obj.CompanyId);
+            return Ok(new ApiResponse(ResponseMessageEnum.Success.GetDescription(), result, 200));
+        }
+
+        [HttpPost()] //Note: Remove this after change - GetOrderFollowup
         public async Task<IActionResult> GetScripOrderFollowup([FromBody] GSOrderFollowupReq obj)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(new ApiResponse(400, new ApiError(ResponseMessageEnum.ValidationError.GetDescription(), ModelStateExtension.AllErrors(ModelState))));
+
+            var result = await _rpTradingoService.GetScripOrderFollowup(obj.OrderId);
+            return Ok(new ApiResponse(ResponseMessageEnum.Success.GetDescription(), result, 200));
+        }
+
+        [HttpPost()]
+        public async Task<IActionResult> GetOrderFollowup([FromBody] GOrderFollowupReq obj)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new ApiResponse(400, new ApiError(ResponseMessageEnum.ValidationError.GetDescription(), ModelStateExtension.AllErrors(ModelState))));
@@ -86,12 +115,27 @@ namespace Client.WebApi.Controllers
             var result = await _rpTradingoService.GetScripOrderbySegments(obj);
             return Ok(new ApiResponse(ResponseMessageEnum.Success.GetDescription(), result, 200));
         }
-        [HttpPost()]
+        
+        [HttpPost()] //Note: Remove this after change - ViewRecommendation
         public async Task<IActionResult> ViewRecommendationPercentage()
         {
+            if (!ModelState.IsValid)
+                return BadRequest(new ApiResponse(400, new ApiError(ResponseMessageEnum.ValidationError.GetDescription(), ModelStateExtension.AllErrors(ModelState))));
+
             var result = await _rpTradingoService.ViewRecommendationPercentage();
             return Ok(new ApiResponse(ResponseMessageEnum.Success.GetDescription(), result, 200));
         }
+
+        [HttpPost()] 
+        public async Task<IActionResult> ViewRecommendation(ViewRecomReq obj)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(new ApiResponse(400, new ApiError(ResponseMessageEnum.ValidationError.GetDescription(), ModelStateExtension.AllErrors(ModelState))));
+
+            var result = await _rpTradingoService.ViewRecommendationPercentage();
+            return Ok(new ApiResponse(ResponseMessageEnum.Success.GetDescription(), result, 200));
+        }
+
         [HttpPost()]
         public async Task<IActionResult> GetTopRecommendationList([FromBody] TopRecommLstReq obj)
         {

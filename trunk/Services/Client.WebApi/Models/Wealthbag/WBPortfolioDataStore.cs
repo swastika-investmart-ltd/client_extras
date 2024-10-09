@@ -1,7 +1,6 @@
-﻿using static Client.WebApi.Models.WealthbagPortfolio;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
-namespace Client.WebApi.Models
+namespace Client.WebApi
 {
     public class WBPortfolioDataStore
     {
@@ -17,7 +16,7 @@ namespace Client.WebApi.Models
             {
                 return reference;
             }
-        } 
+        }
         public HashSet<WealthBagStocks> WealthBagStocks = new HashSet<WealthBagStocks>();
 
         public Dictionary<string, List<PortfolioDetails>> PortfolioDictionary { get; set; }
@@ -25,4 +24,3 @@ namespace Client.WebApi.Models
         public long TotalRows;
     }
 }
- 
