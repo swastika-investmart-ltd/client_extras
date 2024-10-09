@@ -28,7 +28,6 @@ namespace Client.WebApi
             _config = config;
             _logger = logger;
         }
-
         public async Task<bool> SendWhatsapp(CommunicationRequest request)
         {
             var httpRequest = (HttpWebRequest)WebRequest.Create("http://pickyassist.com/beta/api/v2/push");
@@ -45,11 +44,11 @@ namespace Client.WebApi
                         number = request.MobileNumber,
                         message = "Message",
                         template_message = new List<string>
-             {
-                request.ClientId,
-                request.Message,
-                request.LTP
-             }
+                         {
+                            request.Uid,
+                            request.Message,
+                            request.LTP
+                         }
                     };
 
                     var data = new Whatsapp();
@@ -113,6 +112,5 @@ namespace Client.WebApi
             }
             return true;
         }
-
     }
 }

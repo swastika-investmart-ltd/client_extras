@@ -1,18 +1,14 @@
-﻿using Microsoft.AspNetCore.Http;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.IO;
 using System.Linq;
-//using System.Web.Mvc;
-
 namespace Entities
 {
     public class CustomValidators
     {
         [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = false)]
-        public abstract class ConditionalValidationAttribute : ValidationAttribute
+        public abstract class ConditionalValidationAttribute : ValidationAttribute //, IClientValidatable
         {
             protected readonly ValidationAttribute InnerAttribute;
             public string DependentProperty { get; set; }
@@ -55,6 +51,41 @@ namespace Entities
                 return ValidationResult.Success;
             }
 
+            //public IEnumerable<ModelClientValidationRule> GetClientValidationRules(ModelMetadata metadata, ControllerContext context)
+            //{
+            //    var rule = new ModelClientValidationRule()
+            //    {
+            //        ErrorMessage = FormatErrorMessage(metadata.GetDisplayName()),
+            //        ValidationType = ValidationName,
+            //    };
+            //    string depProp = BuildDependentPropertyId(metadata, context as ViewContext);
+            //    // find the value on the control we depend on; if it's a bool, format it javascript style    
+            //    string targetValue = (this.TargetValue ?? "").ToString();
+            //    if (this.TargetValue.GetType() == typeof(bool))
+            //    {
+            //        targetValue = targetValue.ToLower();
+            //    }
+            //    rule.ValidationParameters.Add("dependentproperty", depProp);
+            //    rule.ValidationParameters.Add("targetvalue", targetValue);
+            //    // Add the extra params, if any    
+            //    foreach (var param in GetExtraValidationParameters())
+            //    {
+            //        rule.ValidationParameters.Add(param);
+            //    }
+            //    yield return rule;
+            //}
+
+            //private string BuildDependentPropertyId(ModelMetadata metadata, ViewContext viewContext)
+            //{
+            //    string depProp = viewContext.ViewData.TemplateInfo.GetFullHtmlFieldId(this.DependentProperty);
+            //    // This will have the name of the current field appended to the beginning, because the TemplateInfo's context has had this fieldname appended to it.    
+            //    var thisField = metadata.PropertyName + "_";
+            //    if (depProp.StartsWith(thisField))
+            //    {
+            //        depProp = depProp.Substring(thisField.Length);
+            //    }
+            //    return depProp;
+            //}
 
         }
 
@@ -100,16 +131,16 @@ namespace Entities
             }
         }
 
-        public class DecimalRangeIfAttribute : ConditionalValidationAttribute
+        public class DoubleRangeIfAttribute : ConditionalValidationAttribute
         {
-            private readonly decimal minimum;
-            private readonly decimal maximum;
+            private readonly double minimum;
+            private readonly double maximum;
             protected override string ValidationName
             {
-                get { return "decimalrangeif"; }
+                get { return "doublerangeif"; }
             }
-            public DecimalRangeIfAttribute(decimal minimum, decimal maximum, string dependentProperty, object targetValue)
-                : base(new RangeAttribute((double)minimum, (double)maximum), dependentProperty, targetValue)
+            public DoubleRangeIfAttribute(double minimum, double maximum, string dependentProperty, object targetValue)
+                : base(new RangeAttribute(minimum, maximum), dependentProperty, targetValue)
             {
                 this.minimum = minimum;
                 this.maximum = maximum;
@@ -152,27 +183,82 @@ namespace Entities
             }
         }
 
-        public class ValidateEachItemAttribute : ValidationAttribute
+        public class EnsureMinElementsAttribute : ValidationAttribute
         {
-            protected readonly List<ValidationResult> validationResults = new List<ValidationResult>();
+            private readonly int _minElements;
+            public EnsureMinElementsAttribute(int minElements)
+            {
+                _minElements = minElements;
+            }
 
             public override bool IsValid(object value)
             {
-                var list = value as IEnumerable;
-                if (list == null) return true;
-
-                var isValid = true;
-
-                foreach (var item in list)
+                var list = value as IList;
+                if (list != null)
                 {
-                    var validationContext = new ValidationContext(item);
-                    var isItemValid = Validator.TryValidateObject(item, validationContext, validationResults, true);
-                    isValid &= isItemValid;
+                    return list.Count >= _minElements;
                 }
-                return isValid;
+                return false;
             }
+        }
 
-            // I have ommitted error message formatting
+        public class ValidTextInput : ValidationAttribute
+        {
+            private readonly string validInputs;
+            public ValidTextInput(string validInputs)
+            {
+                this.validInputs = validInputs;
+            }
+            protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+            {
+                var strings = value as IEnumerable<string>;
+                foreach (var item in strings)
+                {
+                    if (string.IsNullOrEmpty(item))
+                        return new ValidationResult("At least one ClientID is required");
+                }
+                return ValidationResult.Success;
+            }
+        }
+
+        //[NoDuplicateClientIDs(ErrorMessage = "Duplicate ClientIDs are not allowed")]
+        public class NoDuplicateClientIDsAttribute : ValidationAttribute
+        {
+            protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+            {
+                var list = value as List<string>;
+                if (list == null)
+                {
+                    return new ValidationResult("Invalid property type.");
+                }
+
+                if (list.Distinct().Count() != list.Count)
+                {
+                    return new ValidationResult(ErrorMessage);
+                }
+
+                return ValidationResult.Success;
+            }
+        }
+
+        //[NoNullOrEmptyClientIDs(ErrorMessage = "ClientIDs cannot be null or empty")]
+        public class NoNullOrEmptyClientIDsAttribute : ValidationAttribute
+        {
+            protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+            {
+                var list = value as List<string>;
+                if (list == null)
+                {
+                    return new ValidationResult("Invalid property type.");
+                }
+
+                if (list.Any(string.IsNullOrEmpty))
+                {
+                    return new ValidationResult(ErrorMessage);
+                }
+
+                return ValidationResult.Success;
+            }
         }
 
         /// <summary>
@@ -205,40 +291,5 @@ namespace Entities
                 return ValidationResult.Success;
             }
         }
-        /// <summary>
-        /// Validates the allowed file extensions for an uploaded file.
-        /// </summary>
-        public class AllowedExtensionsAttribute : ValidationAttribute
-        {
-            private readonly string[] _extensions;
-
-            /// <summary>
-            /// Initializes a new instance of the <see cref="AllowedExtensionsAttribute"/> class.
-            /// </summary>
-            /// <param name="extensions">The allowed file extensions (including the dot, e.g., ".jpg", ".jpeg").</param>
-            public AllowedExtensionsAttribute(params string[] extensions)
-            {
-                _extensions = extensions;
-            }
-
-            /// <inheritdoc />
-            protected override ValidationResult IsValid(object value, ValidationContext validationContext)
-            {
-                if (value is IFormFile file)
-                {
-                    var extension = Path.GetExtension(file.FileName);
-                    if (extension != null && !_extensions.Contains(extension.ToLower()))
-                    {
-                        return new ValidationResult($"Only {string.Join(", ", _extensions)} file extensions are allowed.");
-                    }
-                }
-
-                return ValidationResult.Success;
-            }
-        }
-        /// <summary>
-        /// Validates the size of an uploaded file.
-        /// </summary>
-
     }
 }

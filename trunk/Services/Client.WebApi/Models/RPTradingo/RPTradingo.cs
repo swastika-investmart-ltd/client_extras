@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using static Entities.CustomValidators;
 
 namespace ResearchPanel.Entities
-{ 
+{
     public class ScripGeneralResponse
     {
         public long GeneralId { get; set; }
@@ -19,7 +19,7 @@ namespace ResearchPanel.Entities
         public bool IsRead { get; set; }
         public DateTime CreatedOn { get; set; }
         public long CompanyId { get; set; }
-    } 
+    }
     public class ScripOffersResponse
     {
         public long OfferId { get; set; }
@@ -108,7 +108,7 @@ namespace ResearchPanel.Entities
         public string SegmentName { get; set; }
         public string ExchangeName { get; set; }
         public string IndustryType { get; set; }
-        public string Status { get; set; }        
+        public string Status { get; set; }
         public string FilePath { get; set; }
         public long CompanyId { get; set; }
         public string KBContract { get; set; }
@@ -299,10 +299,28 @@ namespace ResearchPanel.Entities
         [Range(0, int.MaxValue, ErrorMessage = "Invalid CompanyId")]
         public long CompanyId { get; set; }
     }
+
+    public class GSGeneralInfoReq
+    {
+        [Range(0, int.MaxValue, ErrorMessage = "Invalid CompanyId")]
+        public long CompanyId { get; set; }
+
+        [Required(ErrorMessage = "Uid is required.")]
+        public string Uid { get; set; }
+    }
     public class GSOffersReq
     {
         [Range(0, int.MaxValue, ErrorMessage = "Invalid CompanyId")]
         public long CompanyId { get; set; }
+    }
+
+    public class GSOffersInfoReq
+    {
+        [Range(0, int.MaxValue, ErrorMessage = "Invalid CompanyId")]
+        public long CompanyId { get; set; }
+
+        [Required(ErrorMessage = "Uid is required.")]
+        public string Uid { get; set; }
     }
     public class GSOrderFollowupReq
     {
@@ -310,6 +328,16 @@ namespace ResearchPanel.Entities
         [Range(1, int.MaxValue, ErrorMessage = "Invalid OrderId")]
         public long OrderId { get; set; }
     }
+    public class GOrderFollowupReq
+    {
+        [Required(ErrorMessage = "OrderId is required.")]
+        [Range(1, int.MaxValue, ErrorMessage = "Invalid OrderId")]
+        public long OrderId { get; set; }
+
+        [Required(ErrorMessage = "Uid is required.")]
+        public string Uid { get; set; }
+    }
+
     public class GAllScripInfoReq
     {
         [Range(0, int.MaxValue, ErrorMessage = "Invalid CompanyId")]
@@ -330,7 +358,7 @@ namespace ResearchPanel.Entities
         [Required(ErrorMessage = "Uid is required.")]
         public string Uid { get; set; }
     }
-     public class TopRecommLstReq
+    public class TopRecommLstReq
     {
         [Required(ErrorMessage = "Uid is required.")]
         public string Uid { get; set; }
@@ -344,6 +372,9 @@ namespace ResearchPanel.Entities
         [Required(ErrorMessage = "SecurityKey is required.")]
         public string SecurityKey { get; set; }
     }
+    public class ViewRecomReq
+    {
+        [Required(ErrorMessage = "Uid is required.")]
+        public string Uid { get; set; }
+    }
 }
-
-

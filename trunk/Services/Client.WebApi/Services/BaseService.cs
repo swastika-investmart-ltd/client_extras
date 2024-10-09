@@ -1,46 +1,32 @@
-﻿using Microsoft.Extensions.Configuration;
-using System.Data.SqlClient;
+﻿using System.Data.SqlClient;
 using System.Data;
-using System.IO;
+using Client.WebApi.Models.Base;
 
 namespace Client.WebApi
 {
     public class BaseService
     {
-        protected IDbConnection CreateTrvwConnection()
+        //define ConfigurationService as a static property in BaseService. This way, it can be set once at the application start, and all derived classes can access it.
+        protected static ConfigurationService ConfigurationService { get; private set; }
+
+        public static void SetConfigurationService(ConfigurationService configurationService)
         {
-            var conTrvwDbString = (new BaseAppConfiguration()).TrvwDbConString;
-            return new SqlConnection(conTrvwDbString);
+            ConfigurationService = configurationService;
         }
+
+        protected IDbConnection CreateJarvisConnection()
+        {
+            return new SqlConnection(ConfigurationService.JarvisDbConnectionString);
+        }
+
         protected IDbConnection CreateRPConnection()
         {
-            var conRPDbString = (new BaseAppConfiguration()).RPDbConString;
-            return new SqlConnection(conRPDbString);
-        }
-    }
-
-    public class BaseAppConfiguration
-    {
-        private readonly string _conRPDbString = string.Empty;
-        private readonly string _conTrvwDbString = string.Empty;
-        public BaseAppConfiguration()
-        {
-            var configurationBuilder = new ConfigurationBuilder();
-            var path = Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json");
-            configurationBuilder.AddJsonFile(path, false);
-
-            var root = configurationBuilder.Build();
-            _conRPDbString = root.GetConnectionString("RPDbCon");
-            _conTrvwDbString = root.GetConnectionString("TrvwDbCon");
-        }
-        public string RPDbConString
-        {
-            get => _conRPDbString;
+            return new SqlConnection(ConfigurationService.RPDbConnectionString);
         }
 
-        public string TrvwDbConString
+        protected IDbConnection CreateTrvwConnection()
         {
-            get => _conTrvwDbString;
+            return new SqlConnection(ConfigurationService.TRvwDbConnectionString);
         }
     }
 }

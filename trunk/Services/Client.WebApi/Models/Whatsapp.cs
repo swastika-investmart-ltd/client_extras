@@ -23,7 +23,7 @@ namespace Client.WebApi
     public class CommunicationRequest
     {
         public string MobileNumber { get; set; }
-        public string ClientId { get; set; }
+        public string Uid { get; set; }
         public string Message { get; set; }
         public string LTP { get; set; }
     }
