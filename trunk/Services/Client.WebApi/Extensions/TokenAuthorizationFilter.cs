@@ -7,6 +7,10 @@ using Microsoft.AspNetCore.Http;
 using System.IO;
 using System.Text;
 using Newtonsoft.Json;
+using System.Threading.Tasks;
+using System;
+using DocumentFormat.OpenXml.Math;
+using Irony.Parsing;
 
 namespace Client.WebApi.Extensions
 {
@@ -27,61 +31,82 @@ namespace Client.WebApi.Extensions
                 return;
             }
 
-            // Extract the token 'type' claim from the token
-            var tokenTypeClaim = context.HttpContext.User.FindFirst("type")?.Value;
+            // Extract token 'type' claim
+            var tokenTypeClaim = GetClaimValue(context, "type");
 
-            //If ASTOLD (Access Token Old)
-            if (tokenTypeClaim == "ASTOLD")
+            // Handle specific token types - ASTOLD(Access Token Old),GST (Access Token), AST (Access Token)
+            switch (tokenTypeClaim)
             {
-                return;
-            }
+                case "ASTOLD":
+                    return; // Skip validation for ASTOLD tokens
 
-            // Default to requiring AST (Access Token)
-            if (tokenTypeClaim == "AST")
-            {
-                // Perform input validation based on controller logic
-                if (!ValidateInputForController(context))
-                {
-                    //context.Result = new BadRequestObjectResult(new ApiResponse(400, new ApiError(ResponseMessageEnum.ValidationError.GetDescription(), new List<ValidationError> { new ValidationError("Uid", "Uid is invalid.") })));
-                    context.Result = new UnauthorizedResult();
+                case "GST":
+                    if (!ValidatePreLoginToken(context))
+                    {
+                        SetUnauthorizedResult(context);
+                    }
                     return;
-                }
 
-                return; // Proceed if the token type is correct and input validation passes
+                case "AST":
+                    if (!ValidateInputForController(context))
+                    {
+                        SetUnauthorizedResult(context);
+                    }
+                    return;
+
+                default:
+                    SetUnauthorizedResult(context);
+                    return;
             }
-            else
-            {
-                // Return Unauthorized if the token type doesn't match
-                context.Result = new UnauthorizedResult();
-                return;
-            }
-        }
-
-        private bool ValidateInputForController(AuthorizationFilterContext context)
-        {
-            //var controllerName = context.ActionDescriptor.RouteValues["controller"].ToLower();
-            var actionName = context.ActionDescriptor.RouteValues["action"].ToLower();
-          
-            if (actionName.Equals("getscripgeneral")
-                || actionName.Equals("getscripoffers")
-                || actionName.Equals("getscriporderfollowup")
-                || actionName.Equals("viewrecommendationpPercentage"))
-            {
-                return true; // No validation needed, proceed
-            }            
-
-            // Extract and validate the required parameter from the body
-            var Uid = ExtractUidFromRequestBody(context);
-            if (string.IsNullOrEmpty(Uid))
-            {
-                return false; // Fail if Uid is empty
-            }
-
-            // Extract the token 'type' claim from the token
-            var clientcodeClaim = context.HttpContext.User.FindFirst("clientcode")?.Value;
-            return clientcodeClaim == Uid;
         }        
 
+        // Sets the result to Unauthorized
+        private void SetUnauthorizedResult(AuthorizationFilterContext context)
+        {
+            context.Result = new UnauthorizedResult();
+        }
+
+        // Validates input for GST token
+        private bool ValidatePreLoginToken(AuthorizationFilterContext context)
+        {
+            var isPreLogin = bool.TryParse(GetClaimValue(context, "prelogin"), out var result) && result;
+            if (isPreLogin)
+            {
+                var actionName = context.ActionDescriptor.RouteValues["action"]?.ToLower();
+
+                // Actions that are allowed during pre-login
+                if (actionName is "getscriporderbysegments" or "getorderfollowup"
+                    or "getscripgeneralinfo")
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        // Validates input for AST token
+        private bool ValidateInputForController(AuthorizationFilterContext context)
+        {
+            // var controllerName = context.ActionDescriptor.RouteValues["controller"].ToLower();
+            var actionName = context.ActionDescriptor.RouteValues["action"]?.ToLower();
+
+            // Actions that do not require validation (client code not required)
+            if (actionName is "getscripgeneral" or "getscripoffers"
+                or "getscriporderfollowup" or "viewrecommendationpercentage")
+            {
+                return true;
+            }
+
+            // Extract and validate UID from the request body
+            var uid = ExtractUidFromRequestBody(context);
+            if (string.IsNullOrEmpty(uid)) return false;
+
+            // Compare UID with client code claim
+            var clientCodeClaim = GetClaimValue(context, "clientcode");
+            return clientCodeClaim == uid;
+        }
+
+        // Extracts UID from the request body
         private string ExtractUidFromRequestBody(AuthorizationFilterContext context)
         {
             // Enable buffering to allow multiple reads of the request body
@@ -94,8 +119,7 @@ namespace Client.WebApi.Extensions
                     var bodyContent = reader.ReadToEndAsync().Result;
                     context.HttpContext.Request.Body.Position = 0; // Reset the stream position                    
 
-                    if (string.IsNullOrEmpty(bodyContent))
-                        return string.Empty;
+                    if (string.IsNullOrEmpty(bodyContent)) return string.Empty;
 
                     // Support for both objects and arrays - Parse the body and extract 'Uid' if present
                     var jsonToken = JToken.Parse(bodyContent);
@@ -105,7 +129,7 @@ namespace Client.WebApi.Extensions
                         JTokenType.Object => jsonToken["Uid"],
                         _ => null
                     };
-                    return uid?.ToString() ?? string.Empty;                  
+                    return uid?.ToString() ?? string.Empty;
                 }
             }
             catch (JsonReaderException)
@@ -117,6 +141,12 @@ namespace Client.WebApi.Extensions
                 // Ensure the request body stream is reset even in case of exception
                 context.HttpContext.Request.Body.Position = 0;
             }
+        }
+
+        // Extracts a claim value from the user principal
+        private string GetClaimValue(AuthorizationFilterContext context, string claimType)
+        {
+            return context.HttpContext.User.FindFirst(claimType)?.Value;
         }
     }
 }
