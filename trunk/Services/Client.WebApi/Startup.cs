@@ -222,16 +222,35 @@ namespace Client.WebApi
             // Ensure authentication middleware is called before authorization
             app.UseAuthentication(); // This must come before UseAuthorization	
             app.UseAuthorization();
-            
-            // Swagger configuration
+
+            //This line enables the app to use Swagger, with the configuration in the ConfigureServices method.
             app.UseSwagger();
-            app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "Client.WebApi"); });
+
+            //This line enables Swagger UI, which provides us with a nice, simple UI with which we can view our API calls.
+            if (Configuration.GetValue<bool>("Swagger:isSwaggerEnabled"))
+            {
+                app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "Client.WebApi"); });              
+            }
+            else
+            {
+                app.Map("/swagger", HandleSwaggerRequests);
+            }          
 
             // Custom Middleware
             app.UseApiResponseAndExceptionWrapper();
            
             // Disable endpoint-based routing and switch to the legacy routing system using UseMvc().
             app.UseMvc();
+        }
+
+        private static void HandleSwaggerRequests(IApplicationBuilder app)
+        {
+            app.Run(async context =>
+            {
+                // Block the request by returning a 404 status code
+                context.Response.StatusCode = StatusCodes.Status404NotFound;
+                await context.Response.WriteAsync("Swagger endpoint not found.");
+            });
         }
     }
 }
