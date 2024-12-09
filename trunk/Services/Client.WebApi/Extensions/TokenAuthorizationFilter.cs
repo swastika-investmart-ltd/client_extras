@@ -7,10 +7,6 @@ using Microsoft.AspNetCore.Http;
 using System.IO;
 using System.Text;
 using Newtonsoft.Json;
-using System.Threading.Tasks;
-using System;
-using DocumentFormat.OpenXml.Math;
-using Irony.Parsing;
 
 namespace Client.WebApi.Extensions
 {

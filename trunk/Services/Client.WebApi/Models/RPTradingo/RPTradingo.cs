@@ -194,26 +194,27 @@ namespace ResearchPanel.Entities
         public DateTime ShortDate { get; set; }
     }
 
-    public class LogInOutInfoPost
-    {
-        [Required(ErrorMessage = "UserId is required.")]
-        public string UserId { get; set; } //User Id
+    //public class LogInOutInfoPost
+    //{
+    //    [Required(ErrorMessage = "UserId is required.")]
+    //    public string UserId { get; set; } //User Id
 
-        [Required(ErrorMessage = "SourceId is required.")]
-        public string SourceId { get; set; } //DeviceId Or WebUniqueId
+    //    [Required(ErrorMessage = "SourceId is required.")]
+    //    public string SourceId { get; set; } //DeviceId Or WebUniqueId
 
-        [Required(ErrorMessage = "SourceType is required.")]
-        public string SourceType { get; set; } //web Or mobile    
+    //    [Required(ErrorMessage = "SourceType is required.")]
+    //    public string SourceType { get; set; } //web Or mobile    
 
-        [Required(ErrorMessage = "ReqType is required.")]
-        public string ReqType { get; set; } // login Or logout
+    //    [Required(ErrorMessage = "ReqType is required.")]
+    //    public string ReqType { get; set; } // login Or logout
 
-        [Required(ErrorMessage = "SecurityKey is required.")]
-        public string SecurityKey { get; set; } //Security Key
+    //    [Required(ErrorMessage = "SecurityKey is required.")]
+    //    public string SecurityKey { get; set; } //Security Key
 
-        [Required(ErrorMessage = "CompanyId is required.")]
-        public string CompanyId { get; set; }
-    }
+    //    [Required(ErrorMessage = "CompanyId is required.")]
+    //    public string CompanyId { get; set; }
+    //}
+
     public class ScripOrderbySegmentsRes
     {
         public long OrderId { get; set; }
@@ -364,14 +365,14 @@ namespace ResearchPanel.Entities
         public string Uid { get; set; }
     }
 
-    public class TopRecommLstIntrReq
-    {
-        [Required(ErrorMessage = "Uid is required.")]
-        public string Uid { get; set; }
+    //public class TopRecommLstIntrReq
+    //{
+    //    [Required(ErrorMessage = "Uid is required.")]
+    //    public string Uid { get; set; }
 
-        [Required(ErrorMessage = "SecurityKey is required.")]
-        public string SecurityKey { get; set; }
-    }
+    //    [Required(ErrorMessage = "SecurityKey is required.")]
+    //    public string SecurityKey { get; set; }
+    //}
     public class ViewRecomReq
     {
         [Required(ErrorMessage = "Uid is required.")]
