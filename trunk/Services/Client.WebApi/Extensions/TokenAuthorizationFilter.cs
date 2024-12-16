@@ -29,32 +29,44 @@ namespace Client.WebApi.Extensions
 
             // Extract token 'type' claim
             var tokenTypeClaim = GetClaimValue(context, "type");
-
-            // Handle specific token types - ASTOLD(Access Token Old),GST (Access Token), AST (Access Token)
-            switch (tokenTypeClaim)
+            
+            if (!string.IsNullOrEmpty(tokenTypeClaim))
             {
-                case "ASTOLD":
-                    return; // Skip validation for ASTOLD tokens
+                // Handle specific token types - ASTOLD(Access Token Old),GST (Access Token), AST (Access Token)
+                switch (tokenTypeClaim)
+                {
+                    case "ASTOLD":
+                        return; // Skip validation for ASTOLD tokens
 
-                case "GST":
-                    if (!ValidatePreLoginToken(context))
-                    {
+                    case "GST":
+                        if (!ValidatePreLoginToken(context))
+                        {
+                            SetUnauthorizedResult(context);
+                        }
+                        return;
+
+                    case "AST":
+                        if (!ValidateInputForController(context))
+                        {
+                            SetUnauthorizedResult(context);
+                        }
+                        return;
+
+                    default:
                         SetUnauthorizedResult(context);
-                    }
-                    return;
-
-                case "AST":
-                    if (!ValidateInputForController(context))
-                    {
-                        SetUnauthorizedResult(context);
-                    }
-                    return;
-
-                default:
-                    SetUnauthorizedResult(context);
-                    return;
+                        return;
+                }
             }
-        }        
+            else
+            {
+                var tokenRoleClaim = GetClaimValue(context, System.Security.Claims.ClaimTypes.Role);
+                var genSource = GetClaimValue(context, "GenSource");
+                if (tokenRoleClaim == "Client" && (genSource.ToUpper() == "MOB" || genSource.ToUpper() == "WEB"))
+                    return;
+                else
+                    SetUnauthorizedResult(context);
+            }
+        }
 
         // Sets the result to Unauthorized
         private void SetUnauthorizedResult(AuthorizationFilterContext context)
