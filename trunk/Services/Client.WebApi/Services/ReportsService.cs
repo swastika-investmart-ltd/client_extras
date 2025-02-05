@@ -703,12 +703,26 @@ namespace Client.WebApi.Services
 
         public async Task<ResponseBaseModel> GetDownLoadAnnualReport(DownLoadReportReqMdl obj, string filePath)
         {
+            AES256 aes = new AES256();
+
             ClientInfoPost obclapps = new ClientInfoPost() { UserId = obj.Uid, SecurityKey = obj.SecurityKey };
             //Below method called to get the Client Details
             string CLIENT_ID = obj.Uid;
             string CLIENT_NAME = obj.CName;
-            string PAN_NO = obj.Pan;
             string CLIENT_EMAILID = obj.CEmail;
+
+            string PAN_NO = string.Empty;
+            try
+            {
+                if (IsBase64String(obj.Pan))
+                    PAN_NO = aes.Decrypt(obj.Pan, obj.Uid);
+                else
+                    PAN_NO = obj.Pan;
+            }
+            catch
+            {
+                PAN_NO = "";
+            }
 
             //Below are the separete methods to call Pnl Summary and Global Pnl Summary
             DataSet ds1 = await PnlSummary(obj);
@@ -926,6 +940,23 @@ namespace Client.WebApi.Services
                     ResponseId = 0,
                     ResponseMessage = "No Client Found"
                 };
+            }
+        }
+
+        private static bool IsBase64String(string input)
+        {
+            try
+            {
+                // Attempt to convert the string to a byte array
+                byte[] result = Convert.FromBase64String(input);
+
+                // If successful, the input is a valid Base64 string
+                return true;
+            }
+            catch (FormatException)
+            {
+                // If an exception is thrown, the input is not a valid Base64 string
+                return false;
             }
         }
 
