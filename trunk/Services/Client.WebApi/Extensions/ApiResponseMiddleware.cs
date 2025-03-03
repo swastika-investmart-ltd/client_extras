@@ -35,8 +35,13 @@ namespace Client.WebApi
 
             string clientIpAddress = context.Request.HttpContext.Connection.RemoteIpAddress.ToString();
             var request = await FormatRequest(context.Request);
-            if (IsDownloadFile(request))
-            { await this._next(context); }
+            if (IsDownloadFile(context))
+            {
+                _logger.Log(LogLevel.Info, $@"Request " + ", CorrelationId: " + correlationId + ",IP: " + clientIpAddress + ",Path: " + context.Request.Path + ",Request Body:" + request);
+                await this._next(context);
+                _logger.Log(LogLevel.Info, $@"Response " + ", CorrelationId: " + correlationId + ",IP: " + clientIpAddress + ",Path: " + context.Request.Path + ",Response Body:Pnl Report Download" );
+
+            }
             else
             {
                 var originalBodyStream = context.Response.Body;
@@ -259,20 +264,6 @@ namespace Client.WebApi
         {
             return context.Request.Path.StartsWithSegments("/XApi/DownLoadAnnualReportForJarvis") ;
 
-        }
-        private bool IsDownloadFile(string request)
-        {
-            if (request.Contains("/XApi/DownLoadAnnualReportForJarvis") && request.Replace(" ","").Contains("\"IsEmail\":false"))
-            {
- 
-                return true;
-
-            }
-
-            return false ;
-
-
-
-        }
+        } 
     }
 }
