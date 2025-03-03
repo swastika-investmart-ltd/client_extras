@@ -11,6 +11,8 @@ using NLog;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using DocumentFormat.OpenXml.Office2016.Excel;
+using System.Web;
 
 namespace Client.WebApi
 {
@@ -31,44 +33,52 @@ namespace Client.WebApi
             var correlationId = string.Format("{0}{1}", DateTime.Now.Ticks, System.Threading.Thread.CurrentThread.ManagedThreadId);
             context.Request.Headers.Add("CorrelationId", correlationId);      
 
-            string clientIpAddress = context.Request.HttpContext.Connection.RemoteIpAddress.ToString();           
-            var originalBodyStream = context.Response.Body;
-
-            using (var bodyStream = new MemoryStream())
+            string clientIpAddress = context.Request.HttpContext.Connection.RemoteIpAddress.ToString();
+            var request = await FormatRequest(context.Request);
+            if (IsDownloadFile(request))
+            { await this._next(context); }
+            else
             {
-                try
+                var originalBodyStream = context.Response.Body;
+
+                using (var bodyStream = new MemoryStream())
                 {
-                    context.Response.Body = bodyStream;                    
-
-                    var request = await FormatRequest(context.Request);
-                    _logger.Log(LogLevel.Info, $@"Request " + ", CorrelationId: " + correlationId + ",IP: " + clientIpAddress + ",Path: " + context.Request.Path + ",Request Body:" + request);
-
-                    await _next.Invoke(context);
-                    context.Response.Body = originalBodyStream;
-                    if (context.Response.StatusCode == (int)HttpStatusCode.OK)
+                    try
                     {
-                        var bodyAsText = await FormatResponse(bodyStream);
-                        await HandleSuccessRequestAsync(context, bodyAsText, context.Response.StatusCode);
-                        //Responce body 
-                        _logger.Log(LogLevel.Info, $@"Response " + ", CorrelationId: " + correlationId + ", StatusCode:" + context.Response.StatusCode + ",IP: " + clientIpAddress + ",Path: " + context.Request.Path + ",Response Body:" + bodyAsText);
-                    }
-                    else
-                    {
-                        var bodyAsText = await FormatResponse(bodyStream);
-                        _logger.Log(LogLevel.Warn, $@"Response " + ", CorrelationId: " + correlationId + ", StatusCode:" + context.Response.StatusCode + ",IP: " + clientIpAddress + ",Path: " + context.Request.Path + ",Response Body:" + bodyAsText);
+                        context.Response.Body = bodyStream;
 
-                        if ((context.Response.StatusCode == (int)HttpStatusCode.NotFound || context.Response.StatusCode == (int)HttpStatusCode.BadRequest) && bodyAsText != null)
-                            await HandleNotSuccessRequestAsync(context, bodyAsText, context.Response.StatusCode);
+                      
+                        _logger.Log(LogLevel.Info, $@"Request " + ", CorrelationId: " + correlationId + ",IP: " + clientIpAddress + ",Path: " + context.Request.Path + ",Request Body:" + request);
+
+
+                        await _next.Invoke(context);
+                        context.Response.Body = originalBodyStream;
+                        if (context.Response.StatusCode == (int)HttpStatusCode.OK)
+                        {
+                            var bodyAsText = await FormatResponse(bodyStream);
+                            await HandleSuccessRequestAsync(context, bodyAsText, context.Response.StatusCode);
+                            //Responce body 
+                            _logger.Log(LogLevel.Info, $@"Response " + ", CorrelationId: " + correlationId + ", StatusCode:" + context.Response.StatusCode + ",IP: " + clientIpAddress + ",Path: " + context.Request.Path + ",Response Body:" + bodyAsText);
+                        }
                         else
-                            await HandleNotSuccessRequestAsync(context, context.Response.StatusCode);
+                        {
+                            var bodyAsText = await FormatResponse(bodyStream);
+                            _logger.Log(LogLevel.Warn, $@"Response " + ", CorrelationId: " + correlationId + ", StatusCode:" + context.Response.StatusCode + ",IP: " + clientIpAddress + ",Path: " + context.Request.Path + ",Response Body:" + bodyAsText);
+
+                            if ((context.Response.StatusCode == (int)HttpStatusCode.NotFound || context.Response.StatusCode == (int)HttpStatusCode.BadRequest) && bodyAsText != null)
+                                await HandleNotSuccessRequestAsync(context, bodyAsText, context.Response.StatusCode);
+                            else
+                                await HandleNotSuccessRequestAsync(context, context.Response.StatusCode);
+                        }
+
+                    }
+                    catch (Exception ex)
+                    {
+                        await HandleExceptionAsync(context, ex, correlationId, clientIpAddress);
+                        bodyStream.Seek(0, SeekOrigin.Begin);
+                        await bodyStream.CopyToAsync(originalBodyStream);
                     }
                 }
-                catch (Exception ex)
-                {
-                    await HandleExceptionAsync(context, ex, correlationId, clientIpAddress);
-                    bodyStream.Seek(0, SeekOrigin.Begin);
-                    await bodyStream.CopyToAsync(originalBodyStream);
-                }               
             }           
         }
 
@@ -244,6 +254,25 @@ namespace Client.WebApi
         private ApiResponse GetErrorResponse(int code, ApiError apiError)
         {
             return new ApiResponse(code, apiError);
-        }       
+        }
+        private bool IsDownloadFile(HttpContext context)
+        {
+            return context.Request.Path.StartsWithSegments("/XApi/DownLoadAnnualReportForJarvis") ;
+
+        }
+        private bool IsDownloadFile(string request)
+        {
+            if (request.Contains("/XApi/DownLoadAnnualReportForJarvis") && request.Replace(" ","").Contains("\"IsEmail\":false"))
+            {
+ 
+                return true;
+
+            }
+
+            return false ;
+
+
+
+        }
     }
 }

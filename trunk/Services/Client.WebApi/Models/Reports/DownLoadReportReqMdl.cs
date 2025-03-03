@@ -25,6 +25,8 @@ namespace Client.WebApi
         [Range(1900, 9999, ErrorMessage = "Please enter a valid year")]
         public long FinYear { get; set; }
 
+        public bool IsEmail { get; set; } = true;
+
 
     }
 
