@@ -919,7 +919,7 @@ namespace Client.WebApi.Services
                 //xlWorkBook.Close();
                 //excelApp.Quit();
                 //below code are sending email as an attched excel to the clients               
-                if (!string.IsNullOrEmpty(CLIENT_EMAILID))
+                if (!string.IsNullOrEmpty(CLIENT_EMAILID) && obj.IsEmail)
                 {
                     long finyear = obj.FinYear % 100;
                     var ObjEmailHelper = new EmailHelper(_logger);
@@ -930,7 +930,7 @@ namespace Client.WebApi.Services
                 return new ResponseBaseModel()
                 {
                     ResponseId = 1,
-                    ResponseMessage = "Success",
+                    ResponseMessage = obj.IsEmail ? "Success" : downloadsFilePath,
                 };
             }
             else
