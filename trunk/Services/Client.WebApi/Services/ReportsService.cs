@@ -1301,7 +1301,7 @@ namespace Client.WebApi.Services
 
         public async Task<ResponseBaseModel> LoadBSESecurityInfoReport()
         {
-            using (IDbConnection con = CreateTrvwConnection())
+            using (IDbConnection con = CreateRPConnection())
             {
                 if (con.State != ConnectionState.Open)
                     con.Open();
