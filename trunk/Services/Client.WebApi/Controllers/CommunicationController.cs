@@ -1,18 +1,21 @@
-﻿using Entities;
+﻿using Client.WebApi.Models.InfoBipWhatsapp;
+using Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
 namespace Client.WebApi.Controllers
 {
-    [ApiKeyAuthorize]
+    //[ApiKeyAuthorize]
+    [AllowAnonymous]
     [Route("[controller]/[action]")]
     [ApiController]
     public class CommunicationController : Controller
     {
-        private ICommunicationService _communicationService; 
+        private ICommunicationService _communicationService;
         public CommunicationController(ICommunicationService communicationService)
         {
-            _communicationService = communicationService; 
+            _communicationService = communicationService;
         }
 
         [HttpPost()]
@@ -34,6 +37,23 @@ namespace Client.WebApi.Controllers
                 return BadRequest(new ApiResponse(400, new ApiError(ResponseMessageEnum.ValidationError.GetDescription(), ModelStateExtension.AllErrors(ModelState))));
             }
             var result = await _communicationService.TriggerCallViaTATA(request);
+            return Ok(new ApiResponse(ResponseMessageEnum.Success.GetDescription(), result, 200));
+        }
+
+        [HttpPost()]
+        public async Task<IActionResult> SendWhatsapp_InfoBip(CommunicationRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new ApiResponse(400, new ApiError(ResponseMessageEnum.ValidationError.GetDescription(), ModelStateExtension.AllErrors(ModelState))));
+            }
+            var result = await _communicationService.SendWhatsapp_InfoBip(request);
+            return Ok(new ApiResponse(ResponseMessageEnum.Success.GetDescription(), result, 200));
+        }
+        [HttpPost()]
+        public IActionResult SendWhatsapp_InfoBipResp([FromBody] InfoBipResp resp)
+        {
+            var result = _communicationService.SendWhatsapp_InfoBipResp(resp);
             return Ok(new ApiResponse(ResponseMessageEnum.Success.GetDescription(), result, 200));
         }
     }
