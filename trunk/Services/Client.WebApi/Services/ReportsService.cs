@@ -512,6 +512,8 @@ namespace Client.WebApi.Services
                                                                //ClientName = list[33].Trim(), //CLIENT_NAME,
                                 ScripSymbol = list[34].Trim(), //SCRIP_SYMBOL,
                                                                //TradingQty = list[35].Trim(), //TRADING_QUANTITY
+                                Trading_Qty = list[35].Trim(), //TRADING_QUANTITY,
+                                Trading_Amt = list[1].Trim(), //OPENING TRADING_RATE,                              
                             };
 
                             if (objList.CompanyCode == "EXPENSES")

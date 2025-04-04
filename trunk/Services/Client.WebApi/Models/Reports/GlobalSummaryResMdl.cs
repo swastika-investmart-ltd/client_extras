@@ -42,13 +42,13 @@ namespace Client.WebApi
         //public string TradingQty { get; set; } //TRADING_QUANTITY		
         public string Trading_Amt { get; set; }
         public string Trading_Qty { get; set; }
-        public string Trading_Rate { get; set; }
+        /// public string Trading_Rate { get; set; } This need to be calculated (Trading_Amt * Trading_Qty)
     }
 
-	//public class GlobalSummaryResMdl
-	//{
-	//	public string ScripName { get; set; }
-	//	public int TotalRows { get; set; }
-	//	public List<GlobalSummaryResponseMdl> SummaryList { get; set; }
-	//}
+    //public class GlobalSummaryResMdl
+    //{
+    //	public string ScripName { get; set; }
+    //	public int TotalRows { get; set; }
+    //	public List<GlobalSummaryResponseMdl> SummaryList { get; set; }
+    //}
 }

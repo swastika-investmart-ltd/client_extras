@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Client.WebApi.Models.InfoBipWhatsapp
+namespace Client.WebApi
 {
     public class InfoBipWhatsapp
     {
