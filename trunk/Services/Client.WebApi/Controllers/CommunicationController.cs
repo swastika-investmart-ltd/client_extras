@@ -13,7 +13,7 @@ namespace Client.WebApi.Controllers
     public class CommunicationController : Controller
     {
         private readonly ILog _logger;
-        private ICommunicationService _communicationService;
+        private readonly ICommunicationService _communicationService;
         public CommunicationController(ICommunicationService communicationService, ILog logger)
         {
             _communicationService = communicationService;

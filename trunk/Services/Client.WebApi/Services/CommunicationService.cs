@@ -23,7 +23,7 @@ namespace Client.WebApi
     }
     public class CommunicationService : ICommunicationService
     {
-        private IConfiguration _config;
+        private readonly IConfiguration _config;
         private readonly ILog _logger;
 
         public CommunicationService(IConfiguration config, ILog logger)

@@ -35,9 +35,7 @@ namespace Client.WebApi
 
             string clientIpAddress = context.Request.HttpContext.Connection.RemoteIpAddress.ToString();
             var request = await FormatRequest(context.Request);
-            if (IsSwagger(context))
-                await this._next(context);
-            else if (IsDownloadFile(context))
+            if (IsDownloadFile(context))
             {
                 _logger.Log(LogLevel.Info, $@"Request " + ", CorrelationId: " + correlationId + ",IP: " + clientIpAddress + ",Path: " + context.Request.Path + ",Request Body:" + request);
                 await this._next(context);
@@ -87,11 +85,7 @@ namespace Client.WebApi
                     }
                 }
             }           
-        }
-        private bool IsSwagger(HttpContext context)
-        {
-            return context.Request.Path.StartsWithSegments("/swagger"); 
-        }
+        } 
         private async Task<string> FormatRequest(HttpRequest request)
         {
 
