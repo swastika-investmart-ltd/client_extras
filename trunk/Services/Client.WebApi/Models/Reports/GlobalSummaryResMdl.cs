@@ -40,8 +40,8 @@ namespace Client.WebApi
 		//public string ClientName { get; set; } //CLIENT_NAME
 		public string ScripSymbol { get; set; } //SCRIP_SYMBOL
         //public string TradingQty { get; set; } //TRADING_QUANTITY		
-        public string Trading_Amt { get; set; }
-        public string Trading_Qty { get; set; }
+        public string TradingAmt { get; set; }
+        public string TradingQty { get; set; }
         /// public string Trading_Rate { get; set; } This need to be calculated (Trading_Amt * Trading_Qty)
     }
 
