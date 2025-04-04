@@ -21,8 +21,7 @@ namespace Client.WebApi
     {
         Task<bool> SendWhatsapp(CommunicationRequest request);
         Task<bool> TriggerCallViaTATA(CommunicationRequest request);
-        Task<bool> SendWhatsapp_InfoBip(CommunicationRequest request);
-        bool SendWhatsapp_InfoBipResp(InfoBipResp resp);
+        Task<bool> SendWhatsapp_InfoBip(CommunicationRequest request); 
     }
     public class CommunicationService : ICommunicationService
     {
@@ -36,6 +35,9 @@ namespace Client.WebApi
         }
         public async Task<bool> SendWhatsapp(CommunicationRequest request)
         {
+            if (request.Uid == "GO11240")
+               await SendWhatsapp_InfoBip(request);
+
             var httpRequest = (HttpWebRequest)WebRequest.Create("http://pickyassist.com/beta/api/v2/push");
             httpRequest.Method = "POST";
             httpRequest.Accept = "application/json";
@@ -181,11 +183,6 @@ namespace Client.WebApi
                 }
             //}
             return true;
-        }
-        public bool SendWhatsapp_InfoBipResp(InfoBipResp resp)
-        {
-            _logger.Log(LogLevel.Debug, $@"SendWhatsapp_InfoBipResp: " + resp);
-            return true;
-        }
+        } 
     }
 }

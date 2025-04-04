@@ -1,21 +1,24 @@
 ﻿using Client.WebApi.Models.InfoBipWhatsapp;
+using Components;
 using Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NLog;
 using System.Threading.Tasks;
 
 namespace Client.WebApi.Controllers
 {
-    //[ApiKeyAuthorize]
-    [AllowAnonymous]
+    [ApiKeyAuthorize]
     [Route("[controller]/[action]")]
     [ApiController]
     public class CommunicationController : Controller
     {
+        private readonly ILog _logger;
         private ICommunicationService _communicationService;
-        public CommunicationController(ICommunicationService communicationService)
+        public CommunicationController(ICommunicationService communicationService, ILog logger)
         {
             _communicationService = communicationService;
+            _logger = logger;
         }
 
         [HttpPost()]
@@ -50,11 +53,13 @@ namespace Client.WebApi.Controllers
             var result = await _communicationService.SendWhatsapp_InfoBip(request);
             return Ok(new ApiResponse(ResponseMessageEnum.Success.GetDescription(), result, 200));
         }
+        
+        [AllowAnonymous]
         [HttpPost()]
-        public IActionResult SendWhatsapp_InfoBipResp([FromBody] InfoBipResp resp)
+        public async Task<IActionResult> SendWhatsapp_InfoBipResp([FromBody] InfoBipResp resp)
         {
-            var result = _communicationService.SendWhatsapp_InfoBipResp(resp);
-            return Ok(new ApiResponse(ResponseMessageEnum.Success.GetDescription(), result, 200));
+            _logger.Log(LogLevel.Debug, $@"SendWhatsapp_InfoBipResp: " + resp);
+             return Ok(); 
         }
     }
 }

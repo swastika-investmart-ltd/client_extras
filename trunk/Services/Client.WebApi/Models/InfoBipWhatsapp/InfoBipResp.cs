@@ -20,7 +20,7 @@ namespace Client.WebApi.Models.InfoBipWhatsapp
 
     public class Price
     {
-        public int pricePerMessage { get; set; }
+        public decimal pricePerMessage { get; set; }
         public string currency { get; set; }
     }
     public class Result
@@ -30,9 +30,9 @@ namespace Client.WebApi.Models.InfoBipWhatsapp
         public Status status { get; set; }
         public Error error { get; set; }
         public string messageId { get; set; }
-        public DateTime doneAt { get; set; }
+        public string doneAt { get; set; }
         public int messageCount { get; set; }
-        public DateTime sentAt { get; set; }
+        public string sentAt { get; set; }
         public string callbackData { get; set; }
         public string to { get; set; }
         public string channel { get; set; }
