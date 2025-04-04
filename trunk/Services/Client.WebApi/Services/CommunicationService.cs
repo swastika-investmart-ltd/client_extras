@@ -1,4 +1,5 @@
-﻿using Client.WebApi.Services;
+﻿using Client.WebApi;
+using Client.WebApi.Services;
 using Components;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -18,11 +19,13 @@ namespace Client.WebApi
     {
         Task<bool> SendWhatsapp(CommunicationRequest request);
         Task<bool> TriggerCallViaTATA(CommunicationRequest request);
+        Task<bool> SendWhatsapp_InfoBip(CommunicationRequest request); 
     }
     public class CommunicationService : ICommunicationService
     {
-        private IConfiguration _config;
+        private readonly IConfiguration _config;
         private readonly ILog _logger;
+
         public CommunicationService(IConfiguration config, ILog logger)
         {
             _config = config;
@@ -30,6 +33,9 @@ namespace Client.WebApi
         }
         public async Task<bool> SendWhatsapp(CommunicationRequest request)
         {
+            if (request.Uid == "GO11240")
+               await SendWhatsapp_InfoBip(request);
+
             var httpRequest = (HttpWebRequest)WebRequest.Create("http://pickyassist.com/beta/api/v2/push");
             httpRequest.Method = "POST";
             httpRequest.Accept = "application/json";
@@ -112,5 +118,69 @@ namespace Client.WebApi
             }
             return true;
         }
+        public async Task<bool> SendWhatsapp_InfoBip(CommunicationRequest request)
+        {
+            //using (CommPickyAssistMetrics.SendMessageDuration.NewTimer())
+            //{
+                try
+                {
+                    HttpClient client = new HttpClient
+                    {
+                        DefaultRequestHeaders =
+                        {
+                            { "Authorization", _config["InfoBip:AppKey"] },
+                            { "Accept", "application/json" }
+                        }
+                    };
+
+                    string ApiHost = _config["InfoBip:ApiHost"];
+                    var infoBip = new InfoBipWhatsapp
+                    {
+                        messages = new List<Message>
+                        {
+                            new Message
+                            {
+                                from = _config["InfoBip:fromNo"],        // # Verified Infobip WhatsApp sender
+                                to = request.MobileNumber,    // # Opted-in recipient number
+                                callbackData = request.Uid,   // # Optional: any identifier you want to receive in the callback
+                                notifyUrl = _config["InfoBip:notifyUrl"],               // # Optional: for delivery status callbacks
+                                content = new Content
+                                {
+                                    templateName =  _config["InfoBip:templateName"],   // # Template name (case-sensitive)
+                                    templateData = new TemplateData
+                                    {
+                                        body = new Body
+                                        {
+                                            placeholders = new List<string>
+                                            {
+                                                request.Uid,      // # Placeholder 1
+                                                request.Message,  // # Placeholder 2
+                                                request.LTP       // # Placeholder 3
+                                            }
+                                        }
+                                    },
+                                    language = "en"
+                                }
+                            }
+                        }
+                    };
+
+                    var jsonContent = System.Text.Json.JsonSerializer.Serialize(infoBip);
+                    using var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+                    using var response = await client.PostAsync(ApiHost + _config["InfoBip:ApiURL"], content);
+
+                    string responseString = await response.Content.ReadAsStringAsync();
+                    _logger.Log(LogLevel.Debug, $@"Status Code: " +  (int)response.StatusCode);
+                    _logger.Log(LogLevel.Debug, $@"Response: " + responseString);
+                   // CommPickyAssistMetrics.SendMessageSuccess.Inc();
+                }
+                catch (System.Exception ex)
+                {
+                    _logger.Log(LogLevel.Error, $@"SendWhatsapp-Exception: " + ex.ToString());
+                   // CommPickyAssistMetrics.SendMessageError.Inc();
+                }
+            //}
+            return true;
+        } 
     }
 }

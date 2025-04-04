@@ -85,8 +85,7 @@ namespace Client.WebApi
                     }
                 }
             }           
-        }
-
+        } 
         private async Task<string> FormatRequest(HttpRequest request)
         {
 
