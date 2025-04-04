@@ -8,9 +8,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Authorization;
 
 namespace Client.WebApi.Controllers
-{
-    //[Authorize]
-    [AllowAnonymous]
+{ 
+    [Authorize]
     [Route("[controller]/[action]")]
     [ApiController]
     public class BOReportsController : Controller
