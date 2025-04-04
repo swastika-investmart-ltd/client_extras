@@ -1,12 +1,9 @@
-﻿using Client.WebApi.Models.InfoBipWhatsapp;
-using Client.WebApi.Services;
+﻿using Client.WebApi;
 using Components;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using NLog;
 using Prometheus;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;

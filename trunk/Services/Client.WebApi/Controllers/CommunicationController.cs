@@ -1,5 +1,4 @@
-﻿using Client.WebApi.Models.InfoBipWhatsapp;
-using Components;
+﻿using Components;
 using Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
