@@ -37,16 +37,16 @@ namespace Client.WebApi.Controllers
             return Ok(new ApiResponse(ResponseMessageEnum.Success.GetDescription(), result, 200));
         }
 
-        [HttpPost()]
-        public async Task<IActionResult> SendWhatsapp_InfoBip(CommunicationRequest request)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(new ApiResponse(400, new ApiError(ResponseMessageEnum.ValidationError.GetDescription(), ModelStateExtension.AllErrors(ModelState))));
-            }
-            var result = await _communicationService.SendWhatsapp_InfoBip(request);
-            return Ok(new ApiResponse(ResponseMessageEnum.Success.GetDescription(), result, 200));
-        }
+        //[HttpPost()]
+        //public async Task<IActionResult> SendWhatsapp_InfoBip(CommunicationRequest request)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return BadRequest(new ApiResponse(400, new ApiError(ResponseMessageEnum.ValidationError.GetDescription(), ModelStateExtension.AllErrors(ModelState))));
+        //    }
+        //    var result = await _communicationService.SendWhatsapp_InfoBip(request);
+        //    return Ok(new ApiResponse(ResponseMessageEnum.Success.GetDescription(), result, 200));
+        //}
 
     }
 }
