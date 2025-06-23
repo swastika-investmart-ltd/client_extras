@@ -155,7 +155,8 @@ namespace Client.WebApi
                                             {
                                                 request.Uid,      // # Placeholder 1
                                                 request.Message,  // # Placeholder 2
-                                                request.LTP       // # Placeholder 3
+                                                request.LTP,      // # Placeholder 3
+                                                _config["InfoBip:RemindMeDeepLink"]  // # Placeholder 4
                                             }
                                         }
                                     },
