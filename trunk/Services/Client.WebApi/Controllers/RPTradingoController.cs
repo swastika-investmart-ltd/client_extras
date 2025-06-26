@@ -115,7 +115,17 @@ namespace Client.WebApi.Controllers
             var result = await _rpTradingoService.GetScripOrderbySegments(obj);
             return Ok(new ApiResponse(ResponseMessageEnum.Success.GetDescription(), result, 200));
         }
-        
+
+        [HttpPost()]
+        public async Task<IActionResult> ViewRecommendationPercentageV1()
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(new ApiResponse(400, new ApiError(ResponseMessageEnum.ValidationError.GetDescription(), ModelStateExtension.AllErrors(ModelState))));
+
+            var result = await _rpTradingoService.ViewRecommendationPercentageV1();
+            return Ok(new ApiResponse(ResponseMessageEnum.Success.GetDescription(), result, 200));
+        }
+
         [HttpPost()] //Note: Remove this after change - ViewRecommendation
         public async Task<IActionResult> ViewRecommendationPercentage()
         {

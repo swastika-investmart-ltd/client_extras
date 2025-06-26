@@ -1,6 +1,7 @@
-﻿using Newtonsoft.Json.Serialization;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using static Entities.CustomValidators;
 
@@ -266,6 +267,22 @@ namespace ResearchPanel.Entities
         public decimal LtNiftyReturns { get; set; }
         public int LtActiveCalls { get; set; }
     }
+
+    public class RecommendationPercentageInfo
+    {
+        public decimal? CommodityPercentage { get; set; }
+        public decimal? FNOIndexPercentage { get; set; }
+        public decimal? IntradayPercentage { get; set; }
+        public decimal? FNOStockPercentage { get; set; }
+        public decimal? CashDeliveryPercentage { get; set; }
+        public decimal? IntradayCalls { get; set; }
+        public decimal? CashDeliverycalls { get; set; }
+        public decimal? FNOIndexCalls { get; set; }
+        public decimal? FNOStocksCalls { get; set; }
+        public decimal? CommodityCalls { get; set; }
+    }
+
+
     public class ScripOrderbySegmentsReq
     {
         //[Required(ErrorMessage = "SecurityKey is required.")]
