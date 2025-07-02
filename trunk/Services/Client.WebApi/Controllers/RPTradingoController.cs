@@ -117,12 +117,12 @@ namespace Client.WebApi.Controllers
         }
 
         [HttpPost()]
-        public async Task<IActionResult> ViewRecommendationPercentageV1()
+        public async Task<IActionResult> GetRecommendationPercentage()
         {
             if (!ModelState.IsValid)
                 return BadRequest(new ApiResponse(400, new ApiError(ResponseMessageEnum.ValidationError.GetDescription(), ModelStateExtension.AllErrors(ModelState))));
 
-            var result = await _rpTradingoService.ViewRecommendationPercentageV1();
+            var result = await _rpTradingoService.GetRecommendationPercentage();
             return Ok(new ApiResponse(ResponseMessageEnum.Success.GetDescription(), result, 200));
         }
 

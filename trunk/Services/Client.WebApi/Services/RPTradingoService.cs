@@ -17,7 +17,7 @@ namespace Client.WebApi.Services
         Task<ResponseBaseModel<AllScripInfoResponse>> GetAllScripInfoWithPagination(string ClientId, long PageNo, long CompanyId);
         Task<ResponseBaseRecModel<ScripOrderbySegmentsRes>> GetScripOrderbySegments(ScripOrderbySegmentsReq obj);
         Task<ResponseBaseModel<ViewRecPercentageInfo>> ViewRecommendationPercentage();
-        Task<ResponseBaseModel<RecommendationPercentageInfo>> ViewRecommendationPercentageV1();
+        Task<ResponseBaseModel<RecommendationPercentageInfo>> GetRecommendationPercentage();
         Task<List<ScripOrderbySegmentsRes>> GetTopRecommendationListFromDatabase();
     }
     public class RPTradingoService : BaseService, IRPTradingoService
@@ -439,7 +439,7 @@ namespace Client.WebApi.Services
             }
         }
 
-        public async Task<ResponseBaseModel<RecommendationPercentageInfo>> ViewRecommendationPercentageV1()
+        public async Task<ResponseBaseModel<RecommendationPercentageInfo>> GetRecommendationPercentage()
         {
             using (IDbConnection con = CreateRPConnection())
             {
