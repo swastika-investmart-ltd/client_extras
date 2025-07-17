@@ -148,6 +148,7 @@ namespace Client.WebApi
             services.AddScoped<IHttpClientPostService, HttpClientPostService>();
             services.AddScoped<IRPTradingoService, RPTradingoService>();
             services.AddScoped<IXApiKeysLoader, XApiKeysLoader>();
+            services.AddScoped<IContactsService, ContactsService>();
             
 
             #region API Rate Limit Integration

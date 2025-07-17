@@ -17,6 +17,7 @@ namespace Client.WebApi.Services
         Task<ResponseBaseModel<AllScripInfoResponse>> GetAllScripInfoWithPagination(string ClientId, long PageNo, long CompanyId);
         Task<ResponseBaseRecModel<ScripOrderbySegmentsRes>> GetScripOrderbySegments(ScripOrderbySegmentsReq obj);
         Task<ResponseBaseModel<ViewRecPercentageInfo>> ViewRecommendationPercentage();
+        Task<ResponseBaseModel<RecommendationPercentageInfo>> GetRecommendationPercentage();
         Task<List<ScripOrderbySegmentsRes>> GetTopRecommendationListFromDatabase();
     }
     public class RPTradingoService : BaseService, IRPTradingoService
@@ -437,6 +438,21 @@ namespace Client.WebApi.Services
                 return result;
             }
         }
+
+        public async Task<ResponseBaseModel<RecommendationPercentageInfo>> GetRecommendationPercentage()
+        {
+            using (IDbConnection con = CreateRPConnection())
+            {
+                var result = new ResponseBaseModel<RecommendationPercentageInfo>
+                {
+                    Datas = (await SqlMapper.QueryAsync<RecommendationPercentageInfo>(con, "RecommendationPercentage", commandType: CommandType.StoredProcedure)).ToList()
+                };
+
+                result.TotalRows = result.Datas.Count;
+                return result;
+            }
+        }
+
         public async Task<List<ScripOrderbySegmentsRes>> GetTopRecommendationListFromDatabase()
         {
             using (IDbConnection con = CreateRPConnection())
