@@ -40,16 +40,21 @@ namespace Client.WebApi
             // Generate a unique ID for the request
             var correlationId = string.Format("{0}{1}", DateTime.Now.Ticks, System.Threading.Thread.CurrentThread.ManagedThreadId);
 
+            string clientIpAddress = context.Request.HttpContext.Connection.RemoteIpAddress.ToString();
+
             Tuple<string, string> userDetails = Tuple.Create("", "");
-            if (context.Request.Path.ToString().Contains("/ShareURL") || context.Request.Path.ToString().Contains("/UpdatePriceByScheduler"))
-                userDetails = Tuple.Create("", "");
-            else
-                userDetails = GetUserIdFromToken(context);
+            
+            userDetails = GetUserIdFromToken(context);
             var stopWatch = Stopwatch.StartNew();
             ////// Call the DebugContexLog method to log the HttpContext details
 
             var request = await FormatRequest(context.Request);
-            string clientIpAddress = context.Request.HttpContext.Connection.RemoteIpAddress.ToString();
+
+            if (IsDownloadFile(context))
+            {
+                _logger.Log(LogLevel.Info, $@"Request " + ", CorrelationId: " + correlationId + ",IP: " + clientIpAddress + ",Path: " + context.Request.Path + ",Request Body:" + request);
+                await this._next(context);
+            }
 
             context.Request.Headers.Add("CorrelationId", correlationId);
             context.Request.Headers.Add("IpAddress", clientIpAddress);
@@ -157,14 +162,7 @@ namespace Client.WebApi
                 string GetClaim(JwtSecurityToken token, string type) =>
                     token?.Claims.FirstOrDefault(c => c.Type == type)?.Value ?? "";
 
-                string clientcode = "";
-                var encryptedClientCode = GetClaim(jsonToken, "clientcode");
-                if (!string.IsNullOrEmpty(encryptedClientCode))
-                {
-                    try { clientcode = aes256.Decrypt(encryptedClientCode, _config["AES256:Key"]); }
-                    catch { clientcode = ""; }
-                }
-
+                string clientcode = GetClaim(jsonToken, "clientcode");
                 string employeeCode = GetClaim(jsonToken, "EmployeeCode");
                 string employeeName = GetClaim(jsonToken, "EmployeeName");
                 string profileName = GetClaim(jsonToken, "ProfileName");
