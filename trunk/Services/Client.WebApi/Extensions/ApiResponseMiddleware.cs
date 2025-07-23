@@ -76,7 +76,7 @@ namespace Client.WebApi
                    ",path:" + context.Request.Host + context.Request.Path +
                    ",requestmethod:" + context.Request.Method +
                    ",roletype:" + userDetails.Item1 +
-                   //",requesterid:" + userDetails.Item2 +
+                   ",requesterid:"  +
                    ",requestbody:" + requestBody +
                    ",referrer:" + context.Request.Headers["Referer"].ToString() +
                    ",queryparams:" + context.Request.QueryString.ToString();
@@ -85,19 +85,18 @@ namespace Client.WebApi
                        ",ip:" + clientIpAddress +
                        ",path:" + context.Request.Host + context.Request.Path +
                        ",requestmethod:" + context.Request.Method +
-                       ",roletype:" + userDetails.Item1;
-            //+
-            //           ",requesterid:" + userDetails.Item2;
+                       ",roletype:" + userDetails.Item1 +
+                       ",requesterid:";
 
             string ErrorLogDetail = "correlationid:" + correlationId +
                         ",roletype:" + userDetails.Item1 +
-                        //",requesterid:" + userDetails.Item2 +
+                        ",requesterid:" +
                         ",path:" + context.Request.Host + context.Request.Path;
 
 
             //Request body
-             _logger.Log(LogLevel.Info, string.Format("request:correlationid:{0},ip:{1},path:{2},requestmethod:{3},roletype:{4},,requestbody:{5},referrer:{6},queryparams:{7}",
-                         correlationId, clientIpAddress, context.Request.Host + context.Request.Path.ToString(), context.Request.Method, userDetails.Item1, request, "", ""));
+             _logger.Log(LogLevel.Info, string.Format("request:correlationid:{0},ip:{1},path:{2},requestmethod:{3},roletype:{4},requesterid:{5},requestbody:{6},referrer:{7},queryparams:{8}",
+                         correlationId, clientIpAddress, context.Request.Host + context.Request.Path.ToString(), context.Request.Method, userDetails.Item1, userDetails.Item2, request, "", ""));
 
             var originalBodyStream = context.Response.Body;
            
