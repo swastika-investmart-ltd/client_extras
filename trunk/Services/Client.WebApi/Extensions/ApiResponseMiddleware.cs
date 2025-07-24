@@ -50,36 +50,25 @@ namespace Client.WebApi
 
             var request = await FormatRequest(context.Request);
 
-            if (IsDownloadFile(context))
-            {
-                _logger.Log(LogLevel.Info, $@"Request " + ", CorrelationId: " + correlationId + ",IP: " + clientIpAddress + ",Path: " + context.Request.Path + ",Request Body:" + request);
-                await this._next(context);
-            }
+            //if (IsDownloadFile(context))
+            //{
+            //    _logger.Log(LogLevel.Info, $@"Request " + ", CorrelationId: " + correlationId + ",IP: " + clientIpAddress + ",Path: " + context.Request.Path + ",Request Body:" + request);
+            //    await this._next(context);
+            //}
 
             context.Request.Headers.Add("CorrelationId", correlationId);
             context.Request.Headers.Add("IpAddress", clientIpAddress);
 
-            string requestBody = "";
-            try
-            {
-                using var reader = new StreamReader(context.Request.Body, Encoding.UTF8, leaveOpen: true);
-                requestBody = await reader.ReadToEndAsync();
-                context.Request.Body.Position = 0;
-            }
-            catch (Exception ex)
-            {
-                // _logger.LogError(ex, "Failed to read request body");
-            }
-
-            string LogDetail = "correlationid:" + correlationId +
-                   ",ip:" + clientIpAddress +
-                   ",path:" + context.Request.Host + context.Request.Path +
-                   ",requestmethod:" + context.Request.Method +
-                   ",roletype:" + userDetails.Item1 +
-                   ",requesterid:"  +
-                   ",requestbody:" + requestBody +
-                   ",referrer:" + context.Request.Headers["Referer"].ToString() +
-                   ",queryparams:" + context.Request.QueryString.ToString();
+            
+            //string LogDetail = "correlationid:" + correlationId +
+            //       ",ip:" + clientIpAddress +
+            //       ",path:" + context.Request.Host + context.Request.Path +
+            //       ",requestmethod:" + context.Request.Method +
+            //       ",roletype:" + userDetails.Item1 +
+            //       ",requesterid:"  +
+            //       ",requestbody:" + request +
+            //       ",referrer:" + context.Request.Headers["Referer"].ToString() +
+            //       ",queryparams:" + context.Request.QueryString.ToString();
 
             string RespLogDetail = "correlationid:" + correlationId +
                        ",ip:" + clientIpAddress +
@@ -93,9 +82,15 @@ namespace Client.WebApi
                         ",requesterid:" +
                         ",path:" + context.Request.Host + context.Request.Path;
 
+            if (IsDownloadFile(context))
+            {
+                _logger.Log(LogLevel.Info, string.Format("request:correlationid:{0},ip:{1},path:{2},requestmethod:{3},roletype:{4},requesterid:{5},requestbody:{6},referrer:{7},queryparams:{8}",
+                                        correlationId, clientIpAddress, context.Request.Host + context.Request.Path.ToString(), context.Request.Method, userDetails.Item1, userDetails.Item2, request, "", ""));
+                await this._next(context);
+            }
 
             //Request body
-             _logger.Log(LogLevel.Info, string.Format("request:correlationid:{0},ip:{1},path:{2},requestmethod:{3},roletype:{4},requesterid:{5},requestbody:{6},referrer:{7},queryparams:{8}",
+            _logger.Log(LogLevel.Info, string.Format("request:correlationid:{0},ip:{1},path:{2},requestmethod:{3},roletype:{4},requesterid:{5},requestbody:{6},referrer:{7},queryparams:{8}",
                          correlationId, clientIpAddress, context.Request.Host + context.Request.Path.ToString(), context.Request.Method, userDetails.Item1, userDetails.Item2, request, "", ""));
 
             var originalBodyStream = context.Response.Body;
@@ -163,11 +158,11 @@ namespace Client.WebApi
                     token?.Claims.FirstOrDefault(c => c.Type == type)?.Value ?? "";
 
                 string clientcode = GetClaim(jsonToken, "clientcode");
-                string employeeCode = GetClaim(jsonToken, "EmployeeCode");
-                string employeeName = GetClaim(jsonToken, "EmployeeName");
-                string profileName = GetClaim(jsonToken, "ProfileName");
+                //string employeeCode = GetClaim(jsonToken, "EmployeeCode");
+                //string employeeName = GetClaim(jsonToken, "EmployeeName");
+                //string profileName = GetClaim(jsonToken, "ProfileName");
 
-                return System.Tuple.Create(profileName, $"{clientcode}-{employeeName}");
+                return System.Tuple.Create("", $"{clientcode}");
             }
 
             else
