@@ -37,6 +37,9 @@ namespace Client.WebApi.Controllers
         {
             // Clear the cache and fetch data from the database for Top Recommendation
             await _cacheManager.ClearCacheAndFetchDataAsync(_config["TopRecommendation:CacheKey"], GetTopRecommendationListFromDatabase, TimeSpan.FromHours(Convert.ToDouble(_config["TopRecommendation:ExpirationHrTime"])));
+            await _cacheManager.ClearCacheAndFetchDataAsync(_config["TopRecommendation:ShortRecom"], GetShortTermRecomFromDb, TimeSpan.FromHours(Convert.ToDouble(_config["TopRecommendation:ExpirationHrTime"])));
+            await _cacheManager.ClearCacheAndFetchDataAsync(_config["TopRecommendation:LongRecom"], GetLongTermRecomFromDb, TimeSpan.FromHours(Convert.ToDouble(_config["TopRecommendation:ExpirationHrTime"])));
+
             return Ok(new ApiResponse(ResponseMessageEnum.Success.GetDescription(), "OK", 200));
         }
 
@@ -117,5 +120,16 @@ namespace Client.WebApi.Controllers
             var result = await _reportsService.GetDownLoadAnnualReport(obj, filePath);
                 return Ok(new ApiResponse(ResponseMessageEnum.Success.GetDescription(), result, 200)); 
         }
+        private async Task<List<ScripOrderbySegmentsRes>> GetShortTermRecomFromDb()
+        {
+            //// Call this api also to update the cache
+            return await _rpTradingoService.GetShortTermRecomFromDb();
+        }
+        private async Task<List<ScripOrderbySegmentsRes>> GetLongTermRecomFromDb()
+        {
+            //// Call this api also to update the cache
+            return await _rpTradingoService.GetLongTermRecomFromDb();
+        }
+
     }
 }

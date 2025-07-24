@@ -380,6 +380,9 @@ namespace ResearchPanel.Entities
     {
         [Required(ErrorMessage = "Uid is required.")]
         public string Uid { get; set; }
+
+        [Required(ErrorMessage = "Term is required.")]
+        public bool IsShortTerm { get; set; }
     }
 
     //public class TopRecommLstIntrReq
