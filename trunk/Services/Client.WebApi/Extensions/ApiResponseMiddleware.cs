@@ -50,25 +50,8 @@ namespace Client.WebApi
 
             var request = await FormatRequest(context.Request);
 
-            //if (IsDownloadFile(context))
-            //{
-            //    _logger.Log(LogLevel.Info, $@"Request " + ", CorrelationId: " + correlationId + ",IP: " + clientIpAddress + ",Path: " + context.Request.Path + ",Request Body:" + request);
-            //    await this._next(context);
-            //}
-
             context.Request.Headers.Add("CorrelationId", correlationId);
             context.Request.Headers.Add("IpAddress", clientIpAddress);
-
-            
-            //string LogDetail = "correlationid:" + correlationId +
-            //       ",ip:" + clientIpAddress +
-            //       ",path:" + context.Request.Host + context.Request.Path +
-            //       ",requestmethod:" + context.Request.Method +
-            //       ",roletype:" + userDetails.Item1 +
-            //       ",requesterid:"  +
-            //       ",requestbody:" + request +
-            //       ",referrer:" + context.Request.Headers["Referer"].ToString() +
-            //       ",queryparams:" + context.Request.QueryString.ToString();
 
             string RespLogDetail = "correlationid:" + correlationId +
                        ",ip:" + clientIpAddress +
@@ -82,16 +65,14 @@ namespace Client.WebApi
                         ",requesterid:" +
                         ",path:" + context.Request.Host + context.Request.Path;
 
-            if (IsDownloadFile(context))
-            {
-                _logger.Log(LogLevel.Info, string.Format("request:correlationid:{0},ip:{1},path:{2},requestmethod:{3},roletype:{4},requesterid:{5},requestbody:{6},referrer:{7},queryparams:{8}",
-                                        correlationId, clientIpAddress, context.Request.Host + context.Request.Path.ToString(), context.Request.Method, userDetails.Item1, userDetails.Item2, request, "", ""));
-                await this._next(context);
-            }
-
             //Request body
             _logger.Log(LogLevel.Info, string.Format("request:correlationid:{0},ip:{1},path:{2},requestmethod:{3},roletype:{4},requesterid:{5},requestbody:{6},referrer:{7},queryparams:{8}",
                          correlationId, clientIpAddress, context.Request.Host + context.Request.Path.ToString(), context.Request.Method, userDetails.Item1, userDetails.Item2, request, "", ""));
+
+            if (IsDownloadFile(context))
+            {
+                await this._next(context);
+            }
 
             var originalBodyStream = context.Response.Body;
            
@@ -158,13 +139,8 @@ namespace Client.WebApi
                     token?.Claims.FirstOrDefault(c => c.Type == type)?.Value ?? "";
 
                 string clientcode = GetClaim(jsonToken, "clientcode");
-                //string employeeCode = GetClaim(jsonToken, "EmployeeCode");
-                //string employeeName = GetClaim(jsonToken, "EmployeeName");
-                //string profileName = GetClaim(jsonToken, "ProfileName");
-
                 return System.Tuple.Create("", $"{clientcode}");
             }
-
             else
                 return System.Tuple.Create("", "");
         }
@@ -179,7 +155,6 @@ namespace Client.WebApi
             var bodyAsText = Encoding.UTF8.GetString(buffer);
             request.Body.Seek(0, SeekOrigin.Begin);
             return $"{request.QueryString}{bodyAsText}";
-            // return $"{request.Method} {request.Scheme} {request.Host}{request.Path} {request.QueryString} {bodyAsText}";
         }
 
         private async Task<string> FormatResponse(Stream bodyStream)
