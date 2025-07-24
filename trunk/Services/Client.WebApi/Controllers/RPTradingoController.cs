@@ -168,5 +168,37 @@ namespace Client.WebApi.Controllers
             // Fetch a top recommendation list from the database           
             return await _rpTradingoService.GetTopRecommendationListFromDatabase();
         }
+
+        [HttpPost()]
+        public async Task<IActionResult> GetRecommendations([FromBody] TopRecommLstReq obj)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(new ApiResponse(400, new ApiError(ResponseMessageEnum.ValidationError.GetDescription(), ModelStateExtension.AllErrors(ModelState))));
+
+            List<ScripOrderbySegmentsRes> listData = new();
+            // Use the CacheManager to get or set a list with a 4-hour expiration time
+            if (obj.IsShortTerm == true)
+                listData = await _cacheManager.GetOrSetListAsync(_config["TopRecommendation:ShortRecom"], GetShortTermRecomFromDb, TimeSpan.FromHours(Convert.ToDouble(_config["TopRecommendation:ExpirationHrTime"])));
+            else
+                listData = await _cacheManager.GetOrSetListAsync(_config["TopRecommendation:LongRecom"], GetLongTermRecomFromDb, TimeSpan.FromHours(Convert.ToDouble(_config["TopRecommendation:ExpirationHrTime"])));
+
+            var result = new ResponseBaseModel<ScripOrderbySegmentsRes>()
+            {
+                Datas = listData,
+                TotalRows = listData.Count
+            };
+            return Ok(new ApiResponse(ResponseMessageEnum.Success.GetDescription(), result, 200));
+        }
+        private async Task<List<ScripOrderbySegmentsRes>> GetShortTermRecomFromDb()
+        {
+            //// Call this api also to update the cache
+            return await _rpTradingoService.GetShortTermRecomFromDb();
+        }
+        private async Task<List<ScripOrderbySegmentsRes>> GetLongTermRecomFromDb()
+        {
+            //// Call this api also to update the cache
+            return await _rpTradingoService.GetLongTermRecomFromDb();
+        }
+
     }
 }
