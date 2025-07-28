@@ -1,18 +1,19 @@
 ﻿using Components;
 using Entities;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
+using NLog;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
-using NLog;
+using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using DocumentFormat.OpenXml.Office2016.Excel;
-using System.Web;
 
 namespace Client.WebApi
 {
@@ -20,72 +21,112 @@ namespace Client.WebApi
     {
         private readonly RequestDelegate _next;
         private readonly ILog _logger;
-       
-        public ApiResponseMiddleware(RequestDelegate next, ILog logger)
+        private IConfiguration _config;
+
+        public ApiResponseMiddleware(RequestDelegate next, ILog logger, IConfiguration config)
         {
             _next = next;
             _logger = logger;
+            _config = config;
         }
 
         public async Task InvokeAsync(HttpContext context)
         {
+            var stopWatch = Stopwatch.StartNew();
+
             // Generate a unique ID for the request
             var correlationId = string.Format("{0}{1}", DateTime.Now.Ticks, System.Threading.Thread.CurrentThread.ManagedThreadId);
-            context.Request.Headers.Add("CorrelationId", correlationId);      
+            context.Request.Headers.Add("CorrelationId", correlationId);
 
-            string clientIpAddress = context.Request.HttpContext.Connection.RemoteIpAddress.ToString();
-            var request = await FormatRequest(context.Request);
+            string clientIpAddress = context.Request.HttpContext.Connection.RemoteIpAddress.ToString();            
+            context.Request.Headers.Add("IpAddress", clientIpAddress);
+
+            string clientcode = GetUserIdFromToken(context);  
+            var request = await FormatRequest(context.Request); 
+
+            //Request body
+            _logger.Log(LogLevel.Info, string.Format("request:correlationid:{0},ip:{1},path:{2},requestmethod:{3},roletype:{4},requesterid:{5},requestbody:{6},referrer:{7},queryparams:{8}",
+                         correlationId, clientIpAddress, context.Request.Host + context.Request.Path.ToString(), context.Request.Method, "", clientcode, request, "", ""));
+
+            var (respLogDetail, errorLogDetail) = GetLogString(clientcode, correlationId, clientIpAddress, context);
+
             if (IsDownloadFile(context))
             {
-                _logger.Log(LogLevel.Info, $@"Request " + ", CorrelationId: " + correlationId + ",IP: " + clientIpAddress + ",Path: " + context.Request.Path + ",Request Body:" + request);
                 await this._next(context);
-                _logger.Log(LogLevel.Info, $@"Response " + ", CorrelationId: " + correlationId + ",IP: " + clientIpAddress + ",Path: " + context.Request.Path + ",Response Body:Pnl Report Download" );
-
+                _logger.Log(LogLevel.Info, $@"response:" + respLogDetail + ",responsebody:" + "Pnl Report Download" + ",statuscode:" + context.Response.StatusCode + ",apiresponsetime:" + stopWatch.ElapsedMilliseconds);
             }
             else
-            {
+            {  
                 var originalBodyStream = context.Response.Body;
-
                 using (var bodyStream = new MemoryStream())
                 {
+                    var bodyAsText = string.Empty;
                     try
                     {
                         context.Response.Body = bodyStream;
-
-                      
-                        _logger.Log(LogLevel.Info, $@"Request " + ", CorrelationId: " + correlationId + ",IP: " + clientIpAddress + ",Path: " + context.Request.Path + ",Request Body:" + request);
-
-
                         await _next.Invoke(context);
                         context.Response.Body = originalBodyStream;
                         if (context.Response.StatusCode == (int)HttpStatusCode.OK)
                         {
-                            var bodyAsText = await FormatResponse(bodyStream);
-                            await HandleSuccessRequestAsync(context, bodyAsText, context.Response.StatusCode);
-                            //Responce body 
-                            _logger.Log(LogLevel.Info, $@"Response " + ", CorrelationId: " + correlationId + ", StatusCode:" + context.Response.StatusCode + ",IP: " + clientIpAddress + ",Path: " + context.Request.Path + ",Response Body:" + bodyAsText);
+                            bodyAsText = await FormatResponse(bodyStream);
+                            stopWatch.Stop();
+                            await HandleSuccessRequestAsync(context, bodyAsText, context.Response.StatusCode, respLogDetail, stopWatch.ElapsedMilliseconds);
                         }
                         else
                         {
-                            var bodyAsText = await FormatResponse(bodyStream);
-                            _logger.Log(LogLevel.Warn, $@"Response " + ", CorrelationId: " + correlationId + ", StatusCode:" + context.Response.StatusCode + ",IP: " + clientIpAddress + ",Path: " + context.Request.Path + ",Response Body:" + bodyAsText);
-
+                            bodyAsText = await FormatResponse(bodyStream);
                             if ((context.Response.StatusCode == (int)HttpStatusCode.NotFound || context.Response.StatusCode == (int)HttpStatusCode.BadRequest) && bodyAsText != null)
-                                await HandleNotSuccessRequestAsync(context, bodyAsText, context.Response.StatusCode);
+                                await HandleNotSuccessRequestAsync(context, bodyAsText, context.Response.StatusCode, errorLogDetail, stopWatch.ElapsedMilliseconds);
                             else
-                                await HandleNotSuccessRequestAsync(context, context.Response.StatusCode);
+                                await HandleNotSuccessRequestAsync(context, context.Response.StatusCode, errorLogDetail, stopWatch.ElapsedMilliseconds);
                         }
 
                     }
                     catch (Exception ex)
                     {
-                        await HandleExceptionAsync(context, ex, correlationId, clientIpAddress);
+                        stopWatch.Stop();
+                        await HandleExceptionAsync(context, ex, errorLogDetail, stopWatch.ElapsedMilliseconds);
                         bodyStream.Seek(0, SeekOrigin.Begin);
                         await bodyStream.CopyToAsync(originalBodyStream);
                     }
                 }
-            }           
-        } 
+            } 
+        }
+        private string GetUserIdFromToken(HttpContext context)
+        {
+            var tokenTypeClaim = context.User.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+            if (tokenTypeClaim == "AST")
+            {
+                string clientcode = context.User.Claims.FirstOrDefault(c => c.Type == "clientcode")?.Value;
+                return string.IsNullOrWhiteSpace(clientcode) ? string.Empty : clientcode;
+            }
+            else if(tokenTypeClaim == "GST")
+            {            
+                string mobile = context.User.Claims.FirstOrDefault(c => c.Type == "mobile")?.Value;
+                return string.IsNullOrWhiteSpace(mobile) ? string.Empty : mobile;
+            }
+            else
+            return string.Empty; //CASE For: ASTOLD
+        }
+
+        private (string respLogDetail, string errorLogDetail) GetLogString(string requesterId, string correlationId, string clientIpAddress, HttpContext context)
+        {
+            string respLogDetail = "correlationid:" + correlationId +
+            ",ip:" + clientIpAddress +
+            ",path:" + context.Request.Host + context.Request.Path +
+                        ",requestmethod:" + context.Request.Method +
+                        ",roletype:" +
+                        ",requesterid:" + requesterId;
+                      
+
+            string errorLogDetail = "correlationid:" + correlationId
+                        + ",roletype:"
+                        + ",requesterid:" + requesterId 
+                        + ",path:" + context.Request.Host + context.Request.Path;
+
+            return (respLogDetail, errorLogDetail);
+
+        }
         private async Task<string> FormatRequest(HttpRequest request)
         {
 
@@ -95,8 +136,7 @@ namespace Client.WebApi
             await request.Body.ReadAsync(buffer, 0, buffer.Length);
             var bodyAsText = Encoding.UTF8.GetString(buffer);
             request.Body.Seek(0, SeekOrigin.Begin);
-
-            return $"{request.Method} {request.Scheme} {request.Host}{request.Path} {request.QueryString} {bodyAsText}";
+            return $"{request.QueryString}{bodyAsText}";
         }
 
         private async Task<string> FormatResponse(Stream bodyStream)
@@ -108,7 +148,7 @@ namespace Client.WebApi
             return plainBodyText;
         }
 
-        private Task HandleExceptionAsync(HttpContext context, System.Exception exception, string correlationId, string clientIpAddress)
+        private Task HandleExceptionAsync(HttpContext context, Exception exception, string errorLogDetail, long APITime)
         {
             ApiError apiError = null;
             int code = 0;
@@ -118,7 +158,7 @@ namespace Client.WebApi
                 var ex = exception as ApiException;
                 if (ex.IsModelValidatonError)
                 {
-                    apiError = new ApiError(ResponseMessageEnum.ValidationError.GetDescription(), ex.Errors);  
+                    apiError = new ApiError(ResponseMessageEnum.ValidationError.GetDescription(), ex.Errors);
                 }
                 else
                 {
@@ -127,36 +167,33 @@ namespace Client.WebApi
 
                 code = ex.StatusCode;
                 context.Response.StatusCode = code;
-                _logger.Log(LogLevel.Warn, $@"CorrelationId: " + correlationId + ", StatusCode:" + ex.StatusCode + ",IP: " + clientIpAddress + ",Path: " + context.Request.Path + ",Warning:" + ResponseMessageEnum.ValidationError.GetDescription(), exception);
             }
             else if (exception is UnauthorizedAccessException)
             {
                 apiError = new ApiError(ResponseMessageEnum.UnAuthorized.GetDescription());
                 code = (int)HttpStatusCode.Unauthorized;
                 context.Response.StatusCode = code;
-
-                _logger.Log(LogLevel.Warn, $@" CorrelationId: " + correlationId + ", StatusCode:" + code + ",IP: " + clientIpAddress + ",Path: " + context.Request.Path + ",Warning:" + ResponseMessageEnum.ValidationError.GetDescription(), exception);
             }
             else
             {
 
-                var exceptionMessage = ResponseMessageEnum.Unhandled.GetDescription();               
-                var message = $"{exceptionMessage} {exception.GetBaseException().Message}";              
+                var exceptionMessage = ResponseMessageEnum.Unhandled.GetDescription();
+                var message = $"{exceptionMessage} {exception.GetBaseException().Message}";
 
                 apiError = new ApiError(message);
                 code = (int)HttpStatusCode.InternalServerError;
                 context.Response.StatusCode = code;
-
-                _logger.Log(LogLevel.Error, $@" CorrelationId: " + correlationId + ", StatusCode:" + code + ",IP: " + clientIpAddress + ",Path: " + context.Request.Path + ",Exception:" + exceptionMessage, exception);
             }
 
             var jsonString = ConvertToJSONString(GetErrorResponse(code, apiError));
+
+            _logger.Log(LogLevel.Error, $@"error:" + errorLogDetail + ",message:" + jsonString + ",statuscode:" + code + ",apiresponsetime:" + APITime);
 
             context.Response.ContentType = "application/json";
             return context.Response.WriteAsync(jsonString);
         }
 
-        private Task HandleNotSuccessRequestAsync(HttpContext context, int code)
+        private Task HandleNotSuccessRequestAsync(HttpContext context, int code, string ErrorLogDetail, long APITime)
         {
             ApiError apiError = null;
 
@@ -167,18 +204,18 @@ namespace Client.WebApi
             else if (code == (int)HttpStatusCode.MethodNotAllowed)
                 apiError = new ApiError(ResponseMessageEnum.MethodNotAllowed.GetDescription());
             else if (code == (int)HttpStatusCode.Unauthorized)
-                apiError = new ApiError(ResponseMessageEnum.UnAuthorized.GetDescription());            
+                apiError = new ApiError(ResponseMessageEnum.UnAuthorized.GetDescription());
             else
                 apiError = new ApiError(ResponseMessageEnum.Unknown.GetDescription());
 
             context.Response.StatusCode = code;
             var jsonString = ConvertToJSONString(GetErrorResponse(code, apiError));
-
+            _logger.Log(LogLevel.Error, $@"error:" + ErrorLogDetail + ",message:" + jsonString + ",statuscode:" + code + ",apiresponsetime:" + APITime);
             context.Response.ContentType = "application/json";
             return context.Response.WriteAsync(jsonString);
         }
 
-        private Task HandleNotSuccessRequestAsync(HttpContext context, object body, int code)
+        private Task HandleNotSuccessRequestAsync(HttpContext context, object body, int code, string ErrorLogDetail, long APITime)
         {
             string jsonString = string.Empty;
 
@@ -200,12 +237,13 @@ namespace Client.WebApi
             {
                 jsonString = ConvertToJSONString(code, bodyContent);
             }
+            _logger.Log(LogLevel.Error, $@"error:" + ErrorLogDetail + ",message:" + jsonString + ",statuscode:" + code + ",apiresponsetime:" + APITime);
 
             context.Response.ContentType = "application/json";
             return context.Response.WriteAsync(jsonString);
         }
 
-        private Task HandleSuccessRequestAsync(HttpContext context, object body, int code)
+        private Task HandleSuccessRequestAsync(HttpContext context, object body, int code, string RespLogDetail, long APITime)
         {
             string jsonString = string.Empty;
 
@@ -227,6 +265,7 @@ namespace Client.WebApi
             {
                 jsonString = ConvertToJSONString(code, bodyContent);
             }
+            _logger.Log(LogLevel.Info, $@"response:" + RespLogDetail + ",responsebody:" + jsonString + ",statuscode:" + code + ",apiresponsetime:" + APITime);
 
             context.Response.ContentType = "application/json";
             return context.Response.WriteAsync(jsonString);
@@ -244,25 +283,25 @@ namespace Client.WebApi
         {
             return JsonConvert.SerializeObject(rawJSON, JSONSettings());
         }
-        
+
         private JsonSerializerSettings JSONSettings()
         {
             return new JsonSerializerSettings
-            {               
+            {
                 //For PascalCase Changes
-                ContractResolver = new DefaultContractResolver(),          
+                ContractResolver = new DefaultContractResolver(),
                 Converters = new List<JsonConverter> { new StringEnumConverter() }
             };
         }
-       
+
         private ApiResponse GetErrorResponse(int code, ApiError apiError)
         {
             return new ApiResponse(code, apiError);
         }
         private bool IsDownloadFile(HttpContext context)
         {
-            return context.Request.Path.StartsWithSegments("/XApi/DownLoadAnnualReportForJarvis") ;
+            return context.Request.Path.StartsWithSegments("/XApi/DownLoadAnnualReportForJarvis");
 
-        } 
+        }
     }
 }

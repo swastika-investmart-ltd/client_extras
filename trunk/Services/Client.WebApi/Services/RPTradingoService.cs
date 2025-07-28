@@ -19,6 +19,8 @@ namespace Client.WebApi.Services
         Task<ResponseBaseModel<ViewRecPercentageInfo>> ViewRecommendationPercentage();
         Task<ResponseBaseModel<RecommendationPercentageInfo>> GetRecommendationPercentage();
         Task<List<ScripOrderbySegmentsRes>> GetTopRecommendationListFromDatabase();
+        Task<List<ScripOrderbySegmentsRes>> GetShortTermRecomFromDb();
+        Task<List<ScripOrderbySegmentsRes>> GetLongTermRecomFromDb();
     }
     public class RPTradingoService : BaseService, IRPTradingoService
     {
@@ -464,5 +466,32 @@ namespace Client.WebApi.Services
                 return result?.ToList() ?? new List<ScripOrderbySegmentsRes>();
             }
         }
+        public async Task<List<ScripOrderbySegmentsRes>> GetShortTermRecomFromDb()
+        {
+            using (IDbConnection con = CreateRPConnection())
+            {
+                // Fetch recommendation list from the database    
+                var param = new DynamicParameters();
+                param.Add("@IsShortTerm", 1);
+                var result = await SqlMapper.QueryAsync<ScripOrderbySegmentsRes>(con, "RP_GetRecommendations", param, commandType: CommandType.StoredProcedure);
+
+                // Check for null and return an empty list instead
+                return result?.ToList() ?? new List<ScripOrderbySegmentsRes>();
+            }
+        }
+        public async Task<List<ScripOrderbySegmentsRes>> GetLongTermRecomFromDb()
+        {
+            using (IDbConnection con = CreateRPConnection())
+            {
+                // Fetch recommendation list from the database    
+                var param = new DynamicParameters();
+                param.Add("@IsShortTerm", 0);
+                var result = await SqlMapper.QueryAsync<ScripOrderbySegmentsRes>(con, "RP_GetRecommendations", param, commandType: CommandType.StoredProcedure);
+
+                // Check for null and return an empty list instead
+                return result?.ToList() ?? new List<ScripOrderbySegmentsRes>();
+            }
+        }
+
     }
 }
