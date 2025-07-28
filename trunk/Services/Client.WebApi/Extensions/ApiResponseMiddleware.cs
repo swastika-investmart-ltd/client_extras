@@ -114,13 +114,15 @@ namespace Client.WebApi
             string respLogDetail = "correlationid:" + correlationId +
             ",ip:" + clientIpAddress +
             ",path:" + context.Request.Host + context.Request.Path +
-                       ",requestmethod:" + context.Request.Method +
-                       ",requesterid:" + requesterId +
-                       ",roletype:";
+                        ",requestmethod:" + context.Request.Method +
+                        ",roletype:" +
+                        ",requesterid:" + requesterId;
+                      
 
-            string errorLogDetail = "correlationid:" + correlationId 
+            string errorLogDetail = "correlationid:" + correlationId
+                        + ",roletype:"
                         + ",requesterid:" + requesterId 
-                        + ",roletype:" + ",path:" + context.Request.Host + context.Request.Path;
+                        + ",path:" + context.Request.Host + context.Request.Path;
 
             return (respLogDetail, errorLogDetail);
 
