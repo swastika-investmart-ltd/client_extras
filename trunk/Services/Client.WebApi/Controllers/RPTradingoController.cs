@@ -8,6 +8,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Caching.Memory;
+using Client.WebApi.Models.ClientSegment;
 
 namespace Client.WebApi.Controllers
 {
@@ -16,14 +17,16 @@ namespace Client.WebApi.Controllers
     [ApiController]
     public class RPTradingoController : ControllerBase
     {
-        private IRPTradingoService _rpTradingoService;
+        private readonly IRPTradingoService _rpTradingoService;
+        private readonly IReportsService _reportsService;
         private readonly IConfiguration _config;
         private readonly CacheManager<ScripOrderbySegmentsRes> _cacheManager;
-        public RPTradingoController(IRPTradingoService rpTradingoService, IConfiguration config, IMemoryCache memoryCache)
+        public RPTradingoController(IRPTradingoService rpTradingoService, IConfiguration config, IMemoryCache memoryCache, IReportsService reportsService)
         {
             _rpTradingoService =  rpTradingoService; 
             _config = config;
             _cacheManager = new CacheManager<ScripOrderbySegmentsRes>(memoryCache);
+            _reportsService = reportsService;
         }
        
         [HttpPost] //Note: Remove this after change - GetScripGeneralInfo
@@ -153,7 +156,20 @@ namespace Client.WebApi.Controllers
                 return BadRequest(new ApiResponse(400, new ApiError(ResponseMessageEnum.ValidationError.GetDescription(), ModelStateExtension.AllErrors(ModelState))));
 
             // Use the CacheManager to get or set a list with a 4-hour expiration time           
-            List<ScripOrderbySegmentsRes> listData = await _cacheManager.GetOrSetListAsync(_config["TopRecommendation:CacheKey"], GetTopRecommendationListFromDatabase, TimeSpan.FromHours(Convert.ToDouble(_config["TopRecommendation:ExpirationHrTime"])));
+            List<ScripOrderbySegmentsRes> listData = await _cacheManager.GetOrSetListAsync(_config["TopRecommendation:CacheKey"], async () => await GetTopRecommendationListFromDatabase(obj), TimeSpan.FromHours(Convert.ToDouble(_config["TopRecommendation:ExpirationHrTime"])));
+
+            #region MyRegion 
+            //Dictionary<string, string> clientSegment = new();
+            //string strSegment = string.Empty;
+
+            //if (ClientSegmentDataStore.Reference.SegmentDict.ContainsKey(obj.Uid))
+            //    strSegment =  ClientSegmentDataStore.Reference.SegmentDict[obj.Uid];
+            //else
+            //{
+            //    strSegment = await GetClientSegmentDataFromDb(obj.Uid);
+            //    clientSegment.Add(obj.Uid, strSegment);
+            //}
+            #endregion
 
             var result = new ResponseBaseModel<ScripOrderbySegmentsRes>()
             {
@@ -163,10 +179,15 @@ namespace Client.WebApi.Controllers
             return Ok(new ApiResponse(ResponseMessageEnum.Success.GetDescription(), result, 200));
         }
 
-        private async Task<List<ScripOrderbySegmentsRes>> GetTopRecommendationListFromDatabase()
+        private async Task<List<ScripOrderbySegmentsRes>> GetTopRecommendationListFromDatabase(TopRecommLstReq obj)
         {
             // Fetch a top recommendation list from the database           
-            return await _rpTradingoService.GetTopRecommendationListFromDatabase();
+            return await _rpTradingoService.GetTopRecommendationListFromDatabase(obj);
+        }
+        private async Task<string> GetClientSegmentDataFromDb(string Uid)
+        {
+            // Fetch Client's segment from the database           
+            return await _reportsService.ClientSegment(Uid); 
         }
 
         [HttpPost()]
@@ -198,7 +219,7 @@ namespace Client.WebApi.Controllers
         {
             //// Call this api also to update the cache
             return await _rpTradingoService.GetLongTermRecomFromDb();
-        }
+        } 
 
     }
 }

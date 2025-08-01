@@ -18,12 +18,18 @@ namespace Client.WebApi.Services
         Task<ResponseBaseRecModel<ScripOrderbySegmentsRes>> GetScripOrderbySegments(ScripOrderbySegmentsReq obj);
         Task<ResponseBaseModel<ViewRecPercentageInfo>> ViewRecommendationPercentage();
         Task<ResponseBaseModel<RecommendationPercentageInfo>> GetRecommendationPercentage();
-        Task<List<ScripOrderbySegmentsRes>> GetTopRecommendationListFromDatabase();
+        Task<List<ScripOrderbySegmentsRes>> GetTopRecommendationListFromDatabase(TopRecommLstReq obj);
         Task<List<ScripOrderbySegmentsRes>> GetShortTermRecomFromDb();
-        Task<List<ScripOrderbySegmentsRes>> GetLongTermRecomFromDb();
+        Task<List<ScripOrderbySegmentsRes>> GetLongTermRecomFromDb(); 
     }
     public class RPTradingoService : BaseService, IRPTradingoService
     {
+        private readonly IReportsService _reportsService;
+        public RPTradingoService(IReportsService reportsService)
+        {
+            _reportsService = reportsService;
+        }
+
         public async Task<ResponseBaseModel<ScripGeneralResponse>> GetScripGeneral(long CompanyId)
         {
             using (IDbConnection con = CreateRPConnection())
@@ -455,13 +461,29 @@ namespace Client.WebApi.Services
             }
         }
 
-        public async Task<List<ScripOrderbySegmentsRes>> GetTopRecommendationListFromDatabase()
+        public async Task<List<ScripOrderbySegmentsRes>> GetTopRecommendationListFromDatabase(TopRecommLstReq obj)
         {
+            #region Old code commented 
+            //using (IDbConnection con = CreateRPConnection())
+            //{
+            //    // Fetch a top recommendation list from the database           
+            //    var result = await SqlMapper.QueryAsync<ScripOrderbySegmentsRes>(con, "RP_GetTopRecommendationList", null, commandType: CommandType.StoredProcedure);
+
+            //    // Check for null and return an empty list instead
+            //    return result?.ToList() ?? new List<ScripOrderbySegmentsRes>();
+            //}
+            #endregion
+
+            //// Client's segment wise recommendation
+            string strSegment = await _reportsService.ClientSegment(obj.Uid);
+
             using (IDbConnection con = CreateRPConnection())
             {
-                // Fetch a top recommendation list from the database           
-                var result = await SqlMapper.QueryAsync<ScripOrderbySegmentsRes>(con, "RP_GetTopRecommendationList", null, commandType: CommandType.StoredProcedure);
-
+                if (string.IsNullOrEmpty(strSegment))
+                    strSegment = "New";
+                var param = new DynamicParameters();
+                param.Add("@ClientSegment", strSegment);
+                var result = await SqlMapper.QueryAsync<ScripOrderbySegmentsRes>(con, "ScripOrder_GetDataByClientSegment", param, commandType: CommandType.StoredProcedure);
                 // Check for null and return an empty list instead
                 return result?.ToList() ?? new List<ScripOrderbySegmentsRes>();
             }
@@ -491,7 +513,7 @@ namespace Client.WebApi.Services
                 // Check for null and return an empty list instead
                 return result?.ToList() ?? new List<ScripOrderbySegmentsRes>();
             }
-        }
+        } 
 
     }
 }

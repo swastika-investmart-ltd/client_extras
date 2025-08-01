@@ -22,13 +22,14 @@ namespace Client.WebApi.Services
         Task<ResponseBaseModel<HoldingTradeSummaryResMdl>> GetHoldingTradeSummaryReport(HoldingTradeSummaryReqMdl obj);
         Task<ResponseBaseModel> GetDownLoadAnnualReport(DownLoadReportReqMdl obj, string filePath);
         Task<ResponseBaseMTFRepModel<MTFInterestReportResMdl>> GetMTFInterestReport(MTFInterestReportReqMdl obj);
+        Task<string> ClientSegment(string Uid);
     }
     public class ReportsService : BaseService, IReportsService
     {
         // HashSet to store invalid response values
         private readonly HashSet<string> invalidResponses = new HashSet<string> { "No Such Client ID found..", "No Data Found" };
         private readonly IConfiguration _config;
-        readonly IHttpClientPostService _httpClientPostService;
+        private readonly IHttpClientPostService _httpClientPostService;
         private readonly ILog _logger;
         public ReportsService(IConfiguration config, IHttpClientPostService httpClientPostService, ILog logger)
         {
@@ -1323,5 +1324,16 @@ namespace Client.WebApi.Services
             };
         }
 
+        public async Task<string> ClientSegment(string Uid)
+        {
+            using (IDbConnection TRwcon = CreateTrvwConnection())
+            {
+                if (TRwcon.State != ConnectionState.Open)
+                    TRwcon.Open(); 
+                var param = new DynamicParameters();
+                param.Add("@ClientId", Uid);
+                return (await SqlMapper.QueryAsync<string>(TRwcon, "Client_SegmentDetails", param, commandType: CommandType.StoredProcedure)).FirstOrDefault();
+            }
+        }
     }
 }

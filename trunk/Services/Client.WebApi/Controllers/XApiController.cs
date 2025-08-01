@@ -36,18 +36,17 @@ namespace Client.WebApi.Controllers
         public async Task<IActionResult> TopRecommendationClearCacheAndFetchData([FromBody] TopRecommLstReq obj)
         {
             // Clear the cache and fetch data from the database for Top Recommendation
-            await _cacheManager.ClearCacheAndFetchDataAsync(_config["TopRecommendation:CacheKey"], GetTopRecommendationListFromDatabase, TimeSpan.FromHours(Convert.ToDouble(_config["TopRecommendation:ExpirationHrTime"])));
+            await _cacheManager.ClearCacheAndFetchDataAsync(_config["TopRecommendation:CacheKey"], async () => await GetTopRecommendationListFromDatabase(obj), TimeSpan.FromHours(Convert.ToDouble(_config["TopRecommendation:ExpirationHrTime"])));
             await _cacheManager.ClearCacheAndFetchDataAsync(_config["TopRecommendation:ShortRecom"], GetShortTermRecomFromDb, TimeSpan.FromHours(Convert.ToDouble(_config["TopRecommendation:ExpirationHrTime"])));
             await _cacheManager.ClearCacheAndFetchDataAsync(_config["TopRecommendation:LongRecom"], GetLongTermRecomFromDb, TimeSpan.FromHours(Convert.ToDouble(_config["TopRecommendation:ExpirationHrTime"])));
 
             return Ok(new ApiResponse(ResponseMessageEnum.Success.GetDescription(), "OK", 200));
         }
-
-        private async Task<List<ScripOrderbySegmentsRes>> GetTopRecommendationListFromDatabase()
+        private async Task<List<ScripOrderbySegmentsRes>> GetTopRecommendationListFromDatabase(TopRecommLstReq obj)
         {
             // Fetch a top recommendation list from the database           
-            return await _rpTradingoService.GetTopRecommendationListFromDatabase();
-        }
+            return await _rpTradingoService.GetTopRecommendationListFromDatabase(obj);
+        }  
 
         [HttpPost]
         public async Task<IActionResult> GetAnnualPnlSummaryForJarvis([FromBody] AnnualPnlSummaryReqMdl obj)
