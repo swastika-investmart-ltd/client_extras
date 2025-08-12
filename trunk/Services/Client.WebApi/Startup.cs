@@ -21,6 +21,7 @@ using Prometheus;
 using Client.WebApi.Extensions;
 using Client.WebApi.HostedService;
 using Client.WebApi.Models.Base;
+using Microsoft.AspNetCore.Authentication.OAuth;
 
 
 namespace Client.WebApi
@@ -180,6 +181,9 @@ namespace Client.WebApi
 
             // Registering the hosted service - for load memory data
             services.AddHostedService<DataLoader>();
+
+            // Register path sets
+            ConfigurePathSets(services);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -251,6 +255,33 @@ namespace Client.WebApi
                 // Block the request by returning a 404 status code
                 context.Response.StatusCode = StatusCodes.Status404NotFound;
                 await context.Response.WriteAsync("Swagger endpoint not found.");
+            });
+        }
+
+        private void ConfigurePathSets(IServiceCollection services)
+        {
+            // Configure named options for recomondation key 
+            services.Configure<PathOptions>("Recomkeys", options =>
+            {
+                options.Paths = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+                    {
+                             "New"
+                            ,"Commodity"
+                            ,"Delivery"
+                            ,"FNO"
+                            ,"Intraday"
+                            ,"Commodity_Delivery"
+                            ,"Commodity_FNO"
+                            ,"Commodity_Intraday"
+                            ,"Delivery_FNO"
+                            ,"Delivery_Intraday"
+                            ,"FNO_Intraday"
+                            ,"Commodity_Delivery_FNO"
+                            ,"Commodity_Delivery_Intraday"
+                            ,"Commodity_FNO_Intraday"
+                            ,"Delivery_FNO_Intraday"
+                            ,"Commodity_Delivery_FNO_Intraday"
+                    };
             });
         }
     }

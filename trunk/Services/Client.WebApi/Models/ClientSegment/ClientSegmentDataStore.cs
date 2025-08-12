@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Client.WebApi.Models.ClientSegment
+namespace Client.WebApi.Models
 {
     public class ClientSegmentDataStore
     {

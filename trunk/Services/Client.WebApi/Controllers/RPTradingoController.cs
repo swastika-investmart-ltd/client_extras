@@ -8,7 +8,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Caching.Memory;
-using Client.WebApi.Models.ClientSegment;
+using System.Linq;
 
 namespace Client.WebApi.Controllers
 {
@@ -23,18 +23,18 @@ namespace Client.WebApi.Controllers
         private readonly CacheManager<ScripOrderbySegmentsRes> _cacheManager;
         public RPTradingoController(IRPTradingoService rpTradingoService, IConfiguration config, IMemoryCache memoryCache, IReportsService reportsService)
         {
-            _rpTradingoService =  rpTradingoService; 
+            _rpTradingoService =  rpTradingoService;
             _config = config;
             _cacheManager = new CacheManager<ScripOrderbySegmentsRes>(memoryCache);
             _reportsService = reportsService;
         }
-       
+
         [HttpPost] //Note: Remove this after change - GetScripGeneralInfo
         public async Task<IActionResult> GetScripGeneral([FromBody] GSGeneralReq obj)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new ApiResponse(400, new ApiError(ResponseMessageEnum.ValidationError.GetDescription(), ModelStateExtension.AllErrors(ModelState))));
-            
+
             var result = await _rpTradingoService.GetScripGeneral(obj.CompanyId);
             return Ok(new ApiResponse(ResponseMessageEnum.Success.GetDescription(), result, 200));
         }
@@ -95,8 +95,8 @@ namespace Client.WebApi.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(new ApiResponse(400, new ApiError(ResponseMessageEnum.ValidationError.GetDescription(), ModelStateExtension.AllErrors(ModelState))));
 
-            var result = await _rpTradingoService.GetAllScripInfo(obj.UId, obj.CompanyId); 
-            return Ok(new ApiResponse(ResponseMessageEnum.Success.GetDescription(), result, 200)); 
+            var result = await _rpTradingoService.GetAllScripInfo(obj.UId, obj.CompanyId);
+            return Ok(new ApiResponse(ResponseMessageEnum.Success.GetDescription(), result, 200));
         }
 
         [HttpPost()]
@@ -139,7 +139,7 @@ namespace Client.WebApi.Controllers
             return Ok(new ApiResponse(ResponseMessageEnum.Success.GetDescription(), result, 200));
         }
 
-        [HttpPost()] 
+        [HttpPost()]
         public async Task<IActionResult> ViewRecommendation(ViewRecomReq obj)
         {
             if (!ModelState.IsValid)
@@ -155,40 +155,34 @@ namespace Client.WebApi.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(new ApiResponse(400, new ApiError(ResponseMessageEnum.ValidationError.GetDescription(), ModelStateExtension.AllErrors(ModelState))));
 
-            // Use the CacheManager to get or set a list with a 4-hour expiration time           
-            List<ScripOrderbySegmentsRes> listData = await _cacheManager.GetOrSetListAsync(_config["TopRecommendation:CacheKey"], async () => await GetTopRecommendationListFromDatabase(obj), TimeSpan.FromHours(Convert.ToDouble(_config["TopRecommendation:ExpirationHrTime"])));
+            // Use the CacheManager to get or set a list with a 4-hour expiration time
+            string cacheKey = string.Empty;
+            if (string.IsNullOrEmpty(obj.Preferred_Segment))
+                cacheKey =  "New";
+            else
+            {
+               // cacheKey = obj.Preferred_Segment.Trim().Replace(",", "_"); 
+                // Step 1: Split by comma
+                var parts = obj.Preferred_Segment
+                    .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                    .Select(x => x.Trim())             // Trim spaces
+                    .OrderBy(x => x)                   // Sort alphabetically
+                    .ToList();
 
-            #region MyRegion 
-            //Dictionary<string, string> clientSegment = new();
-            //string strSegment = string.Empty;
+                // Step 2: Join back with underscore
+                cacheKey = string.Join("_", parts);
+            }
+            if (cacheKey == "Commodity_Delivery_FNO_Intraday")
+                cacheKey =  "New";
 
-            //if (ClientSegmentDataStore.Reference.SegmentDict.ContainsKey(obj.Uid))
-            //    strSegment =  ClientSegmentDataStore.Reference.SegmentDict[obj.Uid];
-            //else
-            //{
-            //    strSegment = await GetClientSegmentDataFromDb(obj.Uid);
-            //    clientSegment.Add(obj.Uid, strSegment);
-            //}
-            #endregion
-
+            List<ScripOrderbySegmentsRes> listData = _cacheManager.Get<List<ScripOrderbySegmentsRes>>(cacheKey.Trim());
             var result = new ResponseBaseModel<ScripOrderbySegmentsRes>()
             {
-                Datas = listData,
+                Datas = listData?.ToList() ?? new List<ScripOrderbySegmentsRes>(),
                 TotalRows = listData.Count
             };
             return Ok(new ApiResponse(ResponseMessageEnum.Success.GetDescription(), result, 200));
-        }
-
-        private async Task<List<ScripOrderbySegmentsRes>> GetTopRecommendationListFromDatabase(TopRecommLstReq obj)
-        {
-            // Fetch a top recommendation list from the database           
-            return await _rpTradingoService.GetTopRecommendationListFromDatabase(obj);
-        }
-        private async Task<string> GetClientSegmentDataFromDb(string Uid)
-        {
-            // Fetch Client's segment from the database           
-            return await _reportsService.ClientSegment(Uid); 
-        }
+        } 
 
         [HttpPost()]
         public async Task<IActionResult> GetRecommendations([FromBody] TopRecommLstReq obj)
@@ -220,6 +214,5 @@ namespace Client.WebApi.Controllers
             //// Call this api also to update the cache
             return await _rpTradingoService.GetLongTermRecomFromDb();
         } 
-
     }
 }
