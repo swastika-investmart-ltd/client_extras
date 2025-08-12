@@ -51,12 +51,4 @@ namespace Client.WebApi
         public int TotalRows { get; set; }
         public List<T> Datas { get; set; }
     }
-    public class ResponseBaseModel<T1, T2, T3, T4, T5>
-    {
-        public List<T1> Commodity_Recom { get; set; }
-        public List<T2> Delivery_Recom { get; set; }
-        public List<T3> Intraday_Recom { get; set; }
-        public List<T4> FNO_Recom { get; set; }
-        public List<T5> All_Recom { get; set; }
-    }
 }

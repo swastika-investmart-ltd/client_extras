@@ -22,7 +22,6 @@ namespace Client.WebApi.Services
         Task<ResponseBaseModel<HoldingTradeSummaryResMdl>> GetHoldingTradeSummaryReport(HoldingTradeSummaryReqMdl obj);
         Task<ResponseBaseModel> GetDownLoadAnnualReport(DownLoadReportReqMdl obj, string filePath);
         Task<ResponseBaseMTFRepModel<MTFInterestReportResMdl>> GetMTFInterestReport(MTFInterestReportReqMdl obj);
-        Task<string> ClientSegment(string Uid);
     }
     public class ReportsService : BaseService, IReportsService
     {
@@ -1322,18 +1321,6 @@ namespace Client.WebApi.Services
                 ResponseId = 1,
                 ResponseMessage = "Information Loaded successfully"
             };
-        }
-
-        public async Task<string> ClientSegment(string Uid)
-        {
-            using (IDbConnection TRwcon = CreateTrvwConnection())
-            {
-                if (TRwcon.State != ConnectionState.Open)
-                    TRwcon.Open(); 
-                var param = new DynamicParameters();
-                param.Add("@ClientId", Uid);
-                return (await SqlMapper.QueryAsync<string>(TRwcon, "Client_SegmentDetails", param, commandType: CommandType.StoredProcedure)).FirstOrDefault();
-            }
         }
     }
 }
