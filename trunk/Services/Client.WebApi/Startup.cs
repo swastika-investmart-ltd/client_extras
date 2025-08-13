@@ -261,8 +261,8 @@ namespace Client.WebApi
             {
                 options.Paths = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
                     {
-                             "New"
-                            ,"Commodity"
+                            // "New",
+                            "Commodity"
                             ,"Delivery"
                             ,"FNO"
                             ,"Intraday"

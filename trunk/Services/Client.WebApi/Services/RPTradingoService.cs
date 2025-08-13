@@ -23,6 +23,7 @@ namespace Client.WebApi.Services
         Task<List<ScripOrderbySegmentsRes>> GetTopRecommendationListFromDatabase(string strSegment);
         Task<List<ScripOrderbySegmentsRes>> GetShortTermRecomFromDb();
         Task<List<ScripOrderbySegmentsRes>> GetLongTermRecomFromDb();
+        Task<bool> GetAllSegmentsData();
     }
     public class RPTradingoService : BaseService, IRPTradingoService
     {
@@ -469,11 +470,8 @@ namespace Client.WebApi.Services
 
         public async Task<List<ScripOrderbySegmentsRes>> GetTopRecommendationListFromDatabase(string strSegment)
         {
-            //// Client's segment wise recommendation 
-
-            if (string.IsNullOrEmpty(strSegment))
-                strSegment = "New";
-
+            //// Client's segment wise recommendation  
+             
             using (IDbConnection con = CreateRPConnection())
             {
                 var param = new DynamicParameters();
@@ -499,12 +497,12 @@ namespace Client.WebApi.Services
                 foreach (var cacheKey in _recoKeys.Where(key =>
                     key.Contains(strSegment, StringComparison.OrdinalIgnoreCase)))
                 {
-                    if (cacheKey == "New" || cacheKey == "Commodity_Delivery_FNO_Intraday")
-                    {
-                        // Handle special full-combination or default key
-                        _cacheManager.Set("New", result.ToList(), TimeSpan.FromHours(24));
-                        continue;
-                    }
+                    //if (cacheKey == "New" || cacheKey == "Commodity_Delivery_FNO_Intraday")
+                    //{
+                    //    // Handle special full-combination or default key
+                    //    _cacheManager.Set("New", result.ToList(), TimeSpan.FromHours(24));
+                    //    continue;
+                    //}
 
                     var queue = new TimePriorityQueue<ScripOrderbySegmentsRes>(maxSize: 5);
 
@@ -513,7 +511,7 @@ namespace Client.WebApi.Services
                     foreach (var part in parts)
                     {
                         if (segmentDataMap.TryGetValue(part, out var data))
-                            AddListToQueue(queue, data);
+                            AddListToQueue(queue, data); 
                     }
 
                     _cacheManager.Set(cacheKey, queue.GetData(), TimeSpan.FromHours(24));
@@ -549,10 +547,9 @@ namespace Client.WebApi.Services
                 foreach (var cacheKey in _recoKeys)
                 {
                     // Handle special case for "New"
-                    if (cacheKey.Equals("New", StringComparison.OrdinalIgnoreCase) ||
-                        cacheKey.Equals("Commodity_Delivery_FNO_Intraday", StringComparison.OrdinalIgnoreCase))
+                    if (cacheKey.Equals("Commodity_Delivery_FNO_Intraday", StringComparison.OrdinalIgnoreCase))
                     {
-                        _cacheManager.Set("New", allRecom, TimeSpan.FromHours(24));
+                        _cacheManager.Set("Commodity_Delivery_FNO_Intraday", allRecom, TimeSpan.FromHours(24));
                         continue;
                     }
 

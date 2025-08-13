@@ -16,14 +16,12 @@ namespace Client.WebApi.HostedService
         private readonly IWealthBagService _wealthBagService;        
         private readonly IXApiKeysLoader _xapiKeysLoader;
         private readonly IRPTradingoService _rpTradingoService;
-        private readonly CacheManager<ScripOrderbySegmentsRes> _cacheManager;
-        public DataLoader(ILog logger, IXApiKeysLoader xapiKeysLoader, IMemoryCache memoryCache, IWealthBagService wealthBagService, IRPTradingoService rpTradingoService)
+        public DataLoader(ILog logger, IXApiKeysLoader xapiKeysLoader, IWealthBagService wealthBagService, IRPTradingoService rpTradingoService)
         {
             _logger = logger;
             _xapiKeysLoader = xapiKeysLoader;
             _wealthBagService = wealthBagService;
             _rpTradingoService = rpTradingoService;
-            _cacheManager = new CacheManager<ScripOrderbySegmentsRes>(memoryCache);
         }
         public async Task StartAsync(CancellationToken cancellationToken)
         {

@@ -149,6 +149,7 @@ namespace Client.WebApi.Controllers
             return Ok(new ApiResponse(ResponseMessageEnum.Success.GetDescription(), result, 200));
         }
 
+        [AllowAnonymous]
         [HttpPost()]
         public async Task<IActionResult> GetTopRecommendationList([FromBody] TopRecommLstReq obj)
         {
@@ -157,8 +158,8 @@ namespace Client.WebApi.Controllers
 
             // Use the CacheManager to get or set a list with a 4-hour expiration time
             string cacheKey = string.Empty;
-            if (string.IsNullOrEmpty(obj.Preferred_Segment))
-                cacheKey =  "New";
+            if (string.IsNullOrWhiteSpace(obj.Preferred_Segment))
+                cacheKey =  "Commodity_Delivery_FNO_Intraday";
             else
             {
                // cacheKey = obj.Preferred_Segment.Trim().Replace(",", "_"); 
@@ -172,14 +173,14 @@ namespace Client.WebApi.Controllers
                 // Step 2: Join back with underscore
                 cacheKey = string.Join("_", parts);
             }
-            if (cacheKey == "Commodity_Delivery_FNO_Intraday")
-                cacheKey =  "New";
+            //if (cacheKey == "Commodity_Delivery_FNO_Intraday")
+            //    cacheKey =  "New";
 
             List<ScripOrderbySegmentsRes> listData = _cacheManager.Get<List<ScripOrderbySegmentsRes>>(cacheKey.Trim());
             var result = new ResponseBaseModel<ScripOrderbySegmentsRes>()
             {
                 Datas = listData?.ToList() ?? new List<ScripOrderbySegmentsRes>(),
-                TotalRows = listData.Count
+                TotalRows = listData?.ToList().Count ?? new List<ScripOrderbySegmentsRes>().Count  
             };
             return Ok(new ApiResponse(ResponseMessageEnum.Success.GetDescription(), result, 200));
         } 

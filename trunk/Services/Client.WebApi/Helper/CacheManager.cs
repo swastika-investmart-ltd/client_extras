@@ -82,14 +82,14 @@ namespace Client.WebApi
 
             _memoryCache.Set(cacheKey, data, expirationTime);
         }
-        public List<T> GetData(string cacheKey)
-        {
-            // Data found in cache, return it
-            if (_memoryCache.TryGetValue(cacheKey, out List<T> cachedData))
-                return cachedData;
-            else
-                return cachedData;
-        }
+        //public List<T> GetData(string cacheKey)
+        //{
+        //    // Data found in cache, return it
+        //    if (_memoryCache.TryGetValue(cacheKey, out List<T> cachedData))
+        //        return cachedData;
+        //    else
+        //        return cachedData;
+        //}
         public T Get<T>(string cacheKey)
         {
             _memoryCache.TryGetValue(cacheKey, out T value);
