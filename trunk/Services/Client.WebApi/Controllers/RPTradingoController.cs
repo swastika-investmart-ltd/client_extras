@@ -148,8 +148,7 @@ namespace Client.WebApi.Controllers
             var result = await _rpTradingoService.ViewRecommendationPercentage();
             return Ok(new ApiResponse(ResponseMessageEnum.Success.GetDescription(), result, 200));
         }
-
-        [AllowAnonymous]
+         
         [HttpPost()]
         public async Task<IActionResult> GetTopRecommendationList([FromBody] TopRecommLstReq obj)
         {
