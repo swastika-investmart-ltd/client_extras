@@ -14,8 +14,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Client.WebApi.Controllers
 {
-    //[ApiKeyAuthorize]
-    [AllowAnonymous]
+    [ApiKeyAuthorize] 
     [Route("[controller]/[action]")]
     [ApiController]
     public class XApiController : ControllerBase
