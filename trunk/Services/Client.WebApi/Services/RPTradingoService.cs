@@ -20,7 +20,7 @@ namespace Client.WebApi.Services
         Task<ResponseBaseRecModel<ScripOrderbySegmentsRes>> GetScripOrderbySegments(ScripOrderbySegmentsReq obj);
         Task<ResponseBaseModel<ViewRecPercentageInfo>> ViewRecommendationPercentage();
         Task<ResponseBaseModel<RecommendationPercentageInfo>> GetRecommendationPercentage();
-        Task<List<ScripOrderbySegmentsRes>> GetTopRecommendationListFromDatabase(string strSegment);
+        Task GetTopRecommendationListFromDatabase(string strSegment);
         Task<List<ScripOrderbySegmentsRes>> GetShortTermRecomFromDb();
         Task<List<ScripOrderbySegmentsRes>> GetLongTermRecomFromDb();
         Task<bool> GetAllSegmentsData();
@@ -468,10 +468,10 @@ namespace Client.WebApi.Services
             }
         }
 
-        public async Task<List<ScripOrderbySegmentsRes>> GetTopRecommendationListFromDatabase(string strSegment)
+        //public async Task<List<ScripOrderbySegmentsRes>> GetTopRecommendationListFromDatabase(string strSegment)
+        public async Task GetTopRecommendationListFromDatabase(string strSegment)
         {
-            //// Client's segment wise recommendation  
-             
+            //// Client's segment wise recommendation 
             using (IDbConnection con = CreateRPConnection())
             {
                 var param = new DynamicParameters();
@@ -497,13 +497,6 @@ namespace Client.WebApi.Services
                 foreach (var cacheKey in _recoKeys.Where(key =>
                     key.Contains(strSegment, StringComparison.OrdinalIgnoreCase)))
                 {
-                    //if (cacheKey == "New" || cacheKey == "Commodity_Delivery_FNO_Intraday")
-                    //{
-                    //    // Handle special full-combination or default key
-                    //    _cacheManager.Set("New", result.ToList(), TimeSpan.FromHours(24));
-                    //    continue;
-                    //}
-
                     var queue = new TimePriorityQueue<ScripOrderbySegmentsRes>(maxSize: 5);
 
                     // Split composite keys like "Delivery_FNO"
@@ -511,12 +504,10 @@ namespace Client.WebApi.Services
                     foreach (var part in parts)
                     {
                         if (segmentDataMap.TryGetValue(part, out var data))
-                            AddListToQueue(queue, data); 
+                            AddListToQueue(queue, data);
                     }
-
                     _cacheManager.Set(cacheKey, queue.GetData(), TimeSpan.FromHours(24));
                 }
-                return result?.ToList() ?? new List<ScripOrderbySegmentsRes>();
             }
         }
         public async Task<bool> GetAllSegmentsData()
@@ -546,7 +537,7 @@ namespace Client.WebApi.Services
                 // Iterate over all configured cache keys
                 foreach (var cacheKey in _recoKeys)
                 {
-                    // Handle special case for "New"
+                    // Handle special case for "New/All"
                     if (cacheKey.Equals("Commodity_Delivery_FNO_Intraday", StringComparison.OrdinalIgnoreCase))
                     {
                         _cacheManager.Set("Commodity_Delivery_FNO_Intraday", allRecom, TimeSpan.FromHours(24));

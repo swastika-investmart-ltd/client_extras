@@ -179,7 +179,7 @@ namespace Client.WebApi.Controllers
             var result = new ResponseBaseModel<ScripOrderbySegmentsRes>()
             {
                 Datas = listData?.ToList() ?? new List<ScripOrderbySegmentsRes>(),
-                TotalRows = listData?.ToList().Count ?? new List<ScripOrderbySegmentsRes>().Count  
+                TotalRows = listData?.ToList().Count ?? 0
             };
             return Ok(new ApiResponse(ResponseMessageEnum.Success.GetDescription(), result, 200));
         } 

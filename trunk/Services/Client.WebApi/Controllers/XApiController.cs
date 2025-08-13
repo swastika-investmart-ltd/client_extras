@@ -36,25 +36,19 @@ namespace Client.WebApi.Controllers
         [HttpPost()]
         public async Task<IActionResult> TopRecommendationClearCacheAndFetchData(SegmentReq obj)
         {
-            //string cacheKey = string.Empty;
-            //if (string.IsNullOrWhiteSpace(obj.Segment))
-            //    cacheKey =  "Commodity_Delivery_FNO_Intraday";
-            //else
-            //    cacheKey = obj.Segment;
-
             // Use the CacheManager to get or set a list with a 4-hour expiration time
-            // Clear the cache and fetch data from the database for Top Recommendation
-            await _cacheManager.ClearCacheAndFetchDataAsync(obj.Segment, async () => await GetTopRecommendationListFromDatabase(obj.Segment), TimeSpan.FromHours(Convert.ToDouble(_config["TopRecommendation:ExpirationHrTime"])));
+            // fetch data from the database for Top Recommendation
+            await GetTopRecommendationListFromDatabase(obj.Segment);
 
             //await _cacheManager.ClearCacheAndFetchDataAsync(_config["TopRecommendation:ShortRecom"], GetShortTermRecomFromDb, TimeSpan.FromHours(Convert.ToDouble(_config["TopRecommendation:ExpirationHrTime"])));
             //await _cacheManager.ClearCacheAndFetchDataAsync(_config["TopRecommendation:LongRecom"], GetLongTermRecomFromDb, TimeSpan.FromHours(Convert.ToDouble(_config["TopRecommendation:ExpirationHrTime"])));
 
             return Ok(new ApiResponse(ResponseMessageEnum.Success.GetDescription(), "OK", 200));
         }
-        private async Task<List<ScripOrderbySegmentsRes>> GetTopRecommendationListFromDatabase(string strSegment)
+        private async Task GetTopRecommendationListFromDatabase(string strSegment)
         {
             // Fetch a top recommendation list from the database           
-            return await _rpTradingoService.GetTopRecommendationListFromDatabase(strSegment);
+            await _rpTradingoService.GetTopRecommendationListFromDatabase(strSegment);
         }
 
         [HttpPost]
