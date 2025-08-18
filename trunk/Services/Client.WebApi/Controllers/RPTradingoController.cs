@@ -218,14 +218,14 @@ namespace Client.WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ClosedCallWebRecommendation([FromBody] OrderbySegmentsReq obj)
+        public async Task<IActionResult> WebCallRecommendation([FromBody] OrderbySegmentsReq obj)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(new ApiResponse(400, new ApiError(ResponseMessageEnum.ValidationError.GetDescription(), ModelStateExtension.AllErrors(ModelState))));
             }
 
-            var result = await _rpTradingoService.GetClosedCallWebRecommendation(obj);
+            var result = await _rpTradingoService.GetWebCallRecommendation(obj);
             return Ok(new ApiResponse(ResponseMessageEnum.Success.GetDescription(), result, 200));
         }
     }

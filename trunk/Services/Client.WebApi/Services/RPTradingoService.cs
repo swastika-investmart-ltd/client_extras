@@ -24,7 +24,7 @@ namespace Client.WebApi.Services
         Task<List<ScripOrderbySegmentsRes>> GetShortTermRecomFromDb();
         Task<List<ScripOrderbySegmentsRes>> GetLongTermRecomFromDb();
         Task<bool> GetAllSegmentsData();
-        Task<ClosedCallWebRecommendationResponse> GetClosedCallWebRecommendation(OrderbySegmentsReq obj);
+        Task<WebCallRecommendation> GetWebCallRecommendation(OrderbySegmentsReq obj);
     }
     public class RPTradingoService : BaseService, IRPTradingoService
     {
@@ -604,28 +604,25 @@ namespace Client.WebApi.Services
             }
         }
 
-        public async Task<ClosedCallWebRecommendationResponse> GetClosedCallWebRecommendation(OrderbySegmentsReq obj)
+        public async Task<WebCallRecommendation> GetWebCallRecommendation(OrderbySegmentsReq obj)
         {
             using (IDbConnection con = CreateRPConnection())
             {
                 var param = new DynamicParameters();
-                param.Add("@ProductType", obj.Segment?.Equals("All", StringComparison.OrdinalIgnoreCase) == true ? null : obj.Segment);
-                param.Add("@SegmentType", obj.Type?.Equals("All", StringComparison.OrdinalIgnoreCase) == true ? null : obj.Type);
-                param.Add("@CallStatus", string.IsNullOrEmpty(obj.CallStatus) || obj.CallStatus.Equals("All", StringComparison.OrdinalIgnoreCase) ? null : obj.CallStatus);
+                param.Add("@ProductType", string.IsNullOrWhiteSpace(obj.Type) || obj.Type.Equals("All", StringComparison.OrdinalIgnoreCase) ? null : obj.Type);
+                param.Add("@SegmentType", string.IsNullOrWhiteSpace(obj.Type) || obj.Type.Equals("All", StringComparison.OrdinalIgnoreCase) ? null : obj.Type);
+                param.Add("@CallStatus", string.IsNullOrWhiteSpace(obj.Type) || obj.Type.Equals("All", StringComparison.OrdinalIgnoreCase) ? null : obj.Type);
 
                 using var multi = await con.QueryMultipleAsync("GetClosedCallWebRecommendation", param, commandType: CommandType.StoredProcedure);
-                var closedCallWebRecommendation = await multi.ReadAsync<WebRecommendation>();
-                var dailyRecommendation = (await multi.ReadAsync<DailyWebRecommendation>())
-                                            .Select(x => x.NetDayGainPercent)
-                                            .ToList();
+                var webCallRecommendation = await multi.ReadAsync<WebRecommendation>();
+                var dailyGraphRecommendation = (await multi.ReadAsync<DailyWebRecommendation>()).ToList();
+                var graphcallSummary = await multi.ReadFirstOrDefaultAsync<dynamic>();
 
-                var callSummary = await multi.ReadFirstOrDefaultAsync<dynamic>();
-
-                return new ClosedCallWebRecommendationResponse
+                return new WebCallRecommendation
                 {
-                    ClosedCallWebRecommendation = closedCallWebRecommendation,
-                    DailyRecommendation = dailyRecommendation,
-                    CallSummary = callSummary
+                    WebCallRecommendations = webCallRecommendation,
+                    DailyGraphRecommendation = dailyGraphRecommendation,
+                    GraphCallSummary = graphcallSummary
                 };
             }
         }

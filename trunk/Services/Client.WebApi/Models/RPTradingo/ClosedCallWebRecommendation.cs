@@ -29,14 +29,11 @@ namespace Client.WebApi
         public decimal NetDayGainPercent { get; set; }
     }
 
-    public class ClosedCallWebRecommendationResponse
+    public class WebCallRecommendation
     {
-        //public IEnumerable<WebRecommendation> ClosedCallWebRecommendation { get; set; }
-        //public IEnumerable<decimal> DailyRecommendation { get; set; }
-
-        public IEnumerable<WebRecommendation> ClosedCallWebRecommendation { get; set; }
-        public IEnumerable<decimal> DailyRecommendation { get; set; }
-        public object CallSummary { get; set; }
+        public IEnumerable<WebRecommendation> WebCallRecommendations { get; set; }
+        public List<DailyWebRecommendation> DailyGraphRecommendation { get; set; }
+        public object GraphCallSummary { get; set; }
     }
 
     public class OrderbySegmentsReq
