@@ -1,12 +1,12 @@
-﻿using Client.WebApi.Models.RPTradingo;
-using Dapper;
+﻿using Dapper;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Options;
 using ResearchPanel.Entities;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
-using static Client.WebApi.Models.RPTradingo.ClosedCallWebRecommendation;
 
 namespace Client.WebApi.Services
 {
@@ -20,13 +20,24 @@ namespace Client.WebApi.Services
         Task<ResponseBaseRecModel<ScripOrderbySegmentsRes>> GetScripOrderbySegments(ScripOrderbySegmentsReq obj);
         Task<ResponseBaseModel<ViewRecPercentageInfo>> ViewRecommendationPercentage();
         Task<ResponseBaseModel<RecommendationPercentageInfo>> GetRecommendationPercentage();
-        Task<List<ScripOrderbySegmentsRes>> GetTopRecommendationListFromDatabase();
+        Task GetTopRecommendationListFromDatabase(string strSegment);
         Task<List<ScripOrderbySegmentsRes>> GetShortTermRecomFromDb();
         Task<List<ScripOrderbySegmentsRes>> GetLongTermRecomFromDb();
+        Task<bool> GetAllSegmentsData();
         Task<ClosedCallWebRecommendationResponse> GetClosedCallWebRecommendation(OrderbySegmentsReq obj);
     }
     public class RPTradingoService : BaseService, IRPTradingoService
     {
+        private readonly IReportsService _reportsService;
+        private readonly HashSet<string> _recoKeys;
+        private readonly CacheManager<ScripOrderbySegmentsRes> _cacheManager;
+        public RPTradingoService(IReportsService reportsService, IOptionsSnapshot<PathOptions> optionsPaths, IMemoryCache memoryCache)
+        {
+            _reportsService = reportsService;
+            _recoKeys = optionsPaths.Get("Recomkeys").Paths;
+            _cacheManager = new CacheManager<ScripOrderbySegmentsRes>(memoryCache);
+        }
+
         public async Task<ResponseBaseModel<ScripGeneralResponse>> GetScripGeneral(long CompanyId)
         {
             using (IDbConnection con = CreateRPConnection())
@@ -458,15 +469,112 @@ namespace Client.WebApi.Services
             }
         }
 
-        public async Task<List<ScripOrderbySegmentsRes>> GetTopRecommendationListFromDatabase()
+        //public async Task<List<ScripOrderbySegmentsRes>> GetTopRecommendationListFromDatabase(string strSegment)
+        public async Task GetTopRecommendationListFromDatabase(string strSegment)
+        {
+            //// Client's segment wise recommendation 
+            using (IDbConnection con = CreateRPConnection())
+            {
+                var param = new DynamicParameters();
+                param.Add("@ClientSegment", strSegment);
+
+                // Fetch data from DB based on client segment
+                var result = await SqlMapper.QueryAsync<ScripOrderbySegmentsRes>(con, "ScripOrder_GetDataByClientSegment", param, commandType: CommandType.StoredProcedure);
+
+                // Store raw result for direct segments in cache
+                if (_recoKeys.Contains(strSegment))
+                    _cacheManager.Set(strSegment, result.ToList(), TimeSpan.FromHours(24));
+
+                // Pre-fetch all base segments from cache
+                var segmentDataMap = new Dictionary<string, List<ScripOrderbySegmentsRes>>
+                {
+                    ["Commodity"] = _cacheManager.Get<List<ScripOrderbySegmentsRes>>("Commodity") ?? new(),
+                    ["Delivery"] = _cacheManager.Get<List<ScripOrderbySegmentsRes>>("Delivery") ?? new(),
+                    ["Intraday"] = _cacheManager.Get<List<ScripOrderbySegmentsRes>>("Intraday") ?? new(),
+                    ["FNO"] = _cacheManager.Get<List<ScripOrderbySegmentsRes>>("FNO") ?? new()
+                };
+
+                // Loop through keys that include the current segment
+                foreach (var cacheKey in _recoKeys.Where(key =>
+                    key.Contains(strSegment, StringComparison.OrdinalIgnoreCase)))
+                {
+                    var queue = new TimePriorityQueue<ScripOrderbySegmentsRes>(maxSize: 5);
+
+                    // Split composite keys like "Delivery_FNO"
+                    var parts = cacheKey.Split('_', StringSplitOptions.RemoveEmptyEntries);
+                    foreach (var part in parts)
+                    {
+                        if (segmentDataMap.TryGetValue(part, out var data))
+                            AddListToQueue(queue, data);
+                    }
+                    _cacheManager.Set(cacheKey, queue.GetData(), TimeSpan.FromHours(24));
+                }
+            }
+        }
+        public async Task<bool> GetAllSegmentsData()
         {
             using (IDbConnection con = CreateRPConnection())
             {
-                // Fetch a top recommendation list from the database           
-                var result = await SqlMapper.QueryAsync<ScripOrderbySegmentsRes>(con, "RP_GetTopRecommendationList", null, commandType: CommandType.StoredProcedure);
+                var param = new DynamicParameters();
+                // Execute stored procedure to get all segment-wise data
+                var reco_result = await SqlMapper.QueryMultipleAsync(con, "ScripOrder_GetAllSegmentsData", param, commandType: CommandType.StoredProcedure);
 
-                // Check for null and return an empty list instead
-                return result?.ToList() ?? new List<ScripOrderbySegmentsRes>();
+                // Read results for each segment
+                var commodityRecom = reco_result.Read<ScripOrderbySegmentsRes>().ToList();
+                var deliveryRecom = reco_result.Read<ScripOrderbySegmentsRes>().ToList();
+                var intradayRecom = reco_result.Read<ScripOrderbySegmentsRes>().ToList();
+                var fnoRecom = reco_result.Read<ScripOrderbySegmentsRes>().ToList();
+                var allRecom = reco_result.Read<ScripOrderbySegmentsRes>().ToList();
+
+                // Store base segment data in a dictionary for easy lookup
+                var segmentDataMap = new Dictionary<string, List<ScripOrderbySegmentsRes>>(StringComparer.OrdinalIgnoreCase)
+                {
+                    ["Commodity"] = commodityRecom,
+                    ["Delivery"] = deliveryRecom,
+                    ["Intraday"] = intradayRecom,
+                    ["FNO"] = fnoRecom
+                };
+
+                // Iterate over all configured cache keys
+                foreach (var cacheKey in _recoKeys)
+                {
+                    // Handle special case for "New/All"
+                    if (cacheKey.Equals("Commodity_Delivery_FNO_Intraday", StringComparison.OrdinalIgnoreCase))
+                    {
+                        _cacheManager.Set("Commodity_Delivery_FNO_Intraday", allRecom, TimeSpan.FromHours(24));
+                        continue;
+                    }
+
+                    // If it's a single base segment, set it directly
+                    if (segmentDataMap.ContainsKey(cacheKey))
+                    {
+                        _cacheManager.Set(cacheKey, segmentDataMap[cacheKey], TimeSpan.FromHours(24));
+                        continue;
+                    }
+
+                    // Otherwise, treat it as a composite key and combine segment data
+                    var queue = new TimePriorityQueue<ScripOrderbySegmentsRes>(maxSize: 5);
+                    var parts = cacheKey.Split('_', StringSplitOptions.RemoveEmptyEntries);
+
+                    foreach (var part in parts)
+                    {
+                        if (segmentDataMap.TryGetValue(part, out var segmentList))
+                        {
+                            AddListToQueue(queue, segmentList);
+                        }
+                    }
+
+                    _cacheManager.Set(cacheKey, queue.GetData(), TimeSpan.FromHours(24));
+                }
+                return true;
+            }
+        }
+        void AddListToQueue(TimePriorityQueue<ScripOrderbySegmentsRes> queue, List<ScripOrderbySegmentsRes> list)
+        {
+            foreach (var item in list)
+            {
+                // Use a unique key (e.g., item ID or GUID or combination)
+                queue.AddOrUpdate(Guid.NewGuid().ToString(), item, item.CreatedOn);
             }
         }
         public async Task<List<ScripOrderbySegmentsRes>> GetShortTermRecomFromDb()

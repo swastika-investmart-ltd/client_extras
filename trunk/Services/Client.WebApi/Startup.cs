@@ -22,7 +22,6 @@ using Client.WebApi.Extensions;
 using Client.WebApi.HostedService;
 using Client.WebApi.Models.Base;
 
-
 namespace Client.WebApi
 {
     public class Startup
@@ -33,7 +32,6 @@ namespace Client.WebApi
             Configuration = configuration;
             Environment = environment;
         }
-
         public IConfiguration Configuration { get; }
         public IWebHostEnvironment Environment { get; }
 
@@ -47,7 +45,7 @@ namespace Client.WebApi
             // Other singletons and services
             services.AddHttpContextAccessor();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddSingleton<ILog, LogNLog>();            
+            services.AddSingleton<ILog, LogNLog>();
 
             // Register the custom authorization filter globally
             services.AddControllers(config =>
@@ -56,7 +54,7 @@ namespace Client.WebApi
             });
 
             // Registering XApi Auth Filter
-            services.AddSingleton<ApiKeyAuthFilter>();            
+            services.AddSingleton<ApiKeyAuthFilter>();
 
             // Authentication and JWT Bearer Configuration
             services.AddAuthentication(x =>
@@ -73,7 +71,7 @@ namespace Client.WebApi
                     ValidateIssuerSigningKey = true,
                     ValidateIssuer = true,
                     ValidateAudience = true,
-                    ValidateLifetime = true,                    
+                    ValidateLifetime = true,
                     ValidIssuer = Configuration["Jwt:Issuer"],
                     ValidAudience = Configuration["Jwt:Audience"],
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:AccessTokenSecret"]))
@@ -142,14 +140,14 @@ namespace Client.WebApi
 
             services.AddHttpClient();
 
-            services.AddScoped<IWealthBagService, WealthBagService>();           
-            services.AddScoped<ICommunicationService, CommunicationService>();  
+            services.AddScoped<IWealthBagService, WealthBagService>();
+            services.AddScoped<ICommunicationService, CommunicationService>();
             services.AddScoped<IReportsService, ReportsService>();
             services.AddScoped<IHttpClientPostService, HttpClientPostService>();
             services.AddScoped<IRPTradingoService, RPTradingoService>();
             services.AddScoped<IXApiKeysLoader, XApiKeysLoader>();
             services.AddScoped<IContactsService, ContactsService>();
-            
+
 
             #region API Rate Limit Integration
             services.AddMemoryCache();
@@ -180,10 +178,12 @@ namespace Client.WebApi
 
             // Registering the hosted service - for load memory data
             services.AddHostedService<DataLoader>();
+
+            // Register path sets
+            ConfigurePathSets(services);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider serviceProvider)
         {
             if (env.EnvironmentName.Equals("Development"))
@@ -230,16 +230,16 @@ namespace Client.WebApi
             //This line enables Swagger UI, which provides us with a nice, simple UI with which we can view our API calls.
             if (Configuration.GetValue<bool>("Swagger:isSwaggerEnabled"))
             {
-                app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "Client.WebApi"); });              
+                app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "Client.WebApi"); });
             }
             else
             {
                 app.Map("/swagger", HandleSwaggerRequests);
-            }          
+            }
 
             // Custom Middleware
             app.UseApiResponseAndExceptionWrapper();
-           
+
             // Disable endpoint-based routing and switch to the legacy routing system using UseMvc().
             app.UseMvc();
         }
@@ -251,6 +251,33 @@ namespace Client.WebApi
                 // Block the request by returning a 404 status code
                 context.Response.StatusCode = StatusCodes.Status404NotFound;
                 await context.Response.WriteAsync("Swagger endpoint not found.");
+            });
+        }
+
+        private void ConfigurePathSets(IServiceCollection services)
+        {
+            // Configure named options for recomondation key 
+            services.Configure<PathOptions>("Recomkeys", options =>
+            {
+                options.Paths = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+                    {
+                            // "New",
+                            "Commodity"
+                            ,"Delivery"
+                            ,"FNO"
+                            ,"Intraday"
+                            ,"Commodity_Delivery"
+                            ,"Commodity_FNO"
+                            ,"Commodity_Intraday"
+                            ,"Delivery_FNO"
+                            ,"Delivery_Intraday"
+                            ,"FNO_Intraday"
+                            ,"Commodity_Delivery_FNO"
+                            ,"Commodity_Delivery_Intraday"
+                            ,"Commodity_FNO_Intraday"
+                            ,"Delivery_FNO_Intraday"
+                            ,"Commodity_Delivery_FNO_Intraday"
+                    };
             });
         }
     }
