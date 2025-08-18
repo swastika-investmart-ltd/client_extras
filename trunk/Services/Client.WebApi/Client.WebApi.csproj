@@ -28,12 +28,6 @@
   	<Folder Include="Log\" />
   </ItemGroup>
 
-
-
-  <ItemGroup>
-    <Folder Include="Models\RPTradingo\" />
-  </ItemGroup>
-
 	<ItemGroup>
 		<ProjectReference Include="..\..\Framework\Components\Components.csproj" />
 		<ProjectReference Include="..\..\Framework\Entities\Entities.csproj" />

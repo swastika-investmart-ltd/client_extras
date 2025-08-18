@@ -2,12 +2,13 @@
 using Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using ResearchPanel.Entities;
-using System.Collections.Generic;
-using System;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Configuration;
+using ResearchPanel.Entities;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using static Client.WebApi.Models.RPTradingo.ClosedCallWebRecommendation;
 
 namespace Client.WebApi.Controllers
 {
@@ -200,5 +201,16 @@ namespace Client.WebApi.Controllers
             return await _rpTradingoService.GetLongTermRecomFromDb();
         }
 
+        [HttpPost]
+        public async Task<IActionResult> ClosedCallWebRecommendation([FromBody] OrderbySegmentsReq obj)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new ApiResponse(400, new ApiError(ResponseMessageEnum.ValidationError.GetDescription(), ModelStateExtension.AllErrors(ModelState))));
+            }
+
+            var result = await _rpTradingoService.GetClosedCallWebRecommendation(obj);
+            return Ok(new ApiResponse(ResponseMessageEnum.Success.GetDescription(), result, 200));
+        }
     }
 }

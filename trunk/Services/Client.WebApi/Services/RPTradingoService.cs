@@ -1,10 +1,12 @@
-﻿using Dapper;
+﻿using Client.WebApi.Models.RPTradingo;
+using Dapper;
 using ResearchPanel.Entities;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using static Client.WebApi.Models.RPTradingo.ClosedCallWebRecommendation;
 
 namespace Client.WebApi.Services
 {
@@ -21,6 +23,7 @@ namespace Client.WebApi.Services
         Task<List<ScripOrderbySegmentsRes>> GetTopRecommendationListFromDatabase();
         Task<List<ScripOrderbySegmentsRes>> GetShortTermRecomFromDb();
         Task<List<ScripOrderbySegmentsRes>> GetLongTermRecomFromDb();
+        Task<ClosedCallWebRecommendationResponse> GetClosedCallWebRecommendation(OrderbySegmentsReq obj);
     }
     public class RPTradingoService : BaseService, IRPTradingoService
     {
@@ -490,6 +493,32 @@ namespace Client.WebApi.Services
 
                 // Check for null and return an empty list instead
                 return result?.ToList() ?? new List<ScripOrderbySegmentsRes>();
+            }
+        }
+
+        public async Task<ClosedCallWebRecommendationResponse> GetClosedCallWebRecommendation(OrderbySegmentsReq obj)
+        {
+            using (IDbConnection con = CreateRPConnection())
+            {
+                var param = new DynamicParameters();
+                param.Add("@ProductType", obj.Segment?.Equals("All", StringComparison.OrdinalIgnoreCase) == true ? null : obj.Segment);
+                param.Add("@SegmentType", obj.Type?.Equals("All", StringComparison.OrdinalIgnoreCase) == true ? null : obj.Type);
+                param.Add("@CallStatus", string.IsNullOrEmpty(obj.CallStatus) || obj.CallStatus.Equals("All", StringComparison.OrdinalIgnoreCase) ? null : obj.CallStatus);
+
+                using var multi = await con.QueryMultipleAsync("GetClosedCallWebRecommendation", param, commandType: CommandType.StoredProcedure);
+                var closedCallWebRecommendation = await multi.ReadAsync<WebRecommendation>();
+                var dailyRecommendation = (await multi.ReadAsync<DailyWebRecommendation>())
+                                            .Select(x => x.NetDayGainPercent)
+                                            .ToList();
+
+                var callSummary = await multi.ReadFirstOrDefaultAsync<dynamic>();
+
+                return new ClosedCallWebRecommendationResponse
+                {
+                    ClosedCallWebRecommendation = closedCallWebRecommendation,
+                    DailyRecommendation = dailyRecommendation,
+                    CallSummary = callSummary
+                };
             }
         }
 
