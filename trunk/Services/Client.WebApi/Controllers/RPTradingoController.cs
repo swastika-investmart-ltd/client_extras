@@ -150,7 +150,7 @@ namespace Client.WebApi.Controllers
             var result = await _rpTradingoService.ViewRecommendationPercentage();
             return Ok(new ApiResponse(ResponseMessageEnum.Success.GetDescription(), result, 200));
         }
-         
+
         [HttpPost()]
         public async Task<IActionResult> GetTopRecommendationList([FromBody] TopRecommLstReq obj)
         {
@@ -163,7 +163,7 @@ namespace Client.WebApi.Controllers
                 cacheKey =  "Commodity_Delivery_FNO_Intraday";
             else
             {
-               // cacheKey = obj.Preferred_Segment.Trim().Replace(",", "_"); 
+                // cacheKey = obj.Preferred_Segment.Trim().Replace(",", "_"); 
                 // Step 1: Split by comma
                 var parts = obj.Preferred_Segment
                     .Split(',', StringSplitOptions.RemoveEmptyEntries)
@@ -178,13 +178,18 @@ namespace Client.WebApi.Controllers
             //    cacheKey =  "New";
 
             List<ScripOrderbySegmentsRes> listData = _cacheManager.Get<List<ScripOrderbySegmentsRes>>(cacheKey.Trim());
+            //// If no data is found then show all recommenadtions data
+
+            if (listData is null || listData.Count == 0)
+                listData = _cacheManager.Get<List<ScripOrderbySegmentsRes>>("Commodity_Delivery_FNO_Intraday");
+
             var result = new ResponseBaseModel<ScripOrderbySegmentsRes>()
             {
                 Datas = listData?.ToList() ?? new List<ScripOrderbySegmentsRes>(),
                 TotalRows = listData?.ToList().Count ?? 0
             };
             return Ok(new ApiResponse(ResponseMessageEnum.Success.GetDescription(), result, 200));
-        } 
+        }
 
         [HttpPost()]
         public async Task<IActionResult> GetRecommendations([FromBody] TopRecommLstReq obj)
