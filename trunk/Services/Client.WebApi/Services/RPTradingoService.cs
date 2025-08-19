@@ -5,6 +5,7 @@ using ResearchPanel.Entities;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -25,6 +26,7 @@ namespace Client.WebApi.Services
         Task<List<ScripOrderbySegmentsRes>> GetLongTermRecomFromDb();
         Task<bool> GetAllSegmentsData();
         Task<WebCallRecommendation> GetWebCallRecommendation(OrderbySegmentsReq obj);
+        Task<MobCallRecommendation> GetMobCallRecommendation(OrderbySegmentsReq obj);
     }
     public class RPTradingoService : BaseService, IRPTradingoService
     {
@@ -609,13 +611,15 @@ namespace Client.WebApi.Services
             using (IDbConnection con = CreateRPConnection())
             {
                 var param = new DynamicParameters();
-                param.Add("@ProductType", string.IsNullOrWhiteSpace(obj.Type) || obj.Type.Equals("All", StringComparison.OrdinalIgnoreCase) ? null : obj.Type);
-                param.Add("@SegmentType", string.IsNullOrWhiteSpace(obj.Type) || obj.Type.Equals("All", StringComparison.OrdinalIgnoreCase) ? null : obj.Type);
-                param.Add("@CallStatus", string.IsNullOrWhiteSpace(obj.Type) || obj.Type.Equals("All", StringComparison.OrdinalIgnoreCase) ? null : obj.Type);
+                param.Add("@ProductType", obj.Segment?.Equals("All", StringComparison.OrdinalIgnoreCase) == true ? null : obj.Segment);
+                param.Add("@SegmentType", obj.Type?.Equals("All", StringComparison.OrdinalIgnoreCase) == true ? null : obj.Type);
+                param.Add("@CallStatus", string.IsNullOrEmpty(obj.CallStatus) || obj.CallStatus.Equals("All", StringComparison.OrdinalIgnoreCase) ? null : obj.CallStatus);
 
-                using var multi = await con.QueryMultipleAsync("GetClosedCallWebRecommendation", param, commandType: CommandType.StoredProcedure);
+                using var multi = await con.QueryMultipleAsync("GetWebCallRecommendation", param, commandType: CommandType.StoredProcedure);
                 var webCallRecommendation = await multi.ReadAsync<WebRecommendation>();
-                var dailyGraphRecommendation = (await multi.ReadAsync<DailyWebRecommendation>()).ToList();
+                var dailyGraphRecommendation = (await multi.ReadAsync<DailyWebRecommendation>())
+                                             .Select(x => x.NetDayGainPercent)
+                                             .ToList();
                 var graphcallSummary = await multi.ReadFirstOrDefaultAsync<dynamic>();
 
                 return new WebCallRecommendation
@@ -627,5 +631,63 @@ namespace Client.WebApi.Services
             }
         }
 
+        public async Task<MobCallRecommendation> GetMobCallRecommendation(OrderbySegmentsReq obj)
+        {
+            using (IDbConnection con = CreateRPConnection())
+            {
+                var param = new DynamicParameters();
+                param.Add("@ProductType", obj.Segment?.Equals("All", StringComparison.OrdinalIgnoreCase) == true ? null : obj.Segment);
+                param.Add("@SegmentType", obj.Type?.Equals("All", StringComparison.OrdinalIgnoreCase) == true ? null : obj.Type);
+                param.Add("@CallStatus", string.IsNullOrEmpty(obj.CallStatus) || obj.CallStatus.Equals("All", StringComparison.OrdinalIgnoreCase) ? null : obj.CallStatus);
+
+                using var multi = await con.QueryMultipleAsync("GetMobCallRecommendation", param, commandType: CommandType.StoredProcedure);
+
+                var mobCallRecommendation = (await multi.ReadAsync<MobRecommendation>()).ToList();
+                var dailyGraphRecommendation = (await multi.ReadAsync<DailyWebRecommendation>()).ToList();
+                var graphcallSummary = await multi.ReadFirstOrDefaultAsync<dynamic>();
+                var result = new MobCallRecommendation
+                {
+                    DailyGraphRecommendation = dailyGraphRecommendation
+                        .Select(x => x.NetDayGainPercent)
+                        .ToList(),
+                    GraphCallSummary = graphcallSummary,
+                    TotalCount = mobCallRecommendation.Count,
+                    PageNumber = obj.PageNumber,
+                    PageSize = obj.PageSize
+                };
+
+                // paging
+                var pagedData = mobCallRecommendation
+                    .Skip((obj.PageNumber - 1) * obj.PageSize)
+                    .Take(obj.PageSize)
+                    .ToList();
+
+                if (!string.IsNullOrEmpty(obj.CallStatus) && obj.CallStatus.Equals("Closed", StringComparison.OrdinalIgnoreCase))
+                {
+                    result.GroupedByExitDate = pagedData
+                        .Where(x => x.ExitDate != null)
+                        .GroupBy(x => x.ExitDate.Value.Date)
+                        .Select(g =>
+                        {
+                            var dailyRec = dailyGraphRecommendation
+                                .FirstOrDefault(d => d.OrderDate.Date == g.Key);
+
+                            return new ExitDateGroup
+                            {
+                                ExitDate = g.Key.ToString("dd MMM yyyy", CultureInfo.InvariantCulture),
+                                NetDayGainPercent = dailyRec?.NetDayGainPercent,
+                                MobClosedCall = g.ToList()
+                            };
+                        })
+                        .OrderBy(g => g.ExitDate)
+                        .ToList();
+                }
+                else
+                {
+                    result.MobCallRecommendations = pagedData;
+                }
+                return result;
+            }
+        }
     }
 }
