@@ -5,18 +5,17 @@ using static Entities.CustomValidators;
 
 namespace Client.WebApi
 {
-    public class WebRecommendation
+    public class WebCallRecommendation
     {
         public int OrderId { get; set; }
-        public string ScripSymbol { get; set; }
         public string ScripToken { get; set; }
+        public string ScripSymbol { get; set; }       
         public string SegmentName { get; set; }
         public string ExchangeName { get; set; }
         public string IntradaybtstDelivery { get; set; }
         public string KBContract { get; set; }
         public decimal PriceRangeFrom { get; set; }
-        public decimal PriceRangeTo { get; set; }   
-
+        public decimal PriceRangeTo { get; set; }
         public string CompanyName { get; set; }
         public string TradeType { get; set; }
         public string EntryPrice { get; set; }
@@ -28,10 +27,22 @@ namespace Client.WebApi
         public string OrderMargin { get; set; }
         public DateTime EntryDate { get; set; }
         public DateTime? ExitDate { get; set; }
-        public string DaysDifference { get; set; }
-        public string TradeStatus { get; set; }
+        public string DaysDifference { get; set; }   
         public decimal ProfitLossPercent { get; set; }
-        public decimal ProfitLossRs { get; set; }
+        public decimal ProfitLossRs { get; set; }       
+    }
+
+
+    public class GraphData
+    {
+        public GraphCallStatics GraphCallStatics { get; set; }
+        public List<decimal> GraphPerformance { get; set; }
+    }
+    public class GraphCallStatics
+    {
+        public Decimal PositiveCalls { get; set; }
+        public Decimal TotalsCalls { get; set; }
+        public Decimal PositiveCallPercent { get; set; }
     }
 
     public class DailyWebRecommendation
@@ -40,7 +51,7 @@ namespace Client.WebApi
         public decimal NetDayGainPercent { get; set; }
     }
 
-    public class MobRecommendation
+    public class MobCallRecommendation
     {
         public int OrderId { get; set; }
         public string ScripSymbol { get; set; }
@@ -72,34 +83,13 @@ namespace Client.WebApi
         public decimal ProfitLossRs { get; set; }
     }
 
-
-    public class WebCallRecommendation
-    {
-        public IEnumerable<WebRecommendation> WebCallRecommendations { get; set; }
-        public IEnumerable<decimal> DailyGraphRecommendation { get; set; }
-        public object GraphCallSummary { get; set; }
-    }
-
-    public class MobCallRecommendation
-    {
-        public IEnumerable<MobRecommendation> MobCallRecommendations { get; set; }
-        public IEnumerable<decimal> DailyGraphRecommendation { get; set; }
-        public object GraphCallSummary { get; set; }
-        public List<ExitDateGroup> GroupedByExitDate { get; set; }
-
-        // Paging info
-        public int TotalCount { get; set; }
-        public int PageNumber { get; set; }
-        public int PageSize { get; set; }
-        public int TotalPages => (int)Math.Ceiling((double)TotalCount / PageSize);
-    }
-
-    public class ExitDateGroup
+    public class ClosedData
     {
         public string ExitDate { get; set; }
         public decimal? NetDayGainPercent { get; set; }
-        public List<MobRecommendation> MobClosedCall { get; set; }
+        public List<MobCallRecommendation> ClosedList { get; set; }
     }
+
 
     public class OrderbySegmentsReq
     {

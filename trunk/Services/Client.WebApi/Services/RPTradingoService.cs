@@ -25,8 +25,8 @@ namespace Client.WebApi.Services
         Task<List<ScripOrderbySegmentsRes>> GetShortTermRecomFromDb();
         Task<List<ScripOrderbySegmentsRes>> GetLongTermRecomFromDb();
         Task<bool> GetAllSegmentsData();
-        Task<WebCallRecommendation> GetWebCallRecommendation(OrderbySegmentsReq obj);
-        Task<MobCallRecommendation> GetMobCallRecommendation(OrderbySegmentsReq obj);
+        Task<ResponseBaseCallRecModel<GraphData, WebCallRecommendation>> GetWebCallRecommendation(OrderbySegmentsReq obj);
+        Task<ResponseBaseMobCallRecModel<GraphData, MobCallRecommendation, ClosedData>> GetMobCallRecommendation(OrderbySegmentsReq obj);
     }
     public class RPTradingoService : BaseService, IRPTradingoService
     {
@@ -606,61 +606,109 @@ namespace Client.WebApi.Services
             }
         }
 
-        public async Task<WebCallRecommendation> GetWebCallRecommendation(OrderbySegmentsReq obj)
+        public async Task<ResponseBaseCallRecModel<GraphData, WebCallRecommendation>> GetWebCallRecommendation(OrderbySegmentsReq obj)
         {
             using (IDbConnection con = CreateRPConnection())
             {
                 var param = new DynamicParameters();
-                param.Add("@ProductType", obj.Segment?.Equals("All", StringComparison.OrdinalIgnoreCase) == true ? null : obj.Segment);
-                param.Add("@SegmentType", obj.Type?.Equals("All", StringComparison.OrdinalIgnoreCase) == true ? null : obj.Type);
-                param.Add("@CallStatus", string.IsNullOrEmpty(obj.CallStatus) || obj.CallStatus.Equals("All", StringComparison.OrdinalIgnoreCase) ? null : obj.CallStatus);
+                param.Add("@ProductType", obj.Segment);
+                param.Add("@SegmentType", obj.Type);
+                param.Add("@CallStatus", obj.CallStatus);
 
-                using var multi = await con.QueryMultipleAsync("GetWebCallRecommendation", param, commandType: CommandType.StoredProcedure);
-                var webCallRecommendation = await multi.ReadAsync<WebRecommendation>();
-                var dailyGraphRecommendation = (await multi.ReadAsync<DailyWebRecommendation>())
+                using (var dbResult = await con.QueryMultipleAsync("GetWebCallRecommendation", param, commandType: CommandType.StoredProcedure))
+                {
+                    var webCallRecommendation = dbResult.Read<WebCallRecommendation>().ToList();
+
+                    var GraphPerformance =  dbResult.Read<DailyWebRecommendation>()
                                              .Select(x => x.NetDayGainPercent)
                                              .ToList();
-                var graphcallSummary = await multi.ReadFirstOrDefaultAsync<dynamic>();
 
-                return new WebCallRecommendation
-                {
-                    WebCallRecommendations = webCallRecommendation,
-                    DailyGraphRecommendation = dailyGraphRecommendation,
-                    GraphCallSummary = graphcallSummary
-                };
-            }
-        }
+                    var graphCallStatics = dbResult.ReadFirstOrDefault<GraphCallStatics>();
 
-        public async Task<MobCallRecommendation> GetMobCallRecommendation(OrderbySegmentsReq obj)
-        {
-            using (IDbConnection con = CreateRPConnection())
-            {
-                var param = new DynamicParameters();
-                param.Add("@ProductType", obj.Segment?.Equals("All", StringComparison.OrdinalIgnoreCase) == true ? null : obj.Segment);
-                param.Add("@SegmentType", obj.Type?.Equals("All", StringComparison.OrdinalIgnoreCase) == true ? null : obj.Type);
-                param.Add("@CallStatus", string.IsNullOrEmpty(obj.CallStatus) || obj.CallStatus.Equals("All", StringComparison.OrdinalIgnoreCase) ? null : obj.CallStatus);
-
-                using var multi = await con.QueryMultipleAsync("GetMobCallRecommendation", param, commandType: CommandType.StoredProcedure);
-
-                var mobCallRecommendation = (await multi.ReadAsync<MobRecommendation>()).ToList();
-                var dailyGraphRecommendation = (await multi.ReadAsync<DailyWebRecommendation>()).ToList();
-                var graphcallSummary = await multi.ReadFirstOrDefaultAsync<dynamic>();
-                var result = new MobCallRecommendation
-                {
-                    DailyGraphRecommendation = dailyGraphRecommendation
-                        .Select(x => x.NetDayGainPercent)
-                        .ToList(),
-                    GraphCallSummary = graphcallSummary,
-                    TotalCount = mobCallRecommendation.Count,
-                    PageNumber = obj.PageNumber,
-                    PageSize = obj.PageSize
-                };
-
-                // paging
-                var pagedData = mobCallRecommendation
+                    //paging
+                    var pagedData = webCallRecommendation
                     .Skip((obj.PageNumber - 1) * obj.PageSize)
                     .Take(obj.PageSize)
                     .ToList();
+
+                    return new ResponseBaseCallRecModel<GraphData, WebCallRecommendation>()
+                    {
+                        GraphData = new GraphData
+                        {
+                            GraphCallStatics = graphCallStatics,
+                            GraphPerformance = GraphPerformance
+                        },
+                        Datas = pagedData,
+                        TotalRows = webCallRecommendation.Count,
+                    };
+                }
+            }
+        }
+
+        public async Task<ResponseBaseMobCallRecModel<GraphData, MobCallRecommendation, ClosedData>> GetMobCallRecommendation(OrderbySegmentsReq obj)
+        {
+            var result = new ResponseBaseMobCallRecModel<GraphData, MobCallRecommendation, ClosedData>();
+
+            using (IDbConnection con = CreateRPConnection())
+            {
+                var param = new DynamicParameters();
+                param.Add("@ProductType", obj.Segment);
+                param.Add("@SegmentType", obj.Type);
+                param.Add("@CallStatus", obj.CallStatus);
+
+                using (var dbResult = await con.QueryMultipleAsync("GetMobCallRecommendation", param, commandType: CommandType.StoredProcedure))
+                {
+                    var mobCallRecommendation = dbResult.Read<MobCallRecommendation>().ToList();
+
+                    var dailyWebRecommendation = dbResult.Read<DailyWebRecommendation>().ToList();
+
+                    var GraphPerformance = dailyWebRecommendation.Select(x => x.NetDayGainPercent).ToList();
+
+                    var graphCallStatics = dbResult.ReadFirstOrDefault<GraphCallStatics>();
+
+
+                    //paging
+                    
+
+                    if (obj.CallStatus == "Active")
+                    {
+                        var pagedData = mobCallRecommendation
+                                        .Skip((obj.PageNumber - 1) * obj.PageSize)
+                                        .Take(obj.PageSize)
+                                        .ToList();
+                        result.ActiveDatas = pagedData;
+                    }
+                    else
+                    {
+                        //result.ClosedDatas = 
+                            
+                        var closed =  mobCallRecommendation.GroupBy(u => u.ExitDate.Value.Date)
+                                  .Select(grp => new ClosedData
+                                  {
+                                      ExitDate = grp.Key.ToString(),
+                                      NetDayGainPercent = dailyWebRecommendation.Where(x => x.OrderDate == grp.key).f
+                                      //TotalRows = grp.ToList().Count,
+                                      ClosedList = grp.ToList().OrderBy(p => p.ExitDate).ToList()
+                                  }).ToList().OrderBy(x => DateTime.Parse(x.ExitDate)).ToList();
+                    }
+
+                    return new ResponseBaseMobCallRecModel<GraphData, MobCallRecommendation, ClosedData>()
+                    {
+                        GraphData = new GraphData
+                        {
+                            GraphCallStatics = graphCallStatics,
+                            GraphPerformance = GraphPerformance
+                        },
+                        ActiveDatas = pagedData,
+                        ClosedDatas = pagedData,
+                        TotalRows = mobCallRecommendation.Count,
+                    };
+                }
+
+
+
+
+             
 
                 if (!string.IsNullOrEmpty(obj.CallStatus) && obj.CallStatus.Equals("Closed", StringComparison.OrdinalIgnoreCase))
                 {

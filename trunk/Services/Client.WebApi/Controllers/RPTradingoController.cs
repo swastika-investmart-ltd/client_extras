@@ -230,7 +230,7 @@ namespace Client.WebApi.Controllers
                 return BadRequest(new ApiResponse(400, new ApiError(ResponseMessageEnum.ValidationError.GetDescription(), ModelStateExtension.AllErrors(ModelState))));
             }
 
-            var result = await _rpTradingoService.GetWebCallRecommendation(obj);
+            var result = await _rpTradingoService.GetWebCallRecommendation(obj);           
             return Ok(new ApiResponse(ResponseMessageEnum.Success.GetDescription(), result, 200));
         }
 
