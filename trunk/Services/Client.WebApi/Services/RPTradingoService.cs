@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using ResearchPanel.Entities;
@@ -615,40 +616,34 @@ namespace Client.WebApi.Services
                 param.Add("@SegmentType", obj.Type);
                 param.Add("@CallStatus", obj.CallStatus);
 
-                using (var dbResult = await con.QueryMultipleAsync("GetWebCallRecommendation", param, commandType: CommandType.StoredProcedure))
+                var dbResult = await con.QueryMultipleAsync("GetWebCallRecommendation", param, commandType: CommandType.StoredProcedure);
+
+                var webCallRecommendation = dbResult.Read<WebCallRecommendation>().ToList();
+                var GraphPerformance = dbResult.Read<DailyWebRecommendation>()
+                                         .Select(x => x.NetDayGainPercent)
+                                         .ToList();
+                var graphCallStatics = dbResult.ReadFirstOrDefault<GraphCallStatics>();
+                
+                var pagedData = webCallRecommendation
+                .Skip((obj.PageNumber - 1) * obj.PageSize)
+                .Take(obj.PageSize)
+                .ToList();
+
+                return new ResponseBaseCallRecModel<GraphData, WebCallRecommendation>()
                 {
-                    var webCallRecommendation = dbResult.Read<WebCallRecommendation>().ToList();
-
-                    var GraphPerformance =  dbResult.Read<DailyWebRecommendation>()
-                                             .Select(x => x.NetDayGainPercent)
-                                             .ToList();
-
-                    var graphCallStatics = dbResult.ReadFirstOrDefault<GraphCallStatics>();
-
-                    //paging
-                    var pagedData = webCallRecommendation
-                    .Skip((obj.PageNumber - 1) * obj.PageSize)
-                    .Take(obj.PageSize)
-                    .ToList();
-
-                    return new ResponseBaseCallRecModel<GraphData, WebCallRecommendation>()
+                    GraphData = new GraphData
                     {
-                        GraphData = new GraphData
-                        {
-                            GraphCallStatics = graphCallStatics,
-                            GraphPerformance = GraphPerformance
-                        },
-                        Datas = pagedData,
-                        TotalRows = webCallRecommendation.Count,
-                    };
-                }
+                        GraphCallStatics = graphCallStatics,
+                        GraphPerformance = GraphPerformance
+                    },
+                    Datas = pagedData,
+                    TotalRows = webCallRecommendation.Count,
+                };
             }
         }
 
         public async Task<ResponseBaseMobCallRecModel<GraphData, MobCallRecommendation, ClosedData>> GetMobCallRecommendation(OrderbySegmentsReq obj)
         {
-            var result = new ResponseBaseMobCallRecModel<GraphData, MobCallRecommendation, ClosedData>();
-
             using (IDbConnection con = CreateRPConnection())
             {
                 var param = new DynamicParameters();
@@ -656,85 +651,61 @@ namespace Client.WebApi.Services
                 param.Add("@SegmentType", obj.Type);
                 param.Add("@CallStatus", obj.CallStatus);
 
-                using (var dbResult = await con.QueryMultipleAsync("GetMobCallRecommendation", param, commandType: CommandType.StoredProcedure))
+                using var dbResult = await con.QueryMultipleAsync("GetMobCallRecommendation", param, commandType: CommandType.StoredProcedure);
+
+                var mobCallRecommendation = dbResult.Read<MobCallRecommendation>().ToList(); // All Data List
+                var graphPerformance = dbResult.Read<DailyWebRecommendation>().ToList(); // Date And Precent for Graph
+                var graphCallStatics = dbResult.ReadFirstOrDefault<GraphCallStatics>(); //Graph Statics
+
+                var graphData = new GraphData
                 {
-                    var mobCallRecommendation = dbResult.Read<MobCallRecommendation>().ToList();
+                    GraphCallStatics = graphCallStatics,
+                    GraphPerformance = graphPerformance.Select(x => x.NetDayGainPercent).ToList()
+                };
 
-                    var dailyWebRecommendation = dbResult.Read<DailyWebRecommendation>().ToList();
-
-                    var GraphPerformance = dailyWebRecommendation.Select(x => x.NetDayGainPercent).ToList();
-
-                    var graphCallStatics = dbResult.ReadFirstOrDefault<GraphCallStatics>();
-
-
-                    //paging
-                    
-
-                    if (obj.CallStatus == "Active")
-                    {
-                        var pagedData = mobCallRecommendation
-                                        .Skip((obj.PageNumber - 1) * obj.PageSize)
-                                        .Take(obj.PageSize)
-                                        .ToList();
-                        result.ActiveDatas = pagedData;
-                    }
-                    else
-                    {
-                        //result.ClosedDatas = 
-                            
-                        var closed =  mobCallRecommendation.GroupBy(u => u.ExitDate.Value.Date)
-                                  .Select(grp => new ClosedData
-                                  {
-                                      ExitDate = grp.Key.ToString(),
-                                      NetDayGainPercent = dailyWebRecommendation.Where(x => x.OrderDate == grp.key).f
-                                      //TotalRows = grp.ToList().Count,
-                                      ClosedList = grp.ToList().OrderBy(p => p.ExitDate).ToList()
-                                  }).ToList().OrderBy(x => DateTime.Parse(x.ExitDate)).ToList();
-                    }
+                if (obj.CallStatus.Equals("Live", StringComparison.OrdinalIgnoreCase))
+                {
+                    var activeDatas = mobCallRecommendation
+                                    .Skip((obj.PageNumber - 1) * obj.PageSize)
+                                    .Take(obj.PageSize)
+                                    .ToList();
 
                     return new ResponseBaseMobCallRecModel<GraphData, MobCallRecommendation, ClosedData>()
                     {
-                        GraphData = new GraphData
-                        {
-                            GraphCallStatics = graphCallStatics,
-                            GraphPerformance = GraphPerformance
-                        },
-                        ActiveDatas = pagedData,
-                        ClosedDatas = pagedData,
-                        TotalRows = mobCallRecommendation.Count,
+                        GraphData = graphData,
+                        ActiveDatas = activeDatas,
+                        ClosedDatas = null,
+                        TotalRows = mobCallRecommendation.Count
                     };
-                }
-
-
-
-
-             
-
-                if (!string.IsNullOrEmpty(obj.CallStatus) && obj.CallStatus.Equals("Closed", StringComparison.OrdinalIgnoreCase))
-                {
-                    result.GroupedByExitDate = pagedData
-                        .Where(x => x.ExitDate != null)
-                        .GroupBy(x => x.ExitDate.Value.Date)
-                        .Select(g =>
-                        {
-                            var dailyRec = dailyGraphRecommendation
-                                .FirstOrDefault(d => d.OrderDate.Date == g.Key);
-
-                            return new ExitDateGroup
-                            {
-                                ExitDate = g.Key.ToString("dd MMM yyyy", CultureInfo.InvariantCulture),
-                                NetDayGainPercent = dailyRec?.NetDayGainPercent,
-                                MobClosedCall = g.ToList()
-                            };
-                        })
-                        .OrderBy(g => g.ExitDate)
-                        .ToList();
                 }
                 else
                 {
-                    result.MobCallRecommendations = pagedData;
+                    var closedDataList = mobCallRecommendation
+                                       .GroupBy(u => u.ExitDate.Value.Date)
+                                       .Select(g => new ClosedData
+                                       {
+                                           ExitDate = g.Key.ToString("yyyy-MMM-dd"),
+                                           ClosedList = g.ToList(),
+                                           NetDayGainPercent = graphPerformance
+                                                                .Where(d => d.OrderDate == g.Key.ToString("yyyy-MM-dd"))
+                                                                .Select(d => d.NetDayGainPercent)
+                                                                .FirstOrDefault()
+                                       })
+                                       .ToList();
+
+                    var closedDatas = closedDataList
+                                    .Skip((obj.PageNumber - 1) * obj.PageSize)
+                                    .Take(obj.PageSize)
+                                    .ToList();
+
+                    return new ResponseBaseMobCallRecModel<GraphData, MobCallRecommendation, ClosedData>()
+                    {
+                        GraphData = graphData,
+                        ActiveDatas = null,
+                        ClosedDatas = closedDatas,
+                        TotalRows = closedDataList.Count
+                    };
                 }
-                return result;
             }
         }
     }

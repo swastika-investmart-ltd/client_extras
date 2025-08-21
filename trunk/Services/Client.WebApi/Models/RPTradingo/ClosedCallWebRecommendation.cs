@@ -47,7 +47,7 @@ namespace Client.WebApi
 
     public class DailyWebRecommendation
     {
-        public DateTime OrderDate { get; set; }
+        public string OrderDate { get; set; }
         public decimal NetDayGainPercent { get; set; }
     }
 
