@@ -13,7 +13,7 @@ namespace Client.WebApi.Validation
             // Define the base valid segments
             _validSegments = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
-                "EQUITY", "FNO_STOCK", "FNO_INDEX", "COMMODITY"
+                "All", "EQUITY", "FNO_STOCK", "FNO_INDEX", "COMMODITY"
             };
         }
 
