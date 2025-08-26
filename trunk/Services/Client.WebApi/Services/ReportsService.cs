@@ -28,7 +28,7 @@ namespace Client.WebApi.Services
         // HashSet to store invalid response values
         private readonly HashSet<string> invalidResponses = new HashSet<string> { "No Such Client ID found..", "No Data Found" };
         private readonly IConfiguration _config;
-        readonly IHttpClientPostService _httpClientPostService;
+        private readonly IHttpClientPostService _httpClientPostService;
         private readonly ILog _logger;
         public ReportsService(IConfiguration config, IHttpClientPostService httpClientPostService, ILog logger)
         {
@@ -1322,6 +1322,5 @@ namespace Client.WebApi.Services
                 ResponseMessage = "Information Loaded successfully"
             };
         }
-
     }
 }

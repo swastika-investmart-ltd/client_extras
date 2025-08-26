@@ -10,10 +10,11 @@ using Microsoft.Extensions.Caching.Memory;
 using System.Linq;
 using Microsoft.AspNetCore.Hosting;
 using System.IO;
- 
+using Microsoft.AspNetCore.Authorization;
+
 namespace Client.WebApi.Controllers
 {
-    [ApiKeyAuthorize]
+    [ApiKeyAuthorize] 
     [Route("[controller]/[action]")]
     [ApiController]
     public class XApiController : ControllerBase
@@ -33,20 +34,21 @@ namespace Client.WebApi.Controllers
         }
 
         [HttpPost()]
-        public async Task<IActionResult> TopRecommendationClearCacheAndFetchData([FromBody] TopRecommLstReq obj)
+        public async Task<IActionResult> TopRecommendationClearCacheAndFetchData(SegmentReq obj)
         {
-            // Clear the cache and fetch data from the database for Top Recommendation
-            await _cacheManager.ClearCacheAndFetchDataAsync(_config["TopRecommendation:CacheKey"], GetTopRecommendationListFromDatabase, TimeSpan.FromHours(Convert.ToDouble(_config["TopRecommendation:ExpirationHrTime"])));
-            await _cacheManager.ClearCacheAndFetchDataAsync(_config["TopRecommendation:ShortRecom"], GetShortTermRecomFromDb, TimeSpan.FromHours(Convert.ToDouble(_config["TopRecommendation:ExpirationHrTime"])));
-            await _cacheManager.ClearCacheAndFetchDataAsync(_config["TopRecommendation:LongRecom"], GetLongTermRecomFromDb, TimeSpan.FromHours(Convert.ToDouble(_config["TopRecommendation:ExpirationHrTime"])));
+            // Use the CacheManager to get or set a list with a 4-hour expiration time
+            // fetch data from the database for Top Recommendation
+            await GetTopRecommendationListFromDatabase(obj.Segment);
+
+            //await _cacheManager.ClearCacheAndFetchDataAsync(_config["TopRecommendation:ShortRecom"], GetShortTermRecomFromDb, TimeSpan.FromHours(Convert.ToDouble(_config["TopRecommendation:ExpirationHrTime"])));
+            //await _cacheManager.ClearCacheAndFetchDataAsync(_config["TopRecommendation:LongRecom"], GetLongTermRecomFromDb, TimeSpan.FromHours(Convert.ToDouble(_config["TopRecommendation:ExpirationHrTime"])));
 
             return Ok(new ApiResponse(ResponseMessageEnum.Success.GetDescription(), "OK", 200));
         }
-
-        private async Task<List<ScripOrderbySegmentsRes>> GetTopRecommendationListFromDatabase()
+        private async Task GetTopRecommendationListFromDatabase(string strSegment)
         {
             // Fetch a top recommendation list from the database           
-            return await _rpTradingoService.GetTopRecommendationListFromDatabase();
+            await _rpTradingoService.GetTopRecommendationListFromDatabase(strSegment);
         }
 
         [HttpPost]
@@ -79,7 +81,7 @@ namespace Client.WebApi.Controllers
             }
             var result = await _reportsService.GetGlobalSummary(obj);
             return Ok(new ApiResponse(ResponseMessageEnum.Success.GetDescription(), result, 200));
-        } 
+        }
         [HttpPost]
         public async Task<IActionResult> DownLoadAnnualReportForJarvis([FromBody] DownLoadReportReqMdl obj)
         {
@@ -87,38 +89,38 @@ namespace Client.WebApi.Controllers
                 return BadRequest(new ApiResponse(400, new ApiError(ResponseMessageEnum.ValidationError.GetDescription(), ModelStateExtension.AllErrors(ModelState))));
             obj.IsEmail =false;
             var filePath = _hostingEnvironment.ContentRootPath;
-            var result = await _reportsService.GetDownLoadAnnualReport(obj, filePath); 
-                if (result.ResponseId == 1)
+            var result = await _reportsService.GetDownLoadAnnualReport(obj, filePath);
+            if (result.ResponseId == 1)
+            {
+                string outputFilePath = result.ResponseMessage;
+                var memory = new MemoryStream();
+                using (var stream = new FileStream(outputFilePath, FileMode.Open))
                 {
-                    string outputFilePath = result.ResponseMessage;
-                    var memory = new MemoryStream();
-                    using (var stream = new FileStream(outputFilePath, FileMode.Open))
-                    {
-                        await stream.CopyToAsync(memory);
-                    }
-                    var provider = new Microsoft.AspNetCore.StaticFiles.FileExtensionContentTypeProvider();
-                    string contentType;
-                    if (!provider.TryGetContentType(outputFilePath, out contentType))
-                    {
-                        contentType = "application/octet-stream";
-                    }
-                    memory.Position = 0;
-                    return File(memory, contentType, outputFilePath);
+                    await stream.CopyToAsync(memory);
                 }
-                else
+                var provider = new Microsoft.AspNetCore.StaticFiles.FileExtensionContentTypeProvider();
+                string contentType;
+                if (!provider.TryGetContentType(outputFilePath, out contentType))
                 {
-                    return NotFound(result.ResponseMessage);
-                } 
+                    contentType = "application/octet-stream";
+                }
+                memory.Position = 0;
+                return File(memory, contentType, outputFilePath);
+            }
+            else
+            {
+                return NotFound(result.ResponseMessage);
+            }
         }
         [HttpPost]
-        public async Task<IActionResult>  EmailAnnualReportForJarvis([FromBody] DownLoadReportReqMdl obj)
+        public async Task<IActionResult> EmailAnnualReportForJarvis([FromBody] DownLoadReportReqMdl obj)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new ApiResponse(400, new ApiError(ResponseMessageEnum.ValidationError.GetDescription(), ModelStateExtension.AllErrors(ModelState))));
 
             var filePath = _hostingEnvironment.ContentRootPath;
             var result = await _reportsService.GetDownLoadAnnualReport(obj, filePath);
-                return Ok(new ApiResponse(ResponseMessageEnum.Success.GetDescription(), result, 200)); 
+            return Ok(new ApiResponse(ResponseMessageEnum.Success.GetDescription(), result, 200));
         }
         private async Task<List<ScripOrderbySegmentsRes>> GetShortTermRecomFromDb()
         {
