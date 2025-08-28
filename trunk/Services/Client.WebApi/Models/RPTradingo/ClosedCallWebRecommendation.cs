@@ -81,6 +81,11 @@ namespace Client.WebApi
         public string DaysDifference { get; set; }
         public decimal ProfitLossPercent { get; set; }
         public decimal ProfitLossRs { get; set; }
+        public DateTime CreatedOn { get; set; }
+        public string StrikePrice { get; set; }
+        public string ExpiryDate { get; set; }
+        public string InstrumentName { get; set; }
+        public string IndustryType { get; set; }
     }
 
     public class ClosedData
