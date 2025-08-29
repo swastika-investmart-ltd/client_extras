@@ -2,9 +2,11 @@
 using Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Configuration;
 using ResearchPanel.Entities;
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Caching.Memory;
@@ -218,6 +220,30 @@ namespace Client.WebApi.Controllers
         {
             //// Call this api also to update the cache
             return await _rpTradingoService.GetLongTermRecomFromDb();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> WebCallRecommendation([FromBody] OrderbySegmentsReq obj)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new ApiResponse(400, new ApiError(ResponseMessageEnum.ValidationError.GetDescription(), ModelStateExtension.AllErrors(ModelState))));
+            }
+
+            var result = await _rpTradingoService.GetWebCallRecommendation(obj);           
+            return Ok(new ApiResponse(ResponseMessageEnum.Success.GetDescription(), result, 200));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> MobCallRecommendation([FromBody] OrderbySegmentsReq obj)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new ApiResponse(400, new ApiError(ResponseMessageEnum.ValidationError.GetDescription(), ModelStateExtension.AllErrors(ModelState))));
+            }
+
+            var result = await _rpTradingoService.GetMobCallRecommendation(obj);
+            return Ok(new ApiResponse(ResponseMessageEnum.Success.GetDescription(), result, 200));
         }
     }
 }
