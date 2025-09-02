@@ -132,6 +132,7 @@ namespace Client.WebApi.Controllers
             //// Call this api also to update the cache
             return await _rpTradingoService.GetLongTermRecomFromDb();
         }
+        
         [HttpPost()]
         public async Task<IActionResult> GetAllSegmentsData()
         {

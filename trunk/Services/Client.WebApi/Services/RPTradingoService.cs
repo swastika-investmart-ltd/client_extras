@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using ResearchPanel.Entities;
@@ -24,6 +25,8 @@ namespace Client.WebApi.Services
         Task<List<ScripOrderbySegmentsRes>> GetShortTermRecomFromDb();
         Task<List<ScripOrderbySegmentsRes>> GetLongTermRecomFromDb();
         Task<bool> GetAllSegmentsData();
+        Task<ResponseBaseCallRecModel<GraphData, WebCallRecommendation>> GetWebCallRecommendation(OrderbySegmentsReq obj);
+        Task<ResponseBaseMobCallRecModel<GraphData, MobCallRecommendation, ClosedData>> GetMobCallRecommendation(OrderbySegmentsReq obj);
     }
     public class RPTradingoService : BaseService, IRPTradingoService
     {
@@ -600,6 +603,108 @@ namespace Client.WebApi.Services
 
                 // Check for null and return an empty list instead
                 return result?.ToList() ?? new List<ScripOrderbySegmentsRes>();
+            }
+        }
+
+        public async Task<ResponseBaseCallRecModel<GraphData, WebCallRecommendation>> GetWebCallRecommendation(OrderbySegmentsReq obj)
+        {
+            using (IDbConnection con = CreateRPConnection())
+            {
+                var param = new DynamicParameters();
+                param.Add("@ProductType", obj.Segment);
+                param.Add("@SegmentType", obj.Type);
+                param.Add("@CallStatus", obj.CallStatus);
+
+                var dbResult = await con.QueryMultipleAsync("GetWebCallRecommendation", param, commandType: CommandType.StoredProcedure);
+
+                var webCallRecommendation = dbResult.Read<WebCallRecommendation>().ToList();
+                var GraphPerformance = dbResult.Read<DailyWebRecommendation>()
+                                         .Select(x => x.NetDayGainPercent)
+                                         .ToList();
+                var graphCallStatics = dbResult.ReadFirstOrDefault<GraphCallStatics>();
+                
+                var pagedData = webCallRecommendation
+                .Skip((obj.PageNumber - 1) * obj.PageSize)
+                .Take(obj.PageSize)
+                .ToList();
+
+                return new ResponseBaseCallRecModel<GraphData, WebCallRecommendation>()
+                {
+                    GraphData = new GraphData
+                    {
+                        GraphCallStatics = graphCallStatics,
+                        GraphPerformance = GraphPerformance
+                    },
+                    Datas = pagedData,
+                    TotalRows = webCallRecommendation.Count,
+                };
+            }
+        }
+
+        public async Task<ResponseBaseMobCallRecModel<GraphData, MobCallRecommendation, ClosedData>> GetMobCallRecommendation(OrderbySegmentsReq obj)
+        {
+            using (IDbConnection con = CreateRPConnection())
+            {
+                var param = new DynamicParameters();
+                param.Add("@ProductType", obj.Segment);
+                param.Add("@SegmentType", obj.Type);
+                param.Add("@CallStatus", obj.CallStatus);
+
+                using var dbResult = await con.QueryMultipleAsync("GetMobCallRecommendation", param, commandType: CommandType.StoredProcedure);
+
+                var mobCallRecommendation = dbResult.Read<MobCallRecommendation>().ToList(); // All Data List
+                var graphPerformance = dbResult.Read<DailyWebRecommendation>().ToList(); // Date And Precent for Graph
+                var graphCallStatics = dbResult.ReadFirstOrDefault<GraphCallStatics>(); //Graph Statics
+
+                var graphData = new GraphData
+                {
+                    GraphCallStatics = graphCallStatics,
+                    GraphPerformance = graphPerformance.Select(x => x.NetDayGainPercent).ToList()
+                };
+
+                if (obj.CallStatus.Equals("Live", StringComparison.OrdinalIgnoreCase))
+                {
+                    var activeDatas = mobCallRecommendation
+                                    .Skip((obj.PageNumber - 1) * obj.PageSize)
+                                    .Take(obj.PageSize)
+                                    .ToList();
+
+                    return new ResponseBaseMobCallRecModel<GraphData, MobCallRecommendation, ClosedData>()
+                    {
+                        GraphData = graphData,
+                        ActiveDatas = activeDatas,
+                        ClosedDatas = null,
+                        TotalRows = mobCallRecommendation.Count
+                    };
+                }
+                else
+                {
+                    var closedDataList = mobCallRecommendation
+                                       .GroupBy(u => u.ExitDate.Value.Date)
+                                       .Select(g => new ClosedData
+                                       {
+                                           ExitDate = g.Key.ToString("yyyy-MMM-dd"),
+                                           ClosedList = g.ToList(),
+                                           NetDayGainPercent = graphPerformance
+                                                                .Where(d => d.OrderClosedDate.Date == g.Key.Date)
+                                                                .Select(d => d.NetDayGainPercent)
+                                                                .FirstOrDefault()
+                                       })
+                                       .ToList();
+
+                    var closedDatas = closedDataList
+                                    .Skip((obj.PageNumber - 1) * obj.PageSize)
+                                    .Take(obj.PageSize)
+                                    .ToList();
+
+                    return new ResponseBaseMobCallRecModel<GraphData, MobCallRecommendation, ClosedData>()
+                    {
+                        GraphData = graphData,
+                        ActiveDatas = null,
+                        ClosedDatas = closedDatas,
+                        TotalRows = closedDataList.Count
+                    };
+                }
             }
         }
     }
