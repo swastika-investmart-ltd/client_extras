@@ -6,7 +6,6 @@ using ResearchPanel.Entities;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -687,7 +686,7 @@ namespace Client.WebApi.Services
                                            ExitDate = g.Key.ToString("yyyy-MMM-dd"),
                                            ClosedList = g.ToList(),
                                            NetDayGainPercent = graphPerformance
-                                                                .Where(d => d.OrderDate == g.Key.ToString("yyyy-MM-dd"))
+                                                                .Where(d => d.OrderClosedDate.Date == g.Key.Date)
                                                                 .Select(d => d.NetDayGainPercent)
                                                                 .FirstOrDefault()
                                        })
