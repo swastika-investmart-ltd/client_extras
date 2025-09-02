@@ -686,7 +686,7 @@ namespace Client.WebApi.Services
                                            ExitDate = g.Key.ToString("yyyy-MMM-dd"),
                                            ClosedList = g.ToList(),
                                            NetDayGainPercent = graphPerformance
-                                                                .Where(d => d.OrderClosedDate == g.Key.ToString("yyyy-MM-dd"))
+                                                                .Where(d => d.OrderClosedDate.Date == g.Key.Date)
                                                                 .Select(d => d.NetDayGainPercent)
                                                                 .FirstOrDefault()
                                        })
