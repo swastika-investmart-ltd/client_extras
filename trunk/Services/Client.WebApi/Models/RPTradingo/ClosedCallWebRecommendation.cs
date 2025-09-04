@@ -33,10 +33,10 @@ namespace Client.WebApi
         public decimal ProfitLossRs { get; set; }       
     }
 
-    public class GraphData
+    public class WebGraphData
     {
         public GraphCallStatics GraphCallStatics { get; set; }
-        public List<decimal> GraphPerformance { get; set; }
+        public List<DailyWebRecommendation> GraphPerformance {  get; set; }
     }
 
     public class GraphCallStatics
@@ -48,7 +48,7 @@ namespace Client.WebApi
 
     public class DailyWebRecommendation
     {
-        public DateTime OrderClosedDate { get; set; }
+        public string OrderClosedDate { get; set; }
         public decimal NetDayGainPercent { get; set; }
     }
 
@@ -86,6 +86,18 @@ namespace Client.WebApi
         public string ExpiryDate { get; set; }
         public string InstrumentName { get; set; }
         public string IndustryType { get; set; }
+    }
+
+    public class MobGraphData
+    {
+        public GraphCallStatics GraphCallStatics { get; set; }
+        public List<decimal> GraphPerformance { get; set; }
+    }
+
+    public class DailyMobRecommendation
+    {
+        public DateTime OrderClosedDate { get; set; }
+        public decimal NetDayGainPercent { get; set; }
     }
 
     public class ClosedData
