@@ -623,13 +623,11 @@ namespace Client.WebApi.Services
                 //                         .Select(x => x.NetDayGainPercent)
                 //                         .ToList();
 
-                var GraphPerformance = dbResult.Read<DailyWebRecommendation>()
+                var GraphPerformance = dbResult.Read<DailyWebIntrlRecommendation>()
                                              .Where(x => x.NetDayGainPercent != 0)
                                              .Select(x => new DailyWebRecommendation
                                              {
-                                                 OrderClosedDate = DateTime.ParseExact(x.OrderClosedDate, "MM/dd/yyyy HH:mm:ss",
-                                                        CultureInfo.InvariantCulture
-                                                    ).ToString("dd-MM-yyyy"),
+                                                 OrderClosedDate = x.OrderClosedDate.ToString("dd-MM-yyyy"),
                                                  NetDayGainPercent = x.NetDayGainPercent
                                              })
                                             .ToList();

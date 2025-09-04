@@ -46,6 +46,11 @@ namespace Client.WebApi
         public Decimal PositiveCallPercent { get; set; }
     }
 
+    public class DailyWebIntrlRecommendation
+    {
+        public DateTime OrderClosedDate { get; set; }
+        public decimal NetDayGainPercent { get; set; }
+    }
     public class DailyWebRecommendation
     {
         public string OrderClosedDate { get; set; }
