@@ -6,6 +6,7 @@ using ResearchPanel.Entities;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -25,8 +26,8 @@ namespace Client.WebApi.Services
         Task<List<ScripOrderbySegmentsRes>> GetShortTermRecomFromDb();
         Task<List<ScripOrderbySegmentsRes>> GetLongTermRecomFromDb();
         Task<bool> GetAllSegmentsData();
-        Task<ResponseBaseCallRecModel<GraphData, WebCallRecommendation>> GetWebCallRecommendation(OrderbySegmentsReq obj);
-        Task<ResponseBaseMobCallRecModel<GraphData, MobCallRecommendation, ClosedData>> GetMobCallRecommendation(OrderbySegmentsReq obj);
+        Task<ResponseBaseCallRecModel<WebGraphData, WebCallRecommendation>> GetWebCallRecommendation(OrderbySegmentsReq obj);
+        Task<ResponseBaseMobCallRecModel<MobGraphData, MobCallRecommendation, ClosedData>> GetMobCallRecommendation(OrderbySegmentsReq obj);
     }
     public class RPTradingoService : BaseService, IRPTradingoService
     {
@@ -606,7 +607,7 @@ namespace Client.WebApi.Services
             }
         }
 
-        public async Task<ResponseBaseCallRecModel<GraphData, WebCallRecommendation>> GetWebCallRecommendation(OrderbySegmentsReq obj)
+        public async Task<ResponseBaseCallRecModel<WebGraphData, WebCallRecommendation>> GetWebCallRecommendation(OrderbySegmentsReq obj)
         {
             using (IDbConnection con = CreateRPConnection())
             {
@@ -618,9 +619,19 @@ namespace Client.WebApi.Services
                 var dbResult = await con.QueryMultipleAsync("GetWebCallRecommendation", param, commandType: CommandType.StoredProcedure);
 
                 var webCallRecommendation = dbResult.Read<WebCallRecommendation>().ToList();
-                var GraphPerformance = dbResult.Read<DailyWebRecommendation>()
-                                         .Select(x => x.NetDayGainPercent)
-                                         .ToList();
+                //var GraphPerformance = dbResult.Read<DailyWebRecommendation>()
+                //                         .Select(x => x.NetDayGainPercent)
+                //                         .ToList();
+
+                var GraphPerformance = dbResult.Read<DailyWebIntrlRecommendation>()
+                                             .Where(x => x.NetDayGainPercent != 0)
+                                             .Select(x => new DailyWebRecommendation
+                                             {
+                                                 OrderClosedDate = x.OrderClosedDate.ToString("dd-MM-yyyy"),
+                                                 NetDayGainPercent = x.NetDayGainPercent
+                                             })
+                                            .ToList();
+
                 var graphCallStatics = dbResult.ReadFirstOrDefault<GraphCallStatics>();
                 
                 var pagedData = webCallRecommendation
@@ -628,9 +639,9 @@ namespace Client.WebApi.Services
                 .Take(obj.PageSize)
                 .ToList();
 
-                return new ResponseBaseCallRecModel<GraphData, WebCallRecommendation>()
+                return new ResponseBaseCallRecModel<WebGraphData, WebCallRecommendation>()
                 {
-                    GraphData = new GraphData
+                    GraphData = new WebGraphData
                     {
                         GraphCallStatics = graphCallStatics,
                         GraphPerformance = GraphPerformance
@@ -641,7 +652,7 @@ namespace Client.WebApi.Services
             }
         }
 
-        public async Task<ResponseBaseMobCallRecModel<GraphData, MobCallRecommendation, ClosedData>> GetMobCallRecommendation(OrderbySegmentsReq obj)
+        public async Task<ResponseBaseMobCallRecModel<MobGraphData, MobCallRecommendation, ClosedData>> GetMobCallRecommendation(OrderbySegmentsReq obj)
         {
             using (IDbConnection con = CreateRPConnection())
             {
@@ -653,10 +664,10 @@ namespace Client.WebApi.Services
                 using var dbResult = await con.QueryMultipleAsync("GetMobCallRecommendation", param, commandType: CommandType.StoredProcedure);
 
                 var mobCallRecommendation = dbResult.Read<MobCallRecommendation>().ToList(); // All Data List
-                var graphPerformance = dbResult.Read<DailyWebRecommendation>().ToList(); // Date And Precent for Graph
+                var graphPerformance = dbResult.Read<DailyMobRecommendation>().ToList(); // Date And Precent for Graph
                 var graphCallStatics = dbResult.ReadFirstOrDefault<GraphCallStatics>(); //Graph Statics
 
-                var graphData = new GraphData
+                var graphData = new MobGraphData
                 {
                     GraphCallStatics = graphCallStatics,
                     GraphPerformance = graphPerformance.Select(x => x.NetDayGainPercent).ToList()
@@ -669,7 +680,7 @@ namespace Client.WebApi.Services
                                     .Take(obj.PageSize)
                                     .ToList();
 
-                    return new ResponseBaseMobCallRecModel<GraphData, MobCallRecommendation, ClosedData>()
+                    return new ResponseBaseMobCallRecModel<MobGraphData, MobCallRecommendation, ClosedData>()
                     {
                         GraphData = graphData,
                         ActiveDatas = activeDatas,
@@ -697,7 +708,7 @@ namespace Client.WebApi.Services
                                     .Take(obj.PageSize)
                                     .ToList();
 
-                    return new ResponseBaseMobCallRecModel<GraphData, MobCallRecommendation, ClosedData>()
+                    return new ResponseBaseMobCallRecModel<MobGraphData, MobCallRecommendation, ClosedData>()
                     {
                         GraphData = graphData,
                         ActiveDatas = null,
