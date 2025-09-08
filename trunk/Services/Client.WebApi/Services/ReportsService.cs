@@ -609,13 +609,15 @@ namespace Client.WebApi.Services
 
                 if (result != null && result.Any())
                 {
+                    //// Changed on 08 Sep 2025, the order by descending after the feedback from Parth sir that latest order 
+                    ///should be on top. Show date in descending order and trades (time) in ascending order for a particular date.
                     response.Datas = result.GroupBy(u => u.TradeDate)
                                                       .Select(grp => new TradeSummaryResMdl
                                                       {
                                                           TradeDate = grp.Key,
                                                           TotalRows = grp.ToList().Count,
                                                           SummaryList = grp.ToList().OrderBy(p => p.TradeDateTime).ToList()
-                                                      }).ToList().OrderBy(x => DateTime.Parse(x.TradeDate)).ToList();
+                                                      }).ToList().OrderByDescending(x => DateTime.Parse(x.TradeDate)).ToList();
 
                     //response.Datas = result.GroupBy(u => u.TRADE_DATE)
                     //                                  .Select(grp => new TradeSummaryResMdl
