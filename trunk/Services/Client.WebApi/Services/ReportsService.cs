@@ -662,7 +662,8 @@ namespace Client.WebApi.Services
                 param.Add("@Segment", obj.Segment);
                 var responseDb = (await SqlMapper.QueryAsync<TradeSummaryDataResMdl>(TRwcon, "RP_Get_Trade_Summary_Report", param, commandType: CommandType.StoredProcedure)).ToList();
                 if (responseDb != null && responseDb.Any())
-                    response.Datas = responseDb.OrderBy(p => p.TradeDateTime).ToList();
+                    response.Datas = responseDb.OrderByDescending(x => x.TradeDateTime.Date)  // Descending date
+                                        .ThenBy(x => x.TradeDateTime.TimeOfDay).ToList();
                 response.TotalRows = response.Datas.Count;
             }
             return response;
