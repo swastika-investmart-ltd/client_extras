@@ -662,7 +662,8 @@ namespace Client.WebApi.Services
 
                 var mobCallRecommendation = dbResult.Read<MobCallRecommendation>().ToList(); // All Data List
                 var graphPerformance = dbResult.Read<DailyMobRecommendation>().ToList(); // Date And Precent for Graph
-                                                                                         // var graphCallStatics = dbResult.ReadFirstOrDefault<GraphCallStatics>(); //Graph Statics
+               var graphCallStatics = dbResult.ReadFirstOrDefault<GraphCallStatics>(); //Graph Statics
+
                 var graphData = new MobGraphData
                 {
                     MinDate = graphPerformance.Any()
@@ -671,8 +672,10 @@ namespace Client.WebApi.Services
                     MaxDate = graphPerformance.Any()
                         ? graphPerformance.Max(x => x.OrderClosedDate).ToString("dd-MMM-yyyy")
                         : null,                    
-                    GraphPerformance = graphPerformance.Select(x => x.NetDayGainPercent).ToList()
-                };
+                    GraphPerformance = graphPerformance.Select(x => x.NetDayGainPercent).ToList(),
+
+                    GraphCallStatics = graphCallStatics
+                };                
 
                 if (obj.CallStatus.Equals("Live", StringComparison.OrdinalIgnoreCase))
                 {
@@ -683,7 +686,7 @@ namespace Client.WebApi.Services
 
                     return new ResponseBaseMobCallRecModel<MobGraphData, MobCallRecommendation, ClosedData>()
                     {
-                        GraphData = graphData,
+                        GraphData = graphData,                       
                         ActiveDatas = activeDatas,
                         ClosedDatas = null,
                         TotalRows = mobCallRecommendation.Count
@@ -711,6 +714,7 @@ namespace Client.WebApi.Services
 
                     return new ResponseBaseMobCallRecModel<MobGraphData, MobCallRecommendation, ClosedData>()
                     {
+                        
                         GraphData = graphData,
                         ActiveDatas = null,
                         ClosedDatas = closedDatas,
