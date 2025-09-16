@@ -619,9 +619,6 @@ namespace Client.WebApi.Services
                 var dbResult = await con.QueryMultipleAsync("GetWebCallRecommendation", param, commandType: CommandType.StoredProcedure);
 
                 var webCallRecommendation = dbResult.Read<WebCallRecommendation>().ToList();
-                //var GraphPerformance = dbResult.Read<DailyWebRecommendation>()
-                //                         .Select(x => x.NetDayGainPercent)
-                //                         .ToList();
 
                 var GraphPerformance = dbResult.Read<DailyWebIntrlRecommendation>()
                                              .Where(x => x.NetDayGainPercent != 0)
@@ -665,13 +662,20 @@ namespace Client.WebApi.Services
 
                 var mobCallRecommendation = dbResult.Read<MobCallRecommendation>().ToList(); // All Data List
                 var graphPerformance = dbResult.Read<DailyMobRecommendation>().ToList(); // Date And Precent for Graph
-                var graphCallStatics = dbResult.ReadFirstOrDefault<GraphCallStatics>(); //Graph Statics
+               var graphCallStatics = dbResult.ReadFirstOrDefault<GraphCallStatics>(); //Graph Statics
 
                 var graphData = new MobGraphData
                 {
-                    GraphCallStatics = graphCallStatics,
-                    GraphPerformance = graphPerformance.Select(x => x.NetDayGainPercent).ToList()
-                };
+                    MinDate = graphPerformance.Any()
+                        ? graphPerformance.Min(x => x.OrderClosedDate).ToString("dd-MMM-yyyy")
+                        : null,
+                    MaxDate = graphPerformance.Any()
+                        ? graphPerformance.Max(x => x.OrderClosedDate).ToString("dd-MMM-yyyy")
+                        : null,                    
+                    GraphPerformance = graphPerformance.Select(x => x.NetDayGainPercent).ToList(),
+
+                    GraphCallStatics = graphCallStatics
+                };                
 
                 if (obj.CallStatus.Equals("Live", StringComparison.OrdinalIgnoreCase))
                 {
@@ -682,7 +686,7 @@ namespace Client.WebApi.Services
 
                     return new ResponseBaseMobCallRecModel<MobGraphData, MobCallRecommendation, ClosedData>()
                     {
-                        GraphData = graphData,
+                        GraphData = graphData,                       
                         ActiveDatas = activeDatas,
                         ClosedDatas = null,
                         TotalRows = mobCallRecommendation.Count
@@ -710,6 +714,7 @@ namespace Client.WebApi.Services
 
                     return new ResponseBaseMobCallRecModel<MobGraphData, MobCallRecommendation, ClosedData>()
                     {
+                        
                         GraphData = graphData,
                         ActiveDatas = null,
                         ClosedDatas = closedDatas,
