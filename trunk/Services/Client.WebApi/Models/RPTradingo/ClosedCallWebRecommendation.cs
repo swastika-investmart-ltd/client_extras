@@ -35,6 +35,7 @@ namespace Client.WebApi
 
     public class WebGraphData
     {
+        public GraphCallStatics GraphCallStatics { get; set; }
         public List<DailyWebRecommendation> GraphPerformance {  get; set; }
     }
 

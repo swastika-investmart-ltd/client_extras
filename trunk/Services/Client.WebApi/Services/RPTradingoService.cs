@@ -629,6 +629,7 @@ namespace Client.WebApi.Services
                                              })
                                             .ToList();
 
+                var graphCallStatics = dbResult.ReadFirstOrDefault<GraphCallStatics>();
                 
                 var pagedData = webCallRecommendation
                 .Skip((obj.PageNumber - 1) * obj.PageSize)
@@ -639,6 +640,7 @@ namespace Client.WebApi.Services
                 {
                     GraphData = new WebGraphData
                     {
+                        GraphCallStatics = graphCallStatics,
                         GraphPerformance = GraphPerformance
                     },
                     Datas = pagedData,
