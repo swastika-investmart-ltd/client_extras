@@ -268,18 +268,53 @@ namespace ResearchPanel.Entities
         public int LtActiveCalls { get; set; }
     }
 
+    /*
+     SELECT
+        MAX(CASE WHEN Segment = 'Commodity' THEN PositiveCall END) AS CommodityPositiveCall,
+        MAX(CASE WHEN Segment = 'Commodity' THEN Total END) AS CommodityTotal,
+        MAX(CASE WHEN Segment = 'Commodity' THEN SuccessPercentage END) AS CommodityPercentage,
+
+        MAX(CASE WHEN Segment = 'Intraday' THEN PositiveCall END) AS IntradayPositiveCall,
+        MAX(CASE WHEN Segment = 'Intraday' THEN Total END) AS IntradayTotal,
+        MAX(CASE WHEN Segment = 'Intraday' THEN SuccessPercentage END) AS IntradayPercentage,
+
+        MAX(CASE WHEN Segment = 'Delivery' THEN PositiveCall END) AS DeliveryPositiveCall,
+        MAX(CASE WHEN Segment = 'Delivery' THEN Total END) AS DeliveryTotal,
+        MAX(CASE WHEN Segment = 'Delivery' THEN SuccessPercentage END) AS CashDeliveryPercentage,
+
+        MAX(CASE WHEN Segment = 'F&O(index)' THEN PositiveCall END) AS FNOIndexPositiveCall,
+        MAX(CASE WHEN Segment = 'F&O(index)' THEN Total END) AS FNOIndexTotal,
+        MAX(CASE WHEN Segment = 'F&O(index)' THEN SuccessPercentage END) AS FNOIndexPercentage,
+
+        MAX(CASE WHEN Segment = 'F&O(Stock)' THEN PositiveCall END) AS FNOStockPositiveCall,
+        MAX(CASE WHEN Segment = 'F&O(Stock)' THEN Total END) AS FNOStockTotal,
+        MAX(CASE WHEN Segment = 'F&O(Stock)' THEN SuccessPercentage END) AS FNOStockPercentage
+    FROM CTE_Percentage
+     
+     */
+
     public class RecommendationPercentageInfo
     {
-        public decimal? CommodityPercentage { get; set; }
-        public decimal? FNOIndexPercentage { get; set; }
-        public decimal? IntradayPercentage { get; set; }
-        public decimal? FNOStockPercentage { get; set; }
-        public decimal? CashDeliveryPercentage { get; set; }
-        public decimal? IntradayCalls { get; set; }
-        public decimal? CashDeliverycalls { get; set; }
-        public decimal? FNOIndexCalls { get; set; }
-        public decimal? FNOStocksCalls { get; set; }
-        public decimal? CommodityCalls { get; set; }
+        public int CommodityPositiveCall { get; set; }
+        public int CommodityTotal { get; set; }
+        public int CommodityCalls { get; set; }
+        public decimal CommodityPercentage { get; set; }
+        public int IntradayPositiveCall { get; set; }
+        public int IntradayTotal { get; set; }
+        public int IntradayCalls { get; set; }
+        public decimal IntradayPercentage { get; set; }
+        public int DeliveryPositiveCall { get; set; }
+        public int DeliveryTotal { get; set; }
+        public int CashDeliveryCalls { get; set; }
+        public decimal CashDeliveryPercentage { get; set; }
+        public int FNOIndexPositiveCall { get; set; }
+        public int FNOIndexTotal { get; set; }
+        public int FNOIndexCalls { get; set; }
+        public decimal FNOIndexPercentage { get; set; }
+        public int FNOStockPositiveCall { get; set; }
+        public int FNOStocksCalls { get; set; }
+        public int FNOStockTotal { get; set; }
+        public decimal FNOStockPercentage { get; set; }       
     }
 
 

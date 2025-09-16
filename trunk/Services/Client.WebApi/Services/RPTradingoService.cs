@@ -632,7 +632,7 @@ namespace Client.WebApi.Services
                                              })
                                             .ToList();
 
-                var graphCallStatics = dbResult.ReadFirstOrDefault<GraphCallStatics>();
+                //var graphCallStatics = dbResult.ReadFirstOrDefault<GraphCallStatics>();
                 
                 var pagedData = webCallRecommendation
                 .Skip((obj.PageNumber - 1) * obj.PageSize)
@@ -643,7 +643,7 @@ namespace Client.WebApi.Services
                 {
                     GraphData = new WebGraphData
                     {
-                        GraphCallStatics = graphCallStatics,
+                        //GraphCallStatics = graphCallStatics,
                         GraphPerformance = GraphPerformance
                     },
                     Datas = pagedData,
@@ -665,13 +665,17 @@ namespace Client.WebApi.Services
 
                 var mobCallRecommendation = dbResult.Read<MobCallRecommendation>().ToList(); // All Data List
                 var graphPerformance = dbResult.Read<DailyMobRecommendation>().ToList(); // Date And Precent for Graph
-                var graphCallStatics = dbResult.ReadFirstOrDefault<GraphCallStatics>(); //Graph Statics
-
+                                                                                         // var graphCallStatics = dbResult.ReadFirstOrDefault<GraphCallStatics>(); //Graph Statics
                 var graphData = new MobGraphData
                 {
-                    GraphCallStatics = graphCallStatics,
+                    MinDate = graphPerformance.Any()
+                        ? graphPerformance.Min(x => x.OrderClosedDate).ToString("dd-MMM-yyyy")
+                        : null,
+                    MaxDate = graphPerformance.Any()
+                        ? graphPerformance.Max(x => x.OrderClosedDate).ToString("dd-MMM-yyyy")
+                        : null,                    
                     GraphPerformance = graphPerformance.Select(x => x.NetDayGainPercent).ToList()
-                };
+                };               
 
                 if (obj.CallStatus.Equals("Live", StringComparison.OrdinalIgnoreCase))
                 {

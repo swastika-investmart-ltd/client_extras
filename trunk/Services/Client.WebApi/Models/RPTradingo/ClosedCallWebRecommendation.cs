@@ -35,7 +35,7 @@ namespace Client.WebApi
 
     public class WebGraphData
     {
-        public GraphCallStatics GraphCallStatics { get; set; }
+        //public GraphCallStatics GraphCallStatics { get; set; }
         public List<DailyWebRecommendation> GraphPerformance {  get; set; }
     }
 
@@ -95,7 +95,8 @@ namespace Client.WebApi
 
     public class MobGraphData
     {
-        public GraphCallStatics GraphCallStatics { get; set; }
+        public string MinDate { get; set; }
+        public string MaxDate { get; set; }        
         public List<decimal> GraphPerformance { get; set; }
     }
 
