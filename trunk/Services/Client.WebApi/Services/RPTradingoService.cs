@@ -619,9 +619,6 @@ namespace Client.WebApi.Services
                 var dbResult = await con.QueryMultipleAsync("GetWebCallRecommendation", param, commandType: CommandType.StoredProcedure);
 
                 var webCallRecommendation = dbResult.Read<WebCallRecommendation>().ToList();
-                //var GraphPerformance = dbResult.Read<DailyWebRecommendation>()
-                //                         .Select(x => x.NetDayGainPercent)
-                //                         .ToList();
 
                 var GraphPerformance = dbResult.Read<DailyWebIntrlRecommendation>()
                                              .Where(x => x.NetDayGainPercent != 0)
@@ -632,7 +629,6 @@ namespace Client.WebApi.Services
                                              })
                                             .ToList();
 
-                //var graphCallStatics = dbResult.ReadFirstOrDefault<GraphCallStatics>();
                 
                 var pagedData = webCallRecommendation
                 .Skip((obj.PageNumber - 1) * obj.PageSize)
@@ -643,7 +639,6 @@ namespace Client.WebApi.Services
                 {
                     GraphData = new WebGraphData
                     {
-                        //GraphCallStatics = graphCallStatics,
                         GraphPerformance = GraphPerformance
                     },
                     Datas = pagedData,
@@ -675,7 +670,7 @@ namespace Client.WebApi.Services
                         ? graphPerformance.Max(x => x.OrderClosedDate).ToString("dd-MMM-yyyy")
                         : null,                    
                     GraphPerformance = graphPerformance.Select(x => x.NetDayGainPercent).ToList()
-                };               
+                };
 
                 if (obj.CallStatus.Equals("Live", StringComparison.OrdinalIgnoreCase))
                 {

@@ -267,32 +267,7 @@ namespace ResearchPanel.Entities
         public decimal LtNiftyReturns { get; set; }
         public int LtActiveCalls { get; set; }
     }
-
-    /*
-     SELECT
-        MAX(CASE WHEN Segment = 'Commodity' THEN PositiveCall END) AS CommodityPositiveCall,
-        MAX(CASE WHEN Segment = 'Commodity' THEN Total END) AS CommodityTotal,
-        MAX(CASE WHEN Segment = 'Commodity' THEN SuccessPercentage END) AS CommodityPercentage,
-
-        MAX(CASE WHEN Segment = 'Intraday' THEN PositiveCall END) AS IntradayPositiveCall,
-        MAX(CASE WHEN Segment = 'Intraday' THEN Total END) AS IntradayTotal,
-        MAX(CASE WHEN Segment = 'Intraday' THEN SuccessPercentage END) AS IntradayPercentage,
-
-        MAX(CASE WHEN Segment = 'Delivery' THEN PositiveCall END) AS DeliveryPositiveCall,
-        MAX(CASE WHEN Segment = 'Delivery' THEN Total END) AS DeliveryTotal,
-        MAX(CASE WHEN Segment = 'Delivery' THEN SuccessPercentage END) AS CashDeliveryPercentage,
-
-        MAX(CASE WHEN Segment = 'F&O(index)' THEN PositiveCall END) AS FNOIndexPositiveCall,
-        MAX(CASE WHEN Segment = 'F&O(index)' THEN Total END) AS FNOIndexTotal,
-        MAX(CASE WHEN Segment = 'F&O(index)' THEN SuccessPercentage END) AS FNOIndexPercentage,
-
-        MAX(CASE WHEN Segment = 'F&O(Stock)' THEN PositiveCall END) AS FNOStockPositiveCall,
-        MAX(CASE WHEN Segment = 'F&O(Stock)' THEN Total END) AS FNOStockTotal,
-        MAX(CASE WHEN Segment = 'F&O(Stock)' THEN SuccessPercentage END) AS FNOStockPercentage
-    FROM CTE_Percentage
-     
-     */
-
+    
     public class RecommendationPercentageInfo
     {
         public int CommodityPositiveCall { get; set; }
@@ -320,7 +295,6 @@ namespace ResearchPanel.Entities
 
     public class ScripOrderbySegmentsReq
     {
-        //[Required(ErrorMessage = "SecurityKey is required.")]
         public string SecurityKey { get; set; }
 
         [Required(ErrorMessage = "Uid is required.")]
@@ -328,12 +302,10 @@ namespace ResearchPanel.Entities
 
         [Required(ErrorMessage = "Segment is required.")]
 
-        //var segments = new[] { "All", "Equity", "FNO", "Currency", "Commodity", "PreLogin" };
         [ValueInList("All", "Equity", "FNO", "Currency", "Commodity", "PreLogin", ErrorMessage = "Invalid Segment")]
         public string Segment { get; set; }
 
         [Required(ErrorMessage = "Type is required.")]
-        //var Type = new[] { "All", "Intraday", "Delivery" };
         [ValueInList("All", "Intraday", "Delivery", ErrorMessage = "Invalid Type")]
         public string Type { get; set; }
 
