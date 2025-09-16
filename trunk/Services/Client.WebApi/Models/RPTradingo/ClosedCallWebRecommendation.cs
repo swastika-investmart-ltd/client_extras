@@ -35,7 +35,6 @@ namespace Client.WebApi
 
     public class WebGraphData
     {
-        public GraphCallStatics GraphCallStatics { get; set; }
         public List<DailyWebRecommendation> GraphPerformance {  get; set; }
     }
 
@@ -95,7 +94,8 @@ namespace Client.WebApi
 
     public class MobGraphData
     {
-        public GraphCallStatics GraphCallStatics { get; set; }
+        public string MinDate { get; set; }
+        public string MaxDate { get; set; }        
         public List<decimal> GraphPerformance { get; set; }
     }
 
@@ -117,7 +117,6 @@ namespace Client.WebApi
         [Required(ErrorMessage = "Uid is required.")]
         public string Uid { get; set; }
 
-        //[ValueInList("All", "EQUITY", "FNO_STOCK", "FNO_INDEX", "COMMODITY", ErrorMessage = "Invalid Segment")]
         [Required(ErrorMessage = "Segment is required.")]
         [SegmentListValidation(ErrorMessage = "Invalid Segment or combination.")]
         public string Segment { get; set; }
