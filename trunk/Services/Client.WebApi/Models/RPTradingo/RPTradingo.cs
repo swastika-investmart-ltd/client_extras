@@ -270,25 +270,25 @@ namespace ResearchPanel.Entities
     
     public class RecommendationPercentageInfo
     {
-        public int CommodityPositiveCall { get; set; }
-        public int CommodityTotal { get; set; }
+        //public int CommodityPositiveCall { get; set; }
+        //public int CommodityTotal { get; set; }
         public int CommodityCalls { get; set; }
         public decimal CommodityPercentage { get; set; }
-        public int IntradayPositiveCall { get; set; }
-        public int IntradayTotal { get; set; }
+        //public int IntradayPositiveCall { get; set; }
+        //public int IntradayTotal { get; set; }
         public int IntradayCalls { get; set; }
         public decimal IntradayPercentage { get; set; }
-        public int DeliveryPositiveCall { get; set; }
-        public int DeliveryTotal { get; set; }
+        //public int DeliveryPositiveCall { get; set; }
+        //public int DeliveryTotal { get; set; }
         public int CashDeliveryCalls { get; set; }
         public decimal CashDeliveryPercentage { get; set; }
-        public int FNOIndexPositiveCall { get; set; }
-        public int FNOIndexTotal { get; set; }
+        //public int FNOIndexPositiveCall { get; set; }
+        //public int FNOIndexTotal { get; set; }
         public int FNOIndexCalls { get; set; }
         public decimal FNOIndexPercentage { get; set; }
-        public int FNOStockPositiveCall { get; set; }
+       // public int FNOStockPositiveCall { get; set; }
         public int FNOStocksCalls { get; set; }
-        public int FNOStockTotal { get; set; }
+       // public int FNOStockTotal { get; set; }
         public decimal FNOStockPercentage { get; set; }       
     }
 

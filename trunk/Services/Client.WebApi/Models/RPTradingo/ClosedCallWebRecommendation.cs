@@ -30,7 +30,8 @@ namespace Client.WebApi
         public DateTime? ExitDate { get; set; }
         public string DaysDifference { get; set; }   
         public decimal ProfitLossPercent { get; set; }
-        public decimal ProfitLossRs { get; set; }       
+        public decimal ProfitLossRs { get; set; }
+        public bool IsExpired { get; set; }
     }
 
     public class WebGraphData
@@ -41,8 +42,8 @@ namespace Client.WebApi
 
     public class GraphCallStatics
     {
-        public Decimal PositiveCalls { get; set; }
-        public Decimal TotalCalls { get; set; }
+        public int PositiveCalls { get; set; }
+        public int TotalCalls { get; set; }
         public Decimal PositiveCallPercent { get; set; }
     }
 
@@ -91,12 +92,14 @@ namespace Client.WebApi
         public string ExpiryDate { get; set; }
         public string InstrumentName { get; set; }
         public string IndustryType { get; set; }
+        public bool IsExpired { get; set; }
     }
 
     public class MobGraphData
     {
         public string MinDate { get; set; }
-        public string MaxDate { get; set; }        
+        public string MaxDate { get; set; }
+        public GraphCallStatics GraphCallStatics { get; set; }
         public List<decimal> GraphPerformance { get; set; }
     }
 
