@@ -696,6 +696,7 @@ namespace Client.WebApi.Services
                 {
                     var closedDataList = mobCallRecommendation
                                        .GroupBy(u => u.ExitDate.Value.Date)
+                                       .OrderByDescending(g => g.Key)   // Order by Date descending
                                        .Select(g => new ClosedData
                                        {
                                            ExitDate = g.Key.ToString("yyyy-MMM-dd"),
