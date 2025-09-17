@@ -280,7 +280,7 @@ namespace ResearchPanel.Entities
         public decimal IntradayPercentage { get; set; }
         //public int DeliveryPositiveCall { get; set; }
         //public int DeliveryTotal { get; set; }
-        public int CashDeliveryCalls { get; set; }
+        public int CashDeliverycalls { get; set; }
         public decimal CashDeliveryPercentage { get; set; }
         //public int FNOIndexPositiveCall { get; set; }
         //public int FNOIndexTotal { get; set; }
