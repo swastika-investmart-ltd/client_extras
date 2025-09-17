@@ -84,7 +84,7 @@ namespace Client.WebApi.Extensions
 
                 // Actions that are allowed during pre-login
                 if (actionName is "getscriporderbysegments" or "getorderfollowup"
-                    or "getscripgeneralinfo" or "getwebcallrecommendation")
+                    or "getscripgeneralinfo" or "webcallrecommendation")
                 {
                     return true;
                 }
