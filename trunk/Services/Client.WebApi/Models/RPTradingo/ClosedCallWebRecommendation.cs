@@ -25,6 +25,8 @@ namespace Client.WebApi
         public decimal StopLoss { get; set; }
         public string BuySell { get; set; }
         public string Status { get; set; }
+        public int Duration { get; set; }
+        public string DurationType { get; set; }
         public string OrderMargin { get; set; }
         public DateTime EntryDate { get; set; }
         public DateTime? ExitDate { get; set; }
