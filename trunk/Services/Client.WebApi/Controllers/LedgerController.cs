@@ -38,8 +38,30 @@ namespace Client.WebApi.Controllers
                 StartYear = FinStartYear.ToString()
             };
 
-            //await _ledgerService.GetLedgerData(ParamIntr);
-            var result = await _ledgerService.Ledger_GetDPCharges(ParamIntr);
+            var result = await _ledgerService.GetFundsAddedAndWithdrawnList(ParamIntr);
+            return Ok(new ApiResponse(ResponseMessageEnum.Success.GetDescription(), result, 200));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GetFundsUtilisedList([FromBody] FULedgerRequest obj)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(new ApiResponse(400, new ApiError(ResponseMessageEnum.ValidationError.GetDescription(), ModelStateExtension.AllErrors(ModelState))));
+
+            int FinStartYear = (DateTime.Now.Month >= 4 ? DateTime.Now.Year : DateTime.Now.Year - 1);
+            //(DateTime.Now.Month >= 4 ? DateTime.Now.Year - 1 : DateTime.Now.Year - 2);
+
+            LedgerInternalRequest ParamIntr = new LedgerInternalRequest
+            {
+                ClientCode = obj.Uid,
+                FundsUtilisedIn = obj.FundsUtilisedIn,
+                FundsUtilisedFor = obj.FundsUtilisedFor,
+                FromDate = "01/04/" + FinStartYear.ToString(),
+                ToDate = DateTime.Now.ToString(@"dd/MM/yyyy"),
+                StartYear = FinStartYear.ToString()
+            };
+
+            var result = await _ledgerService.GetFundsUtilisedList(ParamIntr);
             return Ok(new ApiResponse(ResponseMessageEnum.Success.GetDescription(), result, 200));
         }
     }
