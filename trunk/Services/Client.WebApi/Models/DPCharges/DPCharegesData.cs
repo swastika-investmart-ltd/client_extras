@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace Client.WebApi
 {
@@ -40,5 +39,10 @@ namespace Client.WebApi
         public string PUNCH_TIME { get; set; }
         public string TRANS_TYPE { get; set; }
         public string NARRATION { get; set; }
+
+        public override string ToString()
+        {
+            return $"ACCOUNTCODE:{ACCOUNTCODE}, VOUCHERDATE:{VOUCHERDATE}";
+        }
     }
 }

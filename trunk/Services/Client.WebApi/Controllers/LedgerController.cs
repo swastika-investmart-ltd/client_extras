@@ -7,27 +7,34 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Client.WebApi.Controllers
 {
-    [AllowAnonymous]
-    //[ApiKeyAuthorize]
+    [Authorize]
     [ApiController]
     [Route("[controller]/[action]")]
     public class LedgerController : ControllerBase
     {
         ILedgerService _ledgerService;
+
         public LedgerController(ILedgerService ledgerService)
         {
             _ledgerService = ledgerService;
         }
-        
+
+        /// <summary>
+        /// Retrieves the list of funds added and withdrawn for a client within the current financial year.
+        /// </summary>
+        /// <param name="obj">LedgerRequest containing client and category details</param>
+        /// <returns>ApiResponse with the list of funds added and withdrawn</returns>
         [HttpPost]
         public async Task<IActionResult> GetFundsAddedAndWithdrawnList([FromBody] LedgerRequest obj)
         {
+            // Validate the incoming model
             if (!ModelState.IsValid)
                 return BadRequest(new ApiResponse(400, new ApiError(ResponseMessageEnum.ValidationError.GetDescription(), ModelStateExtension.AllErrors(ModelState))));
 
+            // Determine the financial year start based on current date (April as start of financial year)
             int FinStartYear = (DateTime.Now.Month >= 4 ? DateTime.Now.Year : DateTime.Now.Year - 1);
-            //(DateTime.Now.Month >= 4 ? DateTime.Now.Year - 1 : DateTime.Now.Year - 2);
 
+            // Prepare internal request object for the service
             LedgerInternalRequest ParamIntr = new LedgerInternalRequest
             {
                 ClientCode = obj.Uid,
@@ -38,19 +45,28 @@ namespace Client.WebApi.Controllers
                 StartYear = FinStartYear.ToString()
             };
 
+            // Call the service to get the data
             var result = await _ledgerService.GetFundsAddedAndWithdrawnList(ParamIntr);
+            // Return the result wrapped in ApiResponse
             return Ok(new ApiResponse(ResponseMessageEnum.Success.GetDescription(), result, 200));
         }
 
+        /// <summary>
+        /// Retrieves the list of funds utilized for a client within the current financial year.
+        /// </summary>
+        /// <param name="obj">FULedgerRequest containing client and utilization details</param>
+        /// <returns>ApiResponse with the list of funds utilized</returns>
         [HttpPost]
         public async Task<IActionResult> GetFundsUtilisedList([FromBody] FULedgerRequest obj)
         {
+            // Validate the incoming model
             if (!ModelState.IsValid)
                 return BadRequest(new ApiResponse(400, new ApiError(ResponseMessageEnum.ValidationError.GetDescription(), ModelStateExtension.AllErrors(ModelState))));
 
+            // Determine the financial year start based on current date (April as start of financial year)
             int FinStartYear = (DateTime.Now.Month >= 4 ? DateTime.Now.Year : DateTime.Now.Year - 1);
-            //(DateTime.Now.Month >= 4 ? DateTime.Now.Year - 1 : DateTime.Now.Year - 2);
 
+            // Prepare internal request object for the service
             LedgerInternalRequest ParamIntr = new LedgerInternalRequest
             {
                 ClientCode = obj.Uid,
@@ -61,7 +77,9 @@ namespace Client.WebApi.Controllers
                 StartYear = FinStartYear.ToString()
             };
 
+            // Call the service to get the data
             var result = await _ledgerService.GetFundsUtilisedList(ParamIntr);
+            // Return the result wrapped in ApiResponse
             return Ok(new ApiResponse(ResponseMessageEnum.Success.GetDescription(), result, 200));
         }
     }

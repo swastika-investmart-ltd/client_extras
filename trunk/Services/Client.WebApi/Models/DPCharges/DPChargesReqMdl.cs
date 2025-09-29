@@ -32,7 +32,7 @@ namespace Client.WebApi
         public string Uid { get; set; }
 
         [Required(ErrorMessage = "CategoryId is required.")]
-        [Range(1, 3, ErrorMessage = "CategoryId must be in range 1 to 3.")]
+        [Range(1, 5, ErrorMessage = "CategoryId must be in range 1 to 5.")]
         public long CategoryId { get; set; }
 
         [Required(ErrorMessage = "SubCategoryId is required.")]

@@ -35,13 +35,13 @@ namespace Client.WebApi
 
     public class PassbookDataResponse
     {
-        public List<PassbookData> PassbookDataList { get; set; } = new List<PassbookData>();
+        public List<PassbookData> PassbookDataList { get; set; }
     }
 
     public class PassbookData
     {
         public string VoucherDate { get; set; }
-        public List<Section1> Section1List { get; set; } = new List<Section1>();
+        public List<Section1> Section1List { get; set; }
 
         public override string ToString()
         {
@@ -59,7 +59,7 @@ namespace Client.WebApi
         public bool IsTransTypeCR { get; set; }
         public string ActionText { get; set; }
         public string Description { get; set; }
-        public Section2 Section2Item { get; set; } =new Section2();
+        public Section2 Section2Item { get; set; }
 
         public override string ToString()
         {
@@ -71,7 +71,7 @@ namespace Client.WebApi
     {
         public string HeaderText { get; set; } //DP Charges for 15 Sep 2025
         public string BodyText { get; set; }
-        public List<Section3> Section3List { get; set; } = new List<Section3>();
+        public List<Section3> Section3List { get; set; }
 
         public override string ToString()
         {
@@ -84,7 +84,7 @@ namespace Client.WebApi
         public string LabelText { get; set; }   //Stock Selling Charges
         public decimal TotalAmount { get; set; }    //150.00
         public string InfoText { get; set; }    //Fee for Selling shares, including taxes.
-        public List<Section4> Section4List { get; set; } = new List<Section4>();
+        public List<Section4> Section4List { get; set; }
         public override string ToString()
         {
             return $"LabelText:{LabelText}, TotalAmount:{TotalAmount}, Section4List Count{Section4List.Count}";
