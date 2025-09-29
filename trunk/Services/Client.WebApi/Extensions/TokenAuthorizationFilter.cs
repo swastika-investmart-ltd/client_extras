@@ -84,7 +84,7 @@ namespace Client.WebApi.Extensions
 
                 // Actions that are allowed during pre-login
                 if (actionName is "getscriporderbysegments" or "getorderfollowup"
-                    or "getscripgeneralinfo")
+                    or "getscripgeneralinfo" or "webcallrecommendation")
                 {
                     return true;
                 }
@@ -100,7 +100,7 @@ namespace Client.WebApi.Extensions
 
             // Actions that do not require validation (client code not required)
             if (actionName is "getscripgeneral" or "getscripoffers"
-                or "getscriporderfollowup" or "viewrecommendationpercentage")
+                or "getscriporderfollowup" or "viewrecommendationpercentage" or "getrecommendationpercentage")
             {
                 return true;
             }

@@ -147,6 +147,7 @@ namespace Client.WebApi
             services.AddScoped<IRPTradingoService, RPTradingoService>();
             services.AddScoped<IXApiKeysLoader, XApiKeysLoader>();
             services.AddScoped<IContactsService, ContactsService>();
+            services.AddScoped<IBackOfficeService, BackOfficeService>();            
             services.AddScoped<ILedgerService, LedgerService>();
 
 
