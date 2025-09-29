@@ -7,7 +7,10 @@ namespace Client.WebApi
         public long ResponseId { get; set; }
         public string ResponseMessage { get; set; }
     }
-     
+    public class ResponseBaseTModel<T>
+    {
+        public T Data { get; set; }
+    }
     public class ResponseBaseModel<T>
     {
         public long TotalRows { get; set; }
