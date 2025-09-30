@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using DocumentFormat.OpenXml.Office2010.Excel;
-using DocumentFormat.OpenXml.Office2010.PowerPoint;
-using DocumentFormat.OpenXml.Wordprocessing;
-using Irony.Ast;
+﻿using System.Collections.Generic;
 
 namespace Client.WebApi
 {
@@ -90,7 +85,7 @@ namespace Client.WebApi
             return $"LabelText:{LabelText}, TotalAmount:{TotalAmount}, Section4List Count{Section4List.Count}";
         }
     }
-    
+
     public class Section4
     {
         public string LabelText { get; set; } //RELIANCE (qty 25)

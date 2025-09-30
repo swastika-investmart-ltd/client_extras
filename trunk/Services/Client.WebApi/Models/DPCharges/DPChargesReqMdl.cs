@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.Runtime.Intrinsics.Arm;
 
 namespace Client.WebApi
 {
@@ -7,7 +6,7 @@ namespace Client.WebApi
     {
         [Required(ErrorMessage = "Uid is required.")]
         public string Uid { get; set; }
-        
+
         [Required(ErrorMessage = "FinYear is required.")]
 
         [Range(1900, 9999, ErrorMessage = "Please enter a valid year")]

@@ -28,10 +28,5 @@ namespace Client.WebApi
         {
             return new SqlConnection(ConfigurationService.TRvwDbConnectionString);
         }
-
-        protected IDbConnection CreateCapsfoConnection()
-        {
-            return new SqlConnection(ConfigurationService.CapsfoDbConnectionString);
-        }
     }
 }

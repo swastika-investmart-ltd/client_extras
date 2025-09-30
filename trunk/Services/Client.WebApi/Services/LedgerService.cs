@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using Components;
 using Dapper;
 using Microsoft.Extensions.Configuration;
+using SqlBulkTools;
 
 namespace Client.WebApi.Services
 {
@@ -81,7 +83,8 @@ namespace Client.WebApi.Services
             };
 
             // "FundsUtilisedIn": ",8" = Equity , "FundsUtilisedFor": ",15" = Misc
-            if (request.FundsUtilisedIn.Contains("8") || request.FundsUtilisedFor.Contains("15"))
+            if (request.FundsUtilisedIn.Contains("0") || request.FundsUtilisedIn.Contains("8")
+                || request.FundsUtilisedFor.Contains("0") || request.FundsUtilisedFor.Contains("15"))
             {
                 // Pull the data from DP_05 table
                 result.Datas = await GetLedgerGetDPCharges(request);
@@ -244,15 +247,11 @@ namespace Client.WebApi.Services
             {
                 case "DEMAT_SETUP":
                     objSection1.Id = DPChargeCategoryType.DEMAT_SETUP;
-                    objSection1.LabelText = "Demat setup charges";
-                    break;
-                case "OTHER":
-                    objSection1.Id = DPChargeCategoryType.OTHER;
-                    objSection1.LabelText = "Other";
+                    objSection1.LabelText = "Demat Setup Charges";
                     break;
                 default:
                     objSection1.Id = DPChargeCategoryType.NONE;
-                    objSection1.LabelText = "Unknow";
+                    objSection1.LabelText = "Other Charges";
                     break;
             }
         }
@@ -320,7 +319,12 @@ namespace Client.WebApi.Services
                     }
                     break;
                 default:
-                    objSection3.LabelText = "Unknown";
+                    objSection3.LabelText = "Other DP charges";
+                    //objSection3.InfoText = "";
+                    foreach (var stockItem in groupbystocks)
+                    {
+                        AddSection4(objSection3, stockItem.Amount, $"{stockItem.StockName} (Qty {stockItem.Quantity})");
+                    }
                     break;
             }
         }
@@ -456,7 +460,7 @@ namespace Client.WebApi.Services
         /// </summary>
         private async Task<bool> PopulateLedgerAPIData(LedgerInternalRequest request)
         {
-            using (IDbConnection con = CreateCapsfoConnection())
+            using (IDbConnection con = CreateTrvwConnection())
             {
                 if (con.State != ConnectionState.Open)
                     con.Open();
@@ -497,13 +501,7 @@ namespace Client.WebApi.Services
                             obj.CreatedDate = DateTime.Now;
                         });
 
-                        var objBulk = new LedgerBulkUploadToSql<LedgerAPIResponse>();
-                        objBulk.InternalStore = LedgerList;
-                        objBulk.CommitBatchSize = 1000;
-                        objBulk.ConnectionString = CreateTrvwConnection().ConnectionString;
-                        objBulk.TableName = "dbo.LedgerAPIData";
-                        await objBulk.LedgerCommit();
-                        return true;
+                        return LedgerBulkUploadToDatabase(LedgerList, "LedgerAPIData");
                     }
 
                 }
@@ -513,6 +511,40 @@ namespace Client.WebApi.Services
                     throw;
                 }
 
+                return false;
+            }
+        }
+
+        public bool LedgerBulkUploadToDatabase<T>(List<T> dataList, string tableName)
+        {
+            try
+            {
+                if (dataList == null || !dataList.Any())
+                    return false;
+
+                // New up an instance
+                var bulk = new BulkOperations();
+                using (var con = CreateTrvwConnection())
+                {
+                    if (con.State != ConnectionState.Open)
+                        con.Open();
+
+                    bulk.Setup<T>(x => x.ForCollection(dataList))
+                        .WithTable(tableName)
+                        .AddAllColumns()
+                        .BulkInsert();
+
+                    using (var conBulk = new SqlConnection(con.ConnectionString))
+                    {
+                        bulk.CommitTransaction(conBulk);
+                    }
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error("LedgerBulkUploadToDatabase: Exception: " + ex.ToString());
                 return false;
             }
         }
