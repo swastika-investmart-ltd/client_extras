@@ -8,19 +8,20 @@ using Microsoft.Extensions.Configuration;
 
 namespace Client.WebApi.Controllers
 {
+#if DEBUG 
+    [AllowAnonymous]
+#else
     [Authorize]
+#endif
     [ApiController]
     [Route("[controller]/[action]")]
     public class LedgerController : ControllerBase
     {
         ILedgerService _ledgerService;
-        IConfiguration _config;
 
-        public LedgerController(ILedgerService ledgerService, IConfiguration config)
+        public LedgerController(ILedgerService ledgerService)
         {
             _ledgerService = ledgerService;
-            _config = config;
-
         }
 
         /// <summary>
