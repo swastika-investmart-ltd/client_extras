@@ -15,12 +15,13 @@ namespace Client.WebApi.Services
     {
         public Task<ResponseBaseModel<PassbookData>> GetFundsAddedAndWithdrawnList(LedgerInternalRequest request);
         public Task<ResponseBaseModel<PassbookData>> GetFundsUtilisedList(LedgerInternalRequest request);
+        public string GetToDateFromConfig(int FinStartYear);
     }
 
     public class LedgerService : BaseService, ILedgerService
     {
         private readonly ILog _logger;
-        private readonly IConfiguration _config;
+        IConfiguration _config;
 
         public LedgerService(ILog logger, IConfiguration config)
         {
@@ -82,12 +83,25 @@ namespace Client.WebApi.Services
                 Datas = new List<PassbookData>(),
             };
 
-            // "FundsUtilisedIn": ",8" = Equity , "FundsUtilisedFor": ",15" = Misc
-            if (request.FundsUtilisedIn.Contains("0") || request.FundsUtilisedIn.Contains("8")
-                || request.FundsUtilisedFor.Contains("0") || request.FundsUtilisedFor.Contains("15"))
+            int[] fundsUtilisedInList = request.FundsUtilisedIn.Split(',', StringSplitOptions.RemoveEmptyEntries) // split by comma and remove blanks
+                                                    .Select(int.Parse) // convert to int
+                                                    .ToArray();
+            int[] fundsUtilisedForList = request.FundsUtilisedFor.Split(',', StringSplitOptions.RemoveEmptyEntries) // split by comma and remove blanks
+                                                    .Select(int.Parse) // convert to int
+                                                    .ToArray();
+
+            if(fundsUtilisedInList.Length > 0 && fundsUtilisedForList.Length > 0)
             {
-                // Pull the data from DP_05 table
-                result.Datas = await GetLedgerGetDPCharges(request);
+                // "FundsUtilisedIn": ",8" = Equity , "FundsUtilisedFor": ",15" = Misc
+                if ((fundsUtilisedInList.All(x => x == 0) && fundsUtilisedForList.All(x => x == 0))
+                    || (fundsUtilisedInList.All(x => x == 0) && fundsUtilisedForList.Contains(15)) // All + Misc
+                    || (fundsUtilisedInList.All(x => x == 8) && fundsUtilisedForList.Contains(0)) // Equity + All
+                    || (fundsUtilisedInList.All(x => x == 8) && fundsUtilisedForList.Contains(15)) // Equity + Misc
+                    )
+                {
+                    // Pull the data from DP_05 table
+                    result.Datas = await GetLedgerGetDPCharges(request);
+                }
             }
 
             // Pull data from existing logic (TechExcel)
@@ -127,9 +141,8 @@ namespace Client.WebApi.Services
                 if (con.State != ConnectionState.Open)
                     con.Open();
 
-                var param = new DynamicParameters();
-                string fromDate = _config["DPCharges:FromDate"];
-                param.Add("@FromDate", DateTime.Parse(fromDate), DbType.Date); //To configure splitter new vs old
+                var param = new DynamicParameters();                
+                param.Add("@FromDate", request.FromDate , DbType.Date); //To configure splitter new vs old
                 param.Add("@ClientCode", request.ClientCode, DbType.String);
 
                 try
@@ -279,7 +292,8 @@ namespace Client.WebApi.Services
                 objSection2.Section3List.Add(objSection3);
             }
 
-            objSection3.TotalAmount = listFilteredBySubCategory.Sum(x => x.DP_CHARGE);
+            //To handle Pledge/Unpledge sum 
+            objSection3.TotalAmount += listFilteredBySubCategory.Sum(x => x.DP_CHARGE);
 
             // Group by stock name for Section4 details
             var groupbystocks = listFilteredBySubCategory.GroupBy(r => r.SCRIP_NAME)
@@ -468,21 +482,12 @@ namespace Client.WebApi.Services
                 // Determine financial start year
                 int FinStartYear = (DateTime.Now.Month >= 4 ? DateTime.Now.Year : DateTime.Now.Year - 1);
 
-                //To configure splitter new vs old
-                string fromDate = _config["DPCharges:FromDate"];
-                if (DateTime.Now <= DateTime.ParseExact("01/04/2026", "dd/MM/yyyy", null))
-                {
-                    fromDate = DateTime.Parse(fromDate).ToString("dd/MM/yyyy");
-                }
-                else
-                {
-                    fromDate = "01/04/" + FinStartYear.ToString();
-                }
-
+                //FromDate '01/04/2025'
+	            //ToDate '25-09-2025'
                 var param = new DynamicParameters();
                 param.Add("@COMPANY_CODE", "BSE_CASH','BSE_FNO','CD_BSE','CD_NSE','MCX','MF_BSE','MTF','NCDEX','NCL','NSE_CASH','NSE_COM','NSE_FNO", DbType.String);
                 param.Add("@START_YEAR", FinStartYear, DbType.Int32);
-                param.Add("@FROM_DATE", fromDate, DbType.String);
+                param.Add("@FROM_DATE", request.FromDate, DbType.String);
                 param.Add("@TO_DATE", DateTime.Now.ToString(@"dd/MM/yyyy"), DbType.String);
                 param.Add("@LEDGER_LIST", request.ClientCode, DbType.String);
                 param.Add("@MERGECOMPANY", "Y", DbType.String);
@@ -501,7 +506,7 @@ namespace Client.WebApi.Services
                             obj.CreatedDate = DateTime.Now;
                         });
 
-                        return LedgerBulkUploadToDatabase(LedgerList, "LedgerAPIData");
+                        return await LedgerBulkUploadToDatabase(LedgerList, "LedgerAPIData");
                     }
 
                 }
@@ -515,7 +520,7 @@ namespace Client.WebApi.Services
             }
         }
 
-        public bool LedgerBulkUploadToDatabase<T>(List<T> dataList, string tableName)
+        private async Task<bool> LedgerBulkUploadToDatabase<T>(List<T> dataList, string tableName)
         {
             try
             {
@@ -536,7 +541,7 @@ namespace Client.WebApi.Services
 
                     using (var conBulk = new SqlConnection(con.ConnectionString))
                     {
-                        bulk.CommitTransaction(conBulk);
+                       await bulk.CommitTransactionAsync(conBulk);
                     }
                 }
 
@@ -547,6 +552,26 @@ namespace Client.WebApi.Services
                 _logger.Error("LedgerBulkUploadToDatabase: Exception: " + ex.ToString());
                 return false;
             }
+        }
+
+        public string GetToDateFromConfig(int FinStartYear)
+        {
+            string fromDate = "01/04/" + FinStartYear.ToString();
+            try
+            {
+                //To rollback, remove config value so it will take current date as earlier
+                if (DateTime.TryParseExact(_config["DPCharges:ToDate"], "yyyy-MM-dd", null, System.Globalization.DateTimeStyles.None, out DateTime dtToDate))
+                {
+                    fromDate = DateTime.Parse(fromDate).ToString("dd/MM/yyyy");
+                }
+            }
+            catch(Exception ex)
+            {
+                // Ignore and use default fromDate
+                _logger.Error("GetToDateFromConfig: Exception: " + ex.ToString());
+            }
+
+            return fromDate;
         }
     }
 }

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using Client.WebApi.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Configuration;
 
 namespace Client.WebApi.Controllers
 {
@@ -13,10 +14,13 @@ namespace Client.WebApi.Controllers
     public class LedgerController : ControllerBase
     {
         ILedgerService _ledgerService;
+        IConfiguration _config;
 
-        public LedgerController(ILedgerService ledgerService)
+        public LedgerController(ILedgerService ledgerService, IConfiguration config)
         {
             _ledgerService = ledgerService;
+            _config = config;
+
         }
 
         /// <summary>
@@ -40,7 +44,7 @@ namespace Client.WebApi.Controllers
                 ClientCode = obj.Uid,
                 CategoryId = obj.CategoryId,
                 SubCategoryId = obj.SubCategoryId,
-                FromDate = "01/04/" + FinStartYear.ToString(),
+                FromDate = _ledgerService.GetToDateFromConfig(FinStartYear),
                 ToDate = DateTime.Now.ToString(@"dd/MM/yyyy"),
                 StartYear = FinStartYear.ToString()
             };
@@ -72,7 +76,7 @@ namespace Client.WebApi.Controllers
                 ClientCode = obj.Uid,
                 FundsUtilisedIn = obj.FundsUtilisedIn,
                 FundsUtilisedFor = obj.FundsUtilisedFor,
-                FromDate = "01/04/" + FinStartYear.ToString(),
+                FromDate = _ledgerService.GetToDateFromConfig(FinStartYear),
                 ToDate = DateTime.Now.ToString(@"dd/MM/yyyy"),
                 StartYear = FinStartYear.ToString()
             };
