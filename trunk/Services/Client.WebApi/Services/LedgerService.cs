@@ -142,8 +142,8 @@ namespace Client.WebApi.Services
                     con.Open();
 
                 var param = new DynamicParameters();                
-                param.Add("@FromDate", request.FromDate , DbType.Date); //To configure splitter new vs old
-                param.Add("@ClientCode", request.ClientCode, DbType.String);
+                param.Add("@FromDate", request.FromDate); //To configure splitter new vs old
+                param.Add("@ClientCode", request.ClientCode);
 
                 try
                 {
@@ -437,11 +437,11 @@ namespace Client.WebApi.Services
                                                 IsTransTypeCR = true,
                                                 LabelText = "DP Charges Refund"
                                             });
-
-                                            objPassbookDataList.Add(passbookData);
-
                                         }
-                                        // else: skip duplicate DP Charges
+                                        else
+                                        {
+                                            continue; //: skip duplicate DP Charges
+                                        }
                                     }
                                     else
                                     {
@@ -453,8 +453,13 @@ namespace Client.WebApi.Services
                                             LabelText = ledgerItem.NARRATION
                                         });
 
-                                        objPassbookDataList.Add(passbookData);
                                     }
+                                }
+
+                                //Add Date records into passbook list only if records found
+                                if(passbookData.Section1List?.Count > 0)
+                                {
+                                    objPassbookDataList.Add(passbookData);
                                 }
                             }
                         }
@@ -560,9 +565,9 @@ namespace Client.WebApi.Services
             try
             {
                 //To rollback, remove config value so it will take current date as earlier
-                if (DateTime.TryParseExact(_config["DPCharges:ToDate"], "yyyy-MM-dd", null, System.Globalization.DateTimeStyles.None, out DateTime dtToDate))
+                if (DateTime.TryParseExact(_config["DPCharges:FromDate"], "yyyy-MM-dd", null, System.Globalization.DateTimeStyles.None, out DateTime dtfromDate))
                 {
-                    fromDate = DateTime.Parse(fromDate).ToString("dd/MM/yyyy");
+                    fromDate = dtfromDate.ToString("dd/MM/yyyy");
                 }
             }
             catch(Exception ex)
