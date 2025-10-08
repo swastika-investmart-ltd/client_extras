@@ -6,8 +6,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Components;
 using Dapper;
-using DocumentFormat.OpenXml.Office2010.PowerPoint;
-using DocumentFormat.OpenXml.Wordprocessing;
 using Microsoft.Extensions.Configuration;
 using SqlBulkTools;
 
