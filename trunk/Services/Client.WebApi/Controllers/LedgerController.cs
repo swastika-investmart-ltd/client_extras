@@ -45,7 +45,7 @@ namespace Client.WebApi.Controllers
                 ClientCode = obj.Uid,
                 CategoryId = obj.CategoryId,
                 SubCategoryId = obj.SubCategoryId,
-                FromDate = _ledgerService.GetToDateFromConfig(FinStartYear),
+                FromDate = _ledgerService.GetConfigFromDate(FinStartYear),
                 ToDate = DateTime.Now.ToString(@"dd/MM/yyyy"),
                 StartYear = FinStartYear.ToString()
             };
@@ -77,7 +77,7 @@ namespace Client.WebApi.Controllers
                 ClientCode = obj.Uid,
                 FundsUtilisedIn = obj.FundsUtilisedIn,
                 FundsUtilisedFor = obj.FundsUtilisedFor,
-                FromDate = _ledgerService.GetToDateFromConfig(FinStartYear),
+                FromDate = _ledgerService.GetConfigFromDate(FinStartYear),
                 ToDate = DateTime.Now.ToString(@"dd/MM/yyyy"),
                 StartYear = FinStartYear.ToString()
             };

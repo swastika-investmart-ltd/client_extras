@@ -15,7 +15,7 @@ namespace Client.WebApi.Services
     {
         public Task<ResponseBaseModel<PassbookData>> GetFundsAddedAndWithdrawnList(LedgerInternalRequest request);
         public Task<ResponseBaseModel<PassbookData>> GetFundsUtilisedList(LedgerInternalRequest request);
-        public string GetToDateFromConfig(int FinStartYear);
+        public string GetConfigFromDate(int FinStartYear);
     }
 
     public class LedgerService : BaseService, ILedgerService
@@ -201,16 +201,12 @@ namespace Client.WebApi.Services
                 List<LedgerResponse> listFilteredByCategory = listFilteredByDate.Where(item => item.CATEGORY == categoryItem).ToList();
                 if (listFilteredByCategory != null && listFilteredByCategory.Any())
                 {
-                    Section1 objSection1 = new Section1()
-                    {
-                        Description = string.Empty,
-                        IsTransTypeCR = false,
-                    };
+                    Section1 objSection1 = new Section1();
 
                     if (record.Section1List is null) record.Section1List = new List<Section1>();
 
                     record.Section1List.Add(objSection1);
-                    objSection1.TotalAmount = listFilteredByCategory.Sum(x => x.DP_CHARGE);
+                    objSection1.TotalAmount = listFilteredByCategory.Sum(x => x.DP_CHARGE); // DP_CHARGE = Amount
 
                     if (categoryItem == DPChargeCategoryType.DP.ToString())
                     {
@@ -253,17 +249,30 @@ namespace Client.WebApi.Services
         /// </summary>
         private void PopulateOtherSection1(Section1 objSection1, string categoryItem)
         {
-            objSection1.TypeId = Section1Category.NONE;
-            objSection1.ActionText = string.Empty;
+            Section2 objSection2 = new Section2();
 
             switch (categoryItem)
             {
-                case "DEMAT_SETUP":
+                case "AMC": //View More
+                    objSection1.Id = DPChargeCategoryType.AMC;
+                    objSection1.LabelText = "AMC Charges";
+                    objSection1.TypeId = Section1Category.KNOW_MORE;
+                    objSection1.ActionText = "Know more";
+
+                    objSection1.Section2Item = objSection2;
+                    objSection2.HeaderText = "Fees charged for maintaining your account";
+                    objSection2.BodyText = "AMC Charges";
+                    break;
+
+                case "DEMAT_SETUP": //None
                     objSection1.Id = DPChargeCategoryType.DEMAT_SETUP;
+                    objSection1.TypeId = Section1Category.NONE;
                     objSection1.LabelText = "Demat Setup Charges";
                     break;
-                default:
-                    objSection1.Id = DPChargeCategoryType.NONE;
+
+                default: // None                    
+                    objSection1.Id = DPChargeCategoryType.OTHER;
+                    objSection1.TypeId = Section1Category.NONE;
                     objSection1.LabelText = "Other Charges";
                     break;
             }
@@ -443,6 +452,19 @@ namespace Client.WebApi.Services
                                             continue; //: skip duplicate DP Charges
                                         }
                                     }
+                                    else if(ledgerItem.NARRATION.Contains("BEING AMT DEBIT AGST POA/DDPI CHARGES", StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        passbookData.Section1List.Add(new Section1
+                                        {
+                                            TypeId = Section1Category.KNOW_MORE,
+                                            TotalAmount = Convert.ToDecimal(ledgerItem.CR_AMT) + Convert.ToDecimal(ledgerItem.DR_AMT),
+                                            IsTransTypeCR = Convert.ToDecimal(ledgerItem.CR_AMT) > 0,
+                                            LabelText = "DDPI Charges",
+                                            ActionText = "Know More",
+                                            Id = DPChargeCategoryType.DDPI,
+                                            Section2Item = new Section2 { HeaderText = "DDPI Charges", BodyText = "One-time fee applied to active share selling" }
+                                        });
+                                    }
                                     else
                                     {
                                         passbookData.Section1List.Add(new Section1
@@ -559,15 +581,16 @@ namespace Client.WebApi.Services
             }
         }
 
-        public string GetToDateFromConfig(int FinStartYear)
+        public string GetConfigFromDate(int FinStartYear)
         {
-            string fromDate = "01/04/" + FinStartYear.ToString();
+            // Default fromDate is next day of current date so no data will be returned from the DP charges SP
+            string fromDate = DateTime.Now.AddDays(1).ToString("dd/MM/yyyy"); //  "01/04/" + FinStartYear.ToString();
             try
             {
                 //To rollback, remove config value so it will take current date as earlier
-                if (DateTime.TryParseExact(_config["DPCharges:FromDate"], "yyyy-MM-dd", null, System.Globalization.DateTimeStyles.None, out DateTime dtfromDate))
+                if (DateTime.TryParseExact(_config["DPCharges:FromDate"], "yyyy-MM-dd HH:mm", null, System.Globalization.DateTimeStyles.None, out DateTime dtfromDate))
                 {
-                    fromDate = dtfromDate.ToString("dd/MM/yyyy");
+                    fromDate = dtfromDate.ToString("dd/MM/yyyy HH:mm");
                 }
             }
             catch(Exception ex)
