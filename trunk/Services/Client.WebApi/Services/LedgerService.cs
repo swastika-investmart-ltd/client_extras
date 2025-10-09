@@ -260,8 +260,8 @@ namespace Client.WebApi.Services
                     objSection1.ActionText = "Know more";
 
                     objSection1.Section2Item = objSection2;
-                    objSection2.HeaderText = "Fees charged for maintaining your account";
-                    objSection2.BodyText = "AMC Charges";
+                    objSection2.BodyText = "Fees charged for maintaining your account";
+                    objSection2.HeaderText = "AMC Charges";
                     break;
 
                 case "DEMAT_SETUP": //None
@@ -321,7 +321,7 @@ namespace Client.WebApi.Services
                     objSection3.InfoText = "Fee for Selling shares, including taxes.";
                     foreach (var stockItem in groupbystocks)
                     {
-                        AddSection4(objSection3, stockItem.Amount, $"{stockItem.StockName} (Qty {stockItem.Quantity})");
+                        AddSection4(objSection3, stockItem.Amount, $"{stockItem.StockName} (qty {stockItem.Quantity})");
                     }
                     break;
                 case "PLEDGE":
@@ -330,7 +330,7 @@ namespace Client.WebApi.Services
                     objSection3.InfoText = "Fee for pledging or unpledging shares.";
                     foreach (var stockItem in groupbystocks)
                     {
-                        AddSection4(objSection3, stockItem.Amount, $"{stockItem.StockName} (Qty {stockItem.Quantity})", subcategoryItem.Equals(DPChargeSubCategoryType.PLEDGE.ToString()) ? "Pledged" : "Unpledged");
+                        AddSection4(objSection3, stockItem.Amount, $"{stockItem.StockName} (qty {stockItem.Quantity})", subcategoryItem.Equals(DPChargeSubCategoryType.PLEDGE.ToString()) ? "Pledged" : "Unpledged");
                     }
                     break;
                 case "OFFMARKET":
@@ -338,7 +338,7 @@ namespace Client.WebApi.Services
                     objSection3.InfoText = "Fee for moving shared between demat accounts.";
                     foreach (var stockItem in groupbystocks)
                     {
-                        AddSection4(objSection3, stockItem.Amount, $"{stockItem.StockName} (Qty {stockItem.Quantity})");
+                        AddSection4(objSection3, stockItem.Amount, $"{stockItem.StockName} (qty {stockItem.Quantity})");
                     }
                     break;
                 default:
@@ -346,7 +346,7 @@ namespace Client.WebApi.Services
                     //objSection3.InfoText = "";
                     foreach (var stockItem in groupbystocks)
                     {
-                        AddSection4(objSection3, stockItem.Amount, $"{stockItem.StockName} (Qty {stockItem.Quantity})");
+                        AddSection4(objSection3, stockItem.Amount, $"{stockItem.StockName} (qty {stockItem.Quantity})");
                     }
                     break;
             }
@@ -524,10 +524,11 @@ namespace Client.WebApi.Services
                     var LedgerList = (await SqlMapper.QueryAsync<LedgerAPIResponse>(con, "FA_SMARTREPORT_LEDGER_DETAIL", param, commandType: CommandType.StoredProcedure)).ToList();
                     if (LedgerList != null && LedgerList.Any())
                     {
+                        string fromdatewithoutTime = request.FromDate.Split(" ")[0];
                         // Populate extra fields for each record
                         LedgerList.ForEach(obj =>
                         {
-                            obj.FromDate = request.FromDate.Trim();
+                            obj.FromDate = fromdatewithoutTime; //request.FromDate.Trim();
                             obj.ToDate = request.ToDate.Trim();
                             obj.STARTYEAR = request.StartYear.Trim();
                             obj.CreatedDate = DateTime.Now;
