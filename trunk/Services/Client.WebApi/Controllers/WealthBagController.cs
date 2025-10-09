@@ -17,6 +17,7 @@ namespace Client.WebApi.Controllers
         }
         
         [HttpPost]
+        [AllowAnonymous]
         [ApiKeyAuthorize]
         public async Task<IActionResult> SavePortfolioDataInMemory()
         {

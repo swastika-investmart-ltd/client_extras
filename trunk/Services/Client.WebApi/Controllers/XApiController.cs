@@ -10,7 +10,6 @@ using Microsoft.Extensions.Caching.Memory;
 using System.Linq;
 using Microsoft.AspNetCore.Hosting;
 using System.IO;
-using Microsoft.AspNetCore.Authorization;
 
 namespace Client.WebApi.Controllers
 {
@@ -24,13 +23,17 @@ namespace Client.WebApi.Controllers
         private readonly CacheManager<ScripOrderbySegmentsRes> _cacheManager;
         private readonly IReportsService _reportsService;
         private readonly IWebHostEnvironment _hostingEnvironment;
-        public XApiController(IRPTradingoService rpTradingoService, IConfiguration config, IMemoryCache memoryCache, IReportsService reportsService, IWebHostEnvironment hostingEnvironment)
+        private readonly ILedgerService _ledgerService;
+
+        public XApiController(IRPTradingoService rpTradingoService, IConfiguration config, IMemoryCache memoryCache, 
+            IReportsService reportsService, IWebHostEnvironment hostingEnvironment, ILedgerService ledgerService)
         {
             _rpTradingoService = rpTradingoService;
             _config = config;
             _cacheManager = new CacheManager<ScripOrderbySegmentsRes>(memoryCache);
             _reportsService = reportsService;
             _hostingEnvironment = hostingEnvironment;
+            _ledgerService = ledgerService;
         }
 
         [HttpPost()]
@@ -139,6 +142,70 @@ namespace Client.WebApi.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(new ApiResponse(400, new ApiError(ResponseMessageEnum.ValidationError.GetDescription(), ModelStateExtension.AllErrors(ModelState))));
             var result = await _rpTradingoService.GetAllSegmentsData();
+            return Ok(new ApiResponse(ResponseMessageEnum.Success.GetDescription(), result, 200));
+        }
+
+        /// <summary>
+        /// Retrieves the list of funds added and withdrawn for a client within the current financial year.
+        /// </summary>
+        /// <param name="obj">LedgerRequest containing client and category details</param>
+        /// <returns>ApiResponse with the list of funds added and withdrawn</returns>
+        [HttpPost]
+        public async Task<IActionResult> GetFundsAddedAndWithdrawnListForJarvis([FromBody] LedgerRequest obj)
+        {
+            // Validate the incoming model
+            if (!ModelState.IsValid)
+                return BadRequest(new ApiResponse(400, new ApiError(ResponseMessageEnum.ValidationError.GetDescription(), ModelStateExtension.AllErrors(ModelState))));
+
+            // Determine the financial year start based on current date (April as start of financial year)
+            int FinStartYear = (DateTime.Now.Month >= 4 ? DateTime.Now.Year : DateTime.Now.Year - 1);
+
+            // Prepare internal request object for the service
+            LedgerInternalRequest ParamIntr = new LedgerInternalRequest
+            {
+                ClientCode = obj.Uid,
+                CategoryId = obj.CategoryId,
+                SubCategoryId = obj.SubCategoryId,
+                FromDate = _ledgerService.GetConfigFromDate(FinStartYear),
+                ToDate = DateTime.Now.ToString(@"dd/MM/yyyy"),
+                StartYear = FinStartYear.ToString()
+            };
+
+            // Call the service to get the data
+            var result = await _ledgerService.GetFundsAddedAndWithdrawnList(ParamIntr);
+            // Return the result wrapped in ApiResponse
+            return Ok(new ApiResponse(ResponseMessageEnum.Success.GetDescription(), result, 200));
+        }
+
+        /// <summary>
+        /// Retrieves the list of funds utilized for a client within the current financial year.
+        /// </summary>
+        /// <param name="obj">FULedgerRequest containing client and utilization details</param>
+        /// <returns>ApiResponse with the list of funds utilized</returns>
+        [HttpPost]
+        public async Task<IActionResult> GetFundsUtilisedListForJarvis([FromBody] FULedgerRequest obj)
+        {
+            // Validate the incoming model
+            if (!ModelState.IsValid)
+                return BadRequest(new ApiResponse(400, new ApiError(ResponseMessageEnum.ValidationError.GetDescription(), ModelStateExtension.AllErrors(ModelState))));
+
+            // Determine the financial year start based on current date (April as start of financial year)
+            int FinStartYear = (DateTime.Now.Month >= 4 ? DateTime.Now.Year : DateTime.Now.Year - 1);
+
+            // Prepare internal request object for the service
+            LedgerInternalRequest ParamIntr = new LedgerInternalRequest
+            {
+                ClientCode = obj.Uid,
+                FundsUtilisedIn = obj.FundsUtilisedIn,
+                FundsUtilisedFor = obj.FundsUtilisedFor,
+                FromDate = _ledgerService.GetConfigFromDate(FinStartYear),
+                ToDate = DateTime.Now.ToString(@"dd/MM/yyyy"),
+                StartYear = FinStartYear.ToString()
+            };
+
+            // Call the service to get the data
+            var result = await _ledgerService.GetFundsUtilisedList(ParamIntr);
+            // Return the result wrapped in ApiResponse
             return Ok(new ApiResponse(ResponseMessageEnum.Success.GetDescription(), result, 200));
         }
     }

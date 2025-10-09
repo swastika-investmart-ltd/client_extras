@@ -7,7 +7,6 @@ namespace Client.WebApi.Models.Base
         public string JarvisDbConnectionString { get; }
         public string RPDbConnectionString { get; }
         public string TRvwDbConnectionString { get; }
-
         public ConfigurationService(IConfiguration configuration)
         {
             JarvisDbConnectionString = configuration.GetConnectionString("JarvisDbCon");
