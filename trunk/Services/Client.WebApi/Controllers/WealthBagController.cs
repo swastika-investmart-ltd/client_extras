@@ -15,9 +15,9 @@ namespace Client.WebApi.Controllers
         {          
             _wealthBagService = wealthBagService;
         }
-
-        [AllowAnonymous]
+        
         [HttpPost]
+        [AllowAnonymous]
         [ApiKeyAuthorize]
         public async Task<IActionResult> SavePortfolioDataInMemory()
         {
