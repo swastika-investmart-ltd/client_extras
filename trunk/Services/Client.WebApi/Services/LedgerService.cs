@@ -68,6 +68,8 @@ namespace Client.WebApi.Services
                 }
             }
 
+            result.Datas = result.Datas.OrderByDescending(x => Convert.ToDateTime(x.VoucherDate)).ToList();
+
             result.TotalRows = result.Datas.Count;
             return result;
         }
@@ -159,7 +161,7 @@ namespace Client.WebApi.Services
                 }
                 catch (Exception ex)
                 {
-                    _logger.Error("Ledger_GetDPCharges: Exception: " + ex.ToString());
+                    _logger.Error("GetFundsAddedAndWithdrawnList => Ledger_GetDPCharges: Exception: " + ex.ToString());
                     throw;
                 }
 
@@ -236,7 +238,21 @@ namespace Client.WebApi.Services
             objSection2.HeaderText = $"{objSection1.LabelText} for {voucherDateItem.ToString("dd MMM yy")}";
             objSection2.BodyText = string.Empty;
 
-            var subcategoryList = listFilteredByCategory.Select(a => a.SUB_CATEGORY).Distinct();
+            var customOrder = new List<string>
+            {
+                "STOCK_SELLING",
+                "PLEDGE",
+                "UNPLEDGE",
+                "OFFMARKET",
+                "OTHER"
+            };
+
+            var subcategoryList = listFilteredByCategory
+                .Select(a => a.SUB_CATEGORY)
+                .Distinct()
+                .OrderBy(x => customOrder.IndexOf(x))
+                .ToList();
+
             foreach (var subcategoryItem in subcategoryList)
             {
                 List<LedgerResponse> listFilteredBySubCategory = listFilteredByCategory.Where(item => item.SUB_CATEGORY == subcategoryItem).ToList();
@@ -488,7 +504,7 @@ namespace Client.WebApi.Services
                     }
                     catch (Exception ex)
                     {
-                        _logger.Error("GetLedgerFADataResponseList: Exception: " + ex);
+                        _logger.Error("GetFundsAddedAndWithdrawnList =>GetLedgerFADataResponseList: Exception: " + ex);
                         throw;
                     }
                 }
@@ -540,7 +556,7 @@ namespace Client.WebApi.Services
                 }
                 catch (Exception ex)
                 {
-                    _logger.Error("PopulateLedgerAPIData: Exception: " + ex.ToString());
+                    _logger.Error("GetFundsAddedAndWithdrawnList => PopulateLedgerAPIData: Exception: " + ex.ToString());
                     throw;
                 }
 
@@ -577,7 +593,7 @@ namespace Client.WebApi.Services
             }
             catch (Exception ex)
             {
-                _logger.Error("LedgerBulkUploadToDatabase: Exception: " + ex.ToString());
+                _logger.Error("GetFundsAddedAndWithdrawnList => LedgerBulkUploadToDatabase: Exception: " + ex.ToString());
                 return false;
             }
         }
@@ -588,6 +604,7 @@ namespace Client.WebApi.Services
             string fromDate = DateTime.Now.AddDays(1).ToString("dd/MM/yyyy"); //  "01/04/" + FinStartYear.ToString();
             try
             {
+                //TODO - APR 2026 should not use this config value
                 //To rollback, remove config value so it will take current date as earlier
                 if (DateTime.TryParseExact(_config["DPCharges:FromDate"], "yyyy-MM-dd HH:mm", null, System.Globalization.DateTimeStyles.None, out DateTime dtfromDate))
                 {
@@ -597,7 +614,7 @@ namespace Client.WebApi.Services
             catch(Exception ex)
             {
                 // Ignore and use default fromDate
-                _logger.Error("GetToDateFromConfig: Exception: " + ex.ToString());
+                _logger.Error("GetFundsAddedAndWithdrawnList => GetToDateFromConfig: Exception: " + ex.ToString());
             }
 
             return fromDate;
