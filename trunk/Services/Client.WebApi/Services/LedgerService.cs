@@ -67,9 +67,7 @@ namespace Client.WebApi.Services
                     }
                 }
             }
-
             result.Datas = result.Datas.OrderByDescending(x => Convert.ToDateTime(x.VoucherDate)).ToList();
-
             result.TotalRows = result.Datas.Count;
             return result;
         }
@@ -126,7 +124,7 @@ namespace Client.WebApi.Services
                     }
                 }
             }
-
+            result.Datas = result.Datas.OrderByDescending(x => Convert.ToDateTime(x.VoucherDate)).ToList();
             result.TotalRows = result.Datas.Count;
             return result;
         }
