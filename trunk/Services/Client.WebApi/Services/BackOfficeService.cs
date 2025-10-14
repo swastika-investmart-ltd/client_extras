@@ -32,7 +32,7 @@ namespace Client.WebApi.Services
             };          
 
             var dbArgs = new DynamicParameters();
-            dbArgs.Add("@UserId", param.UserId);
+            dbArgs.Add("@UserId", param.Uid);
             dbArgs.Add("@OptType", param.OptType);
             dbArgs.Add("@ScripSymbol", param.ScripSymbol);
             dbArgs.Add("@Exch", Exchange);

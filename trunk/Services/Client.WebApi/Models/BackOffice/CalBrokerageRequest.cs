@@ -6,8 +6,8 @@ namespace Client.WebApi
 {
     public class CalBrokerageRequest
     {
-        [Required(ErrorMessage = "UserId is required.")]
-        public string UserId { get; set; }
+        [Required(ErrorMessage = "Uid is required.")]
+        public string Uid { get; set; }
 
         [Required(ErrorMessage = "Scrip Symbol is required.")]
         public string ScripSymbol { get; set; }
