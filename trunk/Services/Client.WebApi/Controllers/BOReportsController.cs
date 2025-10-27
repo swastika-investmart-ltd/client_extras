@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace Client.WebApi.Controllers
 { 
     [Authorize]
-    [Route("BoReports/[action]")]
+    [Route("[controller]/[action]")]
     [ApiController]
     public class BOReportsController : Controller
     {

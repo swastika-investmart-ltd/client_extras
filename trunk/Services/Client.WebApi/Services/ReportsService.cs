@@ -8,9 +8,7 @@ using Microsoft.Extensions.Configuration;
 using System.Linq;
 using Dapper;
 using System.Data;
-using Entities;
 using System.IO;
-using System.Drawing;
 using ClosedXML.Excel;
 
 namespace Client.WebApi.Services
@@ -30,7 +28,7 @@ namespace Client.WebApi.Services
         // HashSet to store invalid response values
         private readonly HashSet<string> invalidResponses = new HashSet<string> { "No Such Client ID found..", "No Data Found" };
         private readonly IConfiguration _config;
-        readonly IHttpClientPostService _httpClientPostService;
+        private readonly IHttpClientPostService _httpClientPostService;
         private readonly ILog _logger;
         public ReportsService(IConfiguration config, IHttpClientPostService httpClientPostService, ILog logger)
         {
@@ -514,6 +512,8 @@ namespace Client.WebApi.Services
                                                                //ClientName = list[33].Trim(), //CLIENT_NAME,
                                 ScripSymbol = list[34].Trim(), //SCRIP_SYMBOL,
                                                                //TradingQty = list[35].Trim(), //TRADING_QUANTITY
+                                TradingQty = list[35].Trim(), //TRADING_QUANTITY,
+                                TradingAmt = list[1].Trim(), //OPENING TRADING_RATE,                              
                             };
 
                             if (objList.CompanyCode == "EXPENSES")
@@ -609,13 +609,15 @@ namespace Client.WebApi.Services
 
                 if (result != null && result.Any())
                 {
+                    //// Changed on 08 Sep 2025, the order by descending after the feedback from Parth sir that latest order 
+                    ///should be on top. Show date in descending order and trades (time) in ascending order for a particular date.
                     response.Datas = result.GroupBy(u => u.TradeDate)
                                                       .Select(grp => new TradeSummaryResMdl
                                                       {
                                                           TradeDate = grp.Key,
                                                           TotalRows = grp.ToList().Count,
                                                           SummaryList = grp.ToList().OrderBy(p => p.TradeDateTime).ToList()
-                                                      }).ToList().OrderBy(x => DateTime.Parse(x.TradeDate)).ToList();
+                                                      }).ToList().OrderByDescending(x => DateTime.Parse(x.TradeDate)).ToList();
 
                     //response.Datas = result.GroupBy(u => u.TRADE_DATE)
                     //                                  .Select(grp => new TradeSummaryResMdl
@@ -660,7 +662,8 @@ namespace Client.WebApi.Services
                 param.Add("@Segment", obj.Segment);
                 var responseDb = (await SqlMapper.QueryAsync<TradeSummaryDataResMdl>(TRwcon, "RP_Get_Trade_Summary_Report", param, commandType: CommandType.StoredProcedure)).ToList();
                 if (responseDb != null && responseDb.Any())
-                    response.Datas = responseDb.OrderBy(p => p.TradeDateTime).ToList();
+                    response.Datas = responseDb.OrderByDescending(x => x.TradeDateTime.Date)  // Descending date
+                                        .ThenBy(x => x.TradeDateTime.TimeOfDay).ToList();
                 response.TotalRows = response.Datas.Count;
             }
             return response;
@@ -705,12 +708,26 @@ namespace Client.WebApi.Services
 
         public async Task<ResponseBaseModel> GetDownLoadAnnualReport(DownLoadReportReqMdl obj, string filePath)
         {
+            AES256 aes = new AES256();
+
             ClientInfoPost obclapps = new ClientInfoPost() { UserId = obj.Uid, SecurityKey = obj.SecurityKey };
             //Below method called to get the Client Details
             string CLIENT_ID = obj.Uid;
             string CLIENT_NAME = obj.CName;
-            string PAN_NO = obj.Pan;
             string CLIENT_EMAILID = obj.CEmail;
+
+            string PAN_NO = string.Empty;
+            try
+            {
+                if (IsBase64String(obj.Pan))
+                    PAN_NO = aes.Decrypt(obj.Pan, obj.Uid);
+                else
+                    PAN_NO = obj.Pan;
+            }
+            catch
+            {
+                PAN_NO = "";
+            }
 
             //Below are the separete methods to call Pnl Summary and Global Pnl Summary
             DataSet ds1 = await PnlSummary(obj);
@@ -907,7 +924,7 @@ namespace Client.WebApi.Services
                 //xlWorkBook.Close();
                 //excelApp.Quit();
                 //below code are sending email as an attched excel to the clients               
-                if (!string.IsNullOrEmpty(CLIENT_EMAILID))
+                if (!string.IsNullOrEmpty(CLIENT_EMAILID) && obj.IsEmail)
                 {
                     long finyear = obj.FinYear % 100;
                     var ObjEmailHelper = new EmailHelper(_logger);
@@ -918,7 +935,7 @@ namespace Client.WebApi.Services
                 return new ResponseBaseModel()
                 {
                     ResponseId = 1,
-                    ResponseMessage = "Success",
+                    ResponseMessage = obj.IsEmail ? "Success" : downloadsFilePath,
                 };
             }
             else
@@ -928,6 +945,23 @@ namespace Client.WebApi.Services
                     ResponseId = 0,
                     ResponseMessage = "No Client Found"
                 };
+            }
+        }
+
+        private static bool IsBase64String(string input)
+        {
+            try
+            {
+                // Attempt to convert the string to a byte array
+                byte[] result = Convert.FromBase64String(input);
+
+                // If successful, the input is a valid Base64 string
+                return true;
+            }
+            catch (FormatException)
+            {
+                // If an exception is thrown, the input is not a valid Base64 string
+                return false;
             }
         }
 
@@ -1272,7 +1306,7 @@ namespace Client.WebApi.Services
 
         public async Task<ResponseBaseModel> LoadBSESecurityInfoReport()
         {
-            using (IDbConnection con = CreateTrvwConnection())
+            using (IDbConnection con = CreateRPConnection())
             {
                 if (con.State != ConnectionState.Open)
                     con.Open();
@@ -1291,6 +1325,5 @@ namespace Client.WebApi.Services
                 ResponseMessage = "Information Loaded successfully"
             };
         }
-
     }
 }

@@ -7,7 +7,10 @@ namespace Client.WebApi
         public long ResponseId { get; set; }
         public string ResponseMessage { get; set; }
     }
-     
+    public class ResponseBaseTModel<T>
+    {
+        public T Data { get; set; }
+    }
     public class ResponseBaseModel<T>
     {
         public long TotalRows { get; set; }
@@ -51,4 +54,21 @@ namespace Client.WebApi
         public int TotalRows { get; set; }
         public List<T> Datas { get; set; }
     }
+
+
+    public class ResponseBaseCallRecModel<T1, T2>
+    {
+        public T1 GraphData { get; set; }
+        public List<T2> Datas { get; set; }
+        public int TotalRows { get; set; }       
+    }
+
+    public class ResponseBaseMobCallRecModel<T1, T2, T3>
+    {
+        public T1 GraphData { get; set; }
+        public List<T2> ActiveDatas { get; set; }
+        public List<T3> ClosedDatas { get; set; }
+        public int TotalRows { get; set; }
+    }
+
 }

@@ -1,11 +1,12 @@
-﻿using Newtonsoft.Json.Serialization;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using static Entities.CustomValidators;
 
 namespace ResearchPanel.Entities
-{ 
+{
     public class ScripGeneralResponse
     {
         public long GeneralId { get; set; }
@@ -19,7 +20,7 @@ namespace ResearchPanel.Entities
         public bool IsRead { get; set; }
         public DateTime CreatedOn { get; set; }
         public long CompanyId { get; set; }
-    } 
+    }
     public class ScripOffersResponse
     {
         public long OfferId { get; set; }
@@ -108,7 +109,7 @@ namespace ResearchPanel.Entities
         public string SegmentName { get; set; }
         public string ExchangeName { get; set; }
         public string IndustryType { get; set; }
-        public string Status { get; set; }        
+        public string Status { get; set; }
         public string FilePath { get; set; }
         public long CompanyId { get; set; }
         public string KBContract { get; set; }
@@ -194,26 +195,27 @@ namespace ResearchPanel.Entities
         public DateTime ShortDate { get; set; }
     }
 
-    public class LogInOutInfoPost
-    {
-        [Required(ErrorMessage = "UserId is required.")]
-        public string UserId { get; set; } //User Id
+    //public class LogInOutInfoPost
+    //{
+    //    [Required(ErrorMessage = "UserId is required.")]
+    //    public string UserId { get; set; } //User Id
 
-        [Required(ErrorMessage = "SourceId is required.")]
-        public string SourceId { get; set; } //DeviceId Or WebUniqueId
+    //    [Required(ErrorMessage = "SourceId is required.")]
+    //    public string SourceId { get; set; } //DeviceId Or WebUniqueId
 
-        [Required(ErrorMessage = "SourceType is required.")]
-        public string SourceType { get; set; } //web Or mobile    
+    //    [Required(ErrorMessage = "SourceType is required.")]
+    //    public string SourceType { get; set; } //web Or mobile    
 
-        [Required(ErrorMessage = "ReqType is required.")]
-        public string ReqType { get; set; } // login Or logout
+    //    [Required(ErrorMessage = "ReqType is required.")]
+    //    public string ReqType { get; set; } // login Or logout
 
-        [Required(ErrorMessage = "SecurityKey is required.")]
-        public string SecurityKey { get; set; } //Security Key
+    //    [Required(ErrorMessage = "SecurityKey is required.")]
+    //    public string SecurityKey { get; set; } //Security Key
 
-        [Required(ErrorMessage = "CompanyId is required.")]
-        public string CompanyId { get; set; }
-    }
+    //    [Required(ErrorMessage = "CompanyId is required.")]
+    //    public string CompanyId { get; set; }
+    //}
+
     public class ScripOrderbySegmentsRes
     {
         public long OrderId { get; set; }
@@ -265,9 +267,34 @@ namespace ResearchPanel.Entities
         public decimal LtNiftyReturns { get; set; }
         public int LtActiveCalls { get; set; }
     }
+    
+    public class RecommendationPercentageInfo
+    {
+        //public int CommodityPositiveCall { get; set; }
+        //public int CommodityTotal { get; set; }
+        public int CommodityCalls { get; set; }
+        public decimal CommodityPercentage { get; set; }
+        //public int IntradayPositiveCall { get; set; }
+        //public int IntradayTotal { get; set; }
+        public int IntradayCalls { get; set; }
+        public decimal IntradayPercentage { get; set; }
+        //public int DeliveryPositiveCall { get; set; }
+        //public int DeliveryTotal { get; set; }
+        public int CashDeliverycalls { get; set; }
+        public decimal CashDeliveryPercentage { get; set; }
+        //public int FNOIndexPositiveCall { get; set; }
+        //public int FNOIndexTotal { get; set; }
+        public int FNOIndexCalls { get; set; }
+        public decimal FNOIndexPercentage { get; set; }
+       // public int FNOStockPositiveCall { get; set; }
+        public int FNOStocksCalls { get; set; }
+       // public int FNOStockTotal { get; set; }
+        public decimal FNOStockPercentage { get; set; }       
+    }
+
+
     public class ScripOrderbySegmentsReq
     {
-        //[Required(ErrorMessage = "SecurityKey is required.")]
         public string SecurityKey { get; set; }
 
         [Required(ErrorMessage = "Uid is required.")]
@@ -275,12 +302,10 @@ namespace ResearchPanel.Entities
 
         [Required(ErrorMessage = "Segment is required.")]
 
-        //var segments = new[] { "All", "Equity", "FNO", "Currency", "Commodity", "PreLogin" };
         [ValueInList("All", "Equity", "FNO", "Currency", "Commodity", "PreLogin", ErrorMessage = "Invalid Segment")]
         public string Segment { get; set; }
 
         [Required(ErrorMessage = "Type is required.")]
-        //var Type = new[] { "All", "Intraday", "Delivery" };
         [ValueInList("All", "Intraday", "Delivery", ErrorMessage = "Invalid Type")]
         public string Type { get; set; }
 
@@ -299,10 +324,28 @@ namespace ResearchPanel.Entities
         [Range(0, int.MaxValue, ErrorMessage = "Invalid CompanyId")]
         public long CompanyId { get; set; }
     }
+
+    public class GSGeneralInfoReq
+    {
+        [Range(0, int.MaxValue, ErrorMessage = "Invalid CompanyId")]
+        public long CompanyId { get; set; }
+
+        [Required(ErrorMessage = "Uid is required.")]
+        public string Uid { get; set; }
+    }
     public class GSOffersReq
     {
         [Range(0, int.MaxValue, ErrorMessage = "Invalid CompanyId")]
         public long CompanyId { get; set; }
+    }
+
+    public class GSOffersInfoReq
+    {
+        [Range(0, int.MaxValue, ErrorMessage = "Invalid CompanyId")]
+        public long CompanyId { get; set; }
+
+        [Required(ErrorMessage = "Uid is required.")]
+        public string Uid { get; set; }
     }
     public class GSOrderFollowupReq
     {
@@ -310,6 +353,16 @@ namespace ResearchPanel.Entities
         [Range(1, int.MaxValue, ErrorMessage = "Invalid OrderId")]
         public long OrderId { get; set; }
     }
+    public class GOrderFollowupReq
+    {
+        [Required(ErrorMessage = "OrderId is required.")]
+        [Range(1, int.MaxValue, ErrorMessage = "Invalid OrderId")]
+        public long OrderId { get; set; }
+
+        [Required(ErrorMessage = "Uid is required.")]
+        public string Uid { get; set; }
+    }
+
     public class GAllScripInfoReq
     {
         [Range(0, int.MaxValue, ErrorMessage = "Invalid CompanyId")]
@@ -330,20 +383,27 @@ namespace ResearchPanel.Entities
         [Required(ErrorMessage = "Uid is required.")]
         public string Uid { get; set; }
     }
-     public class TopRecommLstReq
+    public class TopRecommLstReq
     {
         [Required(ErrorMessage = "Uid is required.")]
         public string Uid { get; set; }
+        public string Preferred_Segment { get; set; }
+
+        //[Required(ErrorMessage = "Term is required.")]
+        public bool IsShortTerm { get; set; }
     }
 
-    public class TopRecommLstIntrReq
+    //public class TopRecommLstIntrReq
+    //{
+    //    [Required(ErrorMessage = "Uid is required.")]
+    //    public string Uid { get; set; }
+
+    //    [Required(ErrorMessage = "SecurityKey is required.")]
+    //    public string SecurityKey { get; set; }
+    //}
+    public class ViewRecomReq
     {
         [Required(ErrorMessage = "Uid is required.")]
         public string Uid { get; set; }
-
-        [Required(ErrorMessage = "SecurityKey is required.")]
-        public string SecurityKey { get; set; }
     }
 }
-
-

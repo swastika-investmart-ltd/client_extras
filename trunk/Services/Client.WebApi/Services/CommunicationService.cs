@@ -1,4 +1,5 @@
-﻿using Client.WebApi.Services;
+﻿using Client.WebApi;
+using Client.WebApi.Services;
 using Components;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -17,68 +18,72 @@ namespace Client.WebApi
     public interface ICommunicationService
     {
         Task<bool> SendWhatsapp(CommunicationRequest request);
-        Task<bool> TriggerCallViaTATA(CommunicationRequest request);
+        Task<bool> TriggerCallViaTATA(CommunicationRequest request); 
     }
     public class CommunicationService : ICommunicationService
     {
-        private IConfiguration _config;
+        private readonly IConfiguration _config;
         private readonly ILog _logger;
+
         public CommunicationService(IConfiguration config, ILog logger)
         {
             _config = config;
             _logger = logger;
         }
-        public async Task<bool> SendWhatsapp(CommunicationRequest request)
-        {
-            var httpRequest = (HttpWebRequest)WebRequest.Create("http://pickyassist.com/beta/api/v2/push");
-            httpRequest.Method = "POST";
-            httpRequest.Accept = "application/json";
-            httpRequest.ContentType = "application/json";
-            using (CommPickyAssistMetrics.SendMessageDuration.NewTimer())
-            {
-                try
-                {
-                    InputData[] senderList = new InputData[1];
-                    senderList[0] = new InputData()
-                    {
-                        number = request.MobileNumber,
-                        message = "Message",
-                        template_message = new List<string>
-             {
-                request.ClientId,
-                request.Message,
-                request.LTP
-             }
-                    };
+        //public async Task<bool> SendWhatsapp_PickyAssist(CommunicationRequest request)
+        //{
+        //    if (request.Uid == "GO11240")
+        //       await SendWhatsapp_InfoBip(request);
 
-                    var data = new Whatsapp();
-                    data.token = _config["PickyAssist:token"];
-                    data.application = _config["PickyAssist:application"];
-                    data.interactive_type = _config["PickyAssist:interactive_type"];
-                    data.template_id = _config["PickyAssist:template_id"];
-                    data.data = senderList;
+        //    var httpRequest = (HttpWebRequest)WebRequest.Create("http://pickyassist.com/beta/api/v2/push");
+        //    httpRequest.Method = "POST";
+        //    httpRequest.Accept = "application/json";
+        //    httpRequest.ContentType = "application/json";
+        //    using (CommPickyAssistMetrics.SendMessageDuration.NewTimer())
+        //    {
+        //        try
+        //        {
+        //            InputData[] senderList = new InputData[1];
+        //            senderList[0] = new InputData()
+        //            {
+        //                number = request.MobileNumber,
+        //                message = "Message",
+        //                template_message = new List<string>
+        //                 {
+        //                    request.Uid,
+        //                    request.Message,
+        //                    request.LTP
+        //                 }
+        //            };
 
-                    using (var streamWriter = new StreamWriter(httpRequest.GetRequestStream()))
-                    {
-                        streamWriter.Write(JsonConvert.SerializeObject(data));
-                    }
+        //            var data = new Whatsapp();
+        //            data.token = _config["PickyAssist:token"];
+        //            data.application = _config["PickyAssist:application"];
+        //            data.interactive_type = _config["PickyAssist:interactive_type"];
+        //            data.template_id = _config["PickyAssist:template_id"];
+        //            data.data = senderList;
 
-                    var httpResponse = (HttpWebResponse)httpRequest.GetResponse();
-                    _logger.Log(LogLevel.Trace, $@"SendWhatsapp- " + httpResponse);
-                    using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
-                    {
-                        var result = streamReader.ReadToEnd();
-                    }
-                    CommPickyAssistMetrics.SendMessageSuccess.Inc();
-                }
-                catch (System.Exception ex)
-                {
-                    _logger.Log(LogLevel.Error, $@"SendWhatsapp-Exception: " + ex.ToString());
-                    CommPickyAssistMetrics.SendMessageError.Inc();
-                }
-            }
-            return true;
-        }
+        //            using (var streamWriter = new StreamWriter(httpRequest.GetRequestStream()))
+        //            {
+        //                streamWriter.Write(JsonConvert.SerializeObject(data));
+        //            }
+
+        //            var httpResponse = (HttpWebResponse)httpRequest.GetResponse();
+        //            _logger.Log(LogLevel.Trace, $@"SendWhatsapp- " + httpResponse);
+        //            using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
+        //            {
+        //                var result = streamReader.ReadToEnd();
+        //            }
+        //            CommPickyAssistMetrics.SendMessageSuccess.Inc();
+        //        }
+        //        catch (System.Exception ex)
+        //        {
+        //            _logger.Log(LogLevel.Error, $@"SendWhatsapp-Exception: " + ex.ToString());
+        //            CommPickyAssistMetrics.SendMessageError.Inc();
+        //        }
+        //    }
+        //    return true;
+        //}
 
         public async Task<bool> TriggerCallViaTATA(CommunicationRequest request)
         {
@@ -108,6 +113,71 @@ namespace Client.WebApi
                         _logger.Log(LogLevel.Error, $@"AddLeadInTATA-Exception: " + ex.ToString());
                         CommTATATeleMetrics.SendTATAMessageError.Inc();
                     }
+                }
+            }
+            return true;
+        }
+        public async Task<bool> SendWhatsapp(CommunicationRequest request)
+        {
+            using (CommPickyAssistMetrics.SendMessageDuration.NewTimer())
+            {
+                try
+                {
+                    HttpClient client = new HttpClient
+                    {
+                        DefaultRequestHeaders =
+                        {
+                            { "Authorization", _config["InfoBip:AppKey"] },
+                            { "Accept", "application/json" }
+                        }
+                    };
+
+                    string ApiHost = _config["InfoBip:ApiHost"];
+                    var infoBip = new InfoBipWhatsapp
+                    {
+                        messages = new List<Message>
+                        {
+                            new Message
+                            {
+                                from = _config["InfoBip:fromNo"],        // # Verified Infobip WhatsApp sender
+                                to = request.MobileNumber,    // # Opted-in recipient number
+                                callbackData = request.Uid,   // # Optional: any identifier you want to receive in the callback
+                                notifyUrl = _config["InfoBip:notifyUrl"],               // # Optional: for delivery status callbacks
+                                content = new Content
+                                {
+                                    templateName =  _config["InfoBip:templateName"],   // # Template name (case-sensitive)
+                                    templateData = new TemplateData
+                                    {
+                                        body = new Body
+                                        {
+                                            placeholders = new List<string>
+                                            {
+                                                request.Uid,      // # Placeholder 1
+                                                request.Message.TrimEnd(),  // # Placeholder 2
+                                                request.LTP,      // # Placeholder 3
+                                                _config["InfoBip:RemindMeDeepLink"]  // # Placeholder 4
+                                            }
+                                        }
+                                    },
+                                    language = "en"
+                                }
+                            }
+                        }
+                    };
+
+                    var jsonContent = System.Text.Json.JsonSerializer.Serialize(infoBip);
+                    using var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+                    using var response = await client.PostAsync(ApiHost + _config["InfoBip:ApiURL"], content);
+
+                    string responseString = await response.Content.ReadAsStringAsync();
+                    _logger.Log(LogLevel.Debug, $@"Status Code: " +  (int)response.StatusCode);
+                    _logger.Log(LogLevel.Debug, $@"Response: " + responseString);
+                    CommPickyAssistMetrics.SendMessageSuccess.Inc();
+                }
+                catch (System.Exception ex)
+                {
+                    _logger.Log(LogLevel.Error, $@"SendWhatsapp-Exception: " + ex.ToString());
+                    CommPickyAssistMetrics.SendMessageError.Inc();
                 }
             }
             return true;

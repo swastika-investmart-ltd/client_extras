@@ -1,9 +1,10 @@
-﻿using Components;
-using System.IO;
+﻿using System.IO;
 using System.Net.Http;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using System;
+using Components;
 
 namespace Client.WebApi
 {
@@ -15,9 +16,11 @@ namespace Client.WebApi
     public class HttpClientPostService : IHttpClientPostService
     {
         private readonly IHttpClientFactory _clientFactory;
-        public HttpClientPostService(IHttpClientFactory clientFactory)
+        private readonly ILog _logger;
+        public HttpClientPostService(IHttpClientFactory clientFactory, ILog logger)
         {
             _clientFactory = clientFactory;
+            _logger = logger;
         }
 
         public async Task<PostDataResponse> PostData<T>(T model, string baseURL, string addressSuffix, string accessToken)
@@ -38,30 +41,39 @@ namespace Client.WebApi
 
         public async Task<string> WebRequestPostAsync(string baseURL, string addresssuffix, string data)
         {
-            string uri = baseURL + addresssuffix;
-            byte[] dataBytes = Encoding.UTF8.GetBytes(data);
-
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
-            request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
-            request.ContentLength = dataBytes.Length;
-            request.ContentType = "application/x-www-form-urlencoded";
-            request.Method = "POST";
-
-            //request.KeepAlive = false;
-            //request.Timeout = 120000;
-            //request.ServicePoint.ConnectionLeaseTimeout = 120000;
-            //request.ServicePoint.MaxIdleTime = 120000;
-
-            using (Stream requestBody = request.GetRequestStream())
+            try
             {
-                await requestBody.WriteAsync(dataBytes, 0, dataBytes.Length);
+
+                string uri = baseURL + addresssuffix;
+                byte[] dataBytes = Encoding.UTF8.GetBytes(data);
+
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
+                request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+                request.ContentLength = dataBytes.Length;
+                request.ContentType = "application/x-www-form-urlencoded";
+                request.Method = "POST";
+
+                //request.KeepAlive = false;
+                //request.Timeout = 120000;
+                //request.ServicePoint.ConnectionLeaseTimeout = 120000;
+                //request.ServicePoint.MaxIdleTime = 120000;
+
+                using (Stream requestBody = request.GetRequestStream())
+                {
+                    await requestBody.WriteAsync(dataBytes, 0, dataBytes.Length);
+                }
+
+                using (HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync())
+                using (Stream streamResponse = response.GetResponseStream())
+                using (StreamReader reader = new StreamReader(streamResponse))
+                {
+                    return await reader.ReadToEndAsync();
+                }
             }
-
-            using (HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync())
-            using (Stream streamResponse = response.GetResponseStream())
-            using (StreamReader reader = new StreamReader(streamResponse))
+            catch(Exception ex)
             {
-                return await reader.ReadToEndAsync();
+                _logger.Log(NLog.LogLevel.Error, " WebRequestPostAsync: " + ex.ToString());
+                return string.Empty;
             }
         }
     }

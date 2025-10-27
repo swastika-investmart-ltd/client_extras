@@ -39,14 +39,16 @@ namespace Client.WebApi
 		//public string ClientId { get; set; } //CLIENT_ID
 		//public string ClientName { get; set; } //CLIENT_NAME
 		public string ScripSymbol { get; set; } //SCRIP_SYMBOL
-		//public string TradingQty { get; set; } //TRADING_QUANTITY		
-
+        //public string TradingQty { get; set; } //TRADING_QUANTITY		
+        public string TradingAmt { get; set; }
+        public string TradingQty { get; set; }
+        /// public string Trading_Rate { get; set; } This need to be calculated (Trading_Amt * Trading_Qty)
     }
 
-	//public class GlobalSummaryResMdl
-	//{
-	//	public string ScripName { get; set; }
-	//	public int TotalRows { get; set; }
-	//	public List<GlobalSummaryResponseMdl> SummaryList { get; set; }
-	//}
+    //public class GlobalSummaryResMdl
+    //{
+    //	public string ScripName { get; set; }
+    //	public int TotalRows { get; set; }
+    //	public List<GlobalSummaryResponseMdl> SummaryList { get; set; }
+    //}
 }
