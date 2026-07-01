@@ -16,13 +16,13 @@ jobs:
     steps:
 
       # =========================
-      # 1. Checkout Code
+      # Checkout Code
       # =========================
       - name: Checkout Code
         uses: actions/checkout@v4
 
       # =========================
-      # 2. Setup .NET SDK (match your project net5.0)
+      # Setup .NET SDK (net5.0 project)
       # =========================
       - name: Setup .NET SDK
         uses: actions/setup-dotnet@v4
@@ -30,7 +30,7 @@ jobs:
           dotnet-version: '5.0.x'
 
       # =========================
-      # 3. Generate Build Version (DateTime)
+      # Generate Build Version (Timestamp)
       # =========================
       - name: Generate Build Version
         shell: pwsh
@@ -39,19 +39,19 @@ jobs:
           echo "BUILD_VERSION=$version" >> $env:GITHUB_ENV
 
       # =========================
-      # 4. Restore Packages
+      # Restore Packages
       # =========================
       - name: Restore Dependencies
         run: dotnet restore .\trunk\ClientExtras.sln
 
       # =========================
-      # 5. Build Solution
+      # Build Solution
       # =========================
       - name: Build Solution
         run: dotnet build .\trunk\ClientExtras.sln --configuration ${{ env.CONFIGURATION }} --no-restore
 
       # =========================
-      # 6. Publish Web API
+      # Publish Web API
       # =========================
       - name: Publish Web API
         run: |
@@ -61,17 +61,17 @@ jobs:
             --output .\publish
 
       # =========================
-      # 7. Rename Publish Folder with Version
+      # Rename output with version
       # =========================
       - name: Versioned Output Folder
         shell: pwsh
         run: |
-          Rename-Item -Path .\publish -NewName "publish_${env:BUILD_VERSION}"
+          Rename-Item -Path .\publish -NewName "publish_$env:BUILD_VERSION"
 
       # =========================
-      # 8. Upload Build Artifact (Versioned)
+      # Upload Artifact
       # =========================
-      - name: Upload Artifact
+      - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
         with:
           name: ClientExtras-${{ env.BUILD_VERSION }}
@@ -79,25 +79,33 @@ jobs:
           retention-days: 30
 
       # =========================
-      # 9. Google Chat Notification - SUCCESS
+      # Google Chat - SUCCESS
       # =========================
-      - name: Notify Success
+      - name: Notify Google Chat Success
         if: success()
+        shell: pwsh
         run: |
-          curl -X POST "${{ secrets.GOOGLE_CHAT_WEBHOOK }}" `
-          -H "Content-Type: application/json" `
-          -d "{
-            \"text\": \"✅ BUILD SUCCESS\nProject: ClientExtras\nVersion: ${{ env.BUILD_VERSION }}\nBranch: ${{ github.ref_name }}\nRun: ${{ github.run_number }}\"
-          }"
+          $body = @{
+            text = "✅ BUILD SUCCESS`nProject: ClientExtras`nVersion: $env:BUILD_VERSION`nBranch: $env:GITHUB_REF_NAME`nRun: $env:GITHUB_RUN_NUMBER"
+          } | ConvertTo-Json -Depth 3
+
+          Invoke-RestMethod -Uri "${{ secrets.GOOGLE_CHAT_WEBHOOK }}" `
+            -Method POST `
+            -ContentType "application/json" `
+            -Body $body
 
       # =========================
-      # 10. Google Chat Notification - FAILURE
+      # Google Chat - FAILURE
       # =========================
-      - name: Notify Failure
+      - name: Notify Google Chat Failure
         if: failure()
+        shell: pwsh
         run: |
-          curl -X POST "${{ secrets.GOOGLE_CHAT_WEBHOOK }}" `
-          -H "Content-Type: application/json" `
-          -d "{
-            \"text\": \"❌ BUILD FAILED\nProject: ClientExtras\nVersion: ${{ env.BUILD_VERSION }}\nBranch: ${{ github.ref_name }}\nRun: ${{ github.run_number }}\"
-          }"
+          $body = @{
+            text = "❌ BUILD FAILED`nProject: ClientExtras`nVersion: $env:BUILD_VERSION`nBranch: $env:GITHUB_REF_NAME`nRun: $env:GITHUB_RUN_NUMBER"
+          } | ConvertTo-Json -Depth 3
+
+          Invoke-RestMethod -Uri "${{ secrets.GOOGLE_CHAT_WEBHOOK }}" `
+            -Method POST `
+            -ContentType "application/json" `
+            -Body $body
