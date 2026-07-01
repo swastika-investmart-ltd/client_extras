@@ -1,5 +1,4 @@
 name: Client Extras CI Build
-
 on:
   push:
     branches:
@@ -9,18 +8,15 @@ on:
 jobs:
   build:
     runs-on: windows-latest
-
     env:
       CONFIGURATION: Release
 
     steps:
-
       # =========================
       # Checkout Code
       # =========================
       - name: Checkout Code
         uses: actions/checkout@v4
-
       # =========================
       # Setup .NET SDK (net5.0 project)
       # =========================
@@ -28,14 +24,16 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '5.0.x'
-
       # =========================
-      # Generate Build Version (Timestamp)
-      # =========================
-      - name: Generate Build Version
+      - name: Generate Build Version (IST)
         shell: pwsh
         run: |
-          $version = Get-Date -Format "yyyyMMdd_HHmmss"
+          $ist = [System.TimeZoneInfo]::ConvertTimeBySystemTimeZoneId(
+            (Get-Date),
+            'India Standard Time'
+          )
+
+          $version = $ist.ToString("yyyyMMdd_HHmmss")
           echo "BUILD_VERSION=$version" >> $env:GITHUB_ENV
 
       # =========================
