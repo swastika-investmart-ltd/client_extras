@@ -1,14 +1,9 @@
-name: Build Client Extras
+name: Client Extras Build
 
 on:
   push:
     branches:
       - main
-
-  pull_request:
-    branches:
-      - main
-
   workflow_dispatch:
 
 jobs:
@@ -16,37 +11,42 @@ jobs:
     runs-on: windows-latest
 
     env:
-      BUILD_CONFIGURATION: Release
+      CONFIGURATION: Release
 
     steps:
-      - name: Checkout Repository
+      # Step 1: Checkout repo
+      - name: Checkout Code
         uses: actions/checkout@v4
 
+      # Step 2: Setup .NET SDK (IMPORTANT: net5.0 project)
       - name: Setup .NET SDK
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: '5.0.x'
 
-      - name: Restore NuGet Packages
-        run: |
-          dotnet restore .\ClientExtras.sln
+      # Step 3: Restore NuGet packages
+      - name: Restore Dependencies
+        run: dotnet restore .\trunk\ClientExtras.sln
 
+      # Step 4: Build Solution
       - name: Build Solution
-        run: |
-          dotnet build .\ClientExtras.sln `
-            --configuration $env:BUILD_CONFIGURATION `
-            --no-restore
+        run: dotnet build .\trunk\ClientExtras.sln --configuration Release --no-restore
 
+      # Step 5: Publish Web API
       - name: Publish Web API
-        run: |
-          dotnet publish .\trunk\Services\Client.WebApi\Client.WebApi.csproj `
-            --configuration $env:BUILD_CONFIGURATION `
-            --no-build `
-            --output .\publish
+        run: dotnet publish .\trunk\Services\Client.WebApi\Client.WebApi.csproj `
+              --configuration Release `
+              --no-build `
+              --output .\publish
 
+      # Step 6: Verify output (debug step - optional but useful)
+      - name: List Published Files
+        run: dir .\publish
+
+      # Step 7: Upload Artifact (THIS is your build output)
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ClientExtras-Publish
+          name: ClientExtras-Build
           path: publish
-          if-no-files-found: error
+          retention-days: 30
