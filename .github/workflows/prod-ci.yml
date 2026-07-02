@@ -15,7 +15,7 @@ jobs:
     env:
       CONFIGURATION: Release
       PROJECT_NAME: ClientExtras
-      S3_BUCKET: mybucketp03-prod
+      S3_BUCKET: mybucketp03
 
     steps:
       - name: Checkout Code
