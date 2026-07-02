@@ -1,15 +1,14 @@
 name: DEV CI Build - Dynamic Branch Support
-
 on:
   push:
     branches:
       - dev
-      - develop
+      - stage
       - feature/**
   pull_request:
     branches:
       - dev
-      - develop
+      - stage
   workflow_dispatch:
     inputs:
       branch:
