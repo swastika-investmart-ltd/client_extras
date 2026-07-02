@@ -1,13 +1,27 @@
 name: Client Extras CI Build
+
 on:
   push:
     branches:
       - main
+      - dev
+      - stage
+
   workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Select branch to build'
+        required: true
+        type: choice
+        options:
+          - dev
+          - stage
+          - main
 
 jobs:
   build:
     runs-on: windows-latest
+
     env:
       CONFIGURATION: Release
       PROJECT_NAME: ClientExtras
@@ -15,10 +29,13 @@ jobs:
 
     steps:
       # =========================
-      # Checkout Code
+      # Checkout Code (Dynamic Branch)
       # =========================
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.branch || github.ref_name }}
+
       # =========================
       # Setup .NET SDK (net5.0 project)
       # =========================
@@ -26,6 +43,9 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '5.0.x'
+
+      # =========================
+      # Generate Build Version (IST)
       # =========================
       - name: Generate Build Version (IST)
         shell: pwsh
@@ -34,7 +54,6 @@ jobs:
             (Get-Date),
             'India Standard Time'
           )
-
           $version = $ist.ToString("yyyyMMdd_HHmmss")
           echo "BUILD_VERSION=$version" >> $env:GITHUB_ENV
 
@@ -67,7 +86,7 @@ jobs:
         shell: pwsh
         run: |
           Rename-Item -Path .\publish -NewName "publish_$env:BUILD_VERSION"
-          
+
       # =========================
       # Configure AWS Credentials
       # =========================
@@ -115,8 +134,9 @@ jobs:
         if: success()
         shell: pwsh
         run: |
+          $branch = "${{ github.event.inputs.branch || github.ref_name }}"
           $body = @{
-            text = "✅ BUILD SUCCESS`nProject: ClientExtras`nVersion: $env:BUILD_VERSION`nBranch: $env:GITHUB_REF_NAME`nRun: $env:GITHUB_RUN_NUMBER"
+            text = "✅ BUILD SUCCESS`nProject: ClientExtras`nVersion: $env:BUILD_VERSION`nBranch: $branch`nRun: $env:GITHUB_RUN_NUMBER"
           } | ConvertTo-Json -Depth 3
 
           Invoke-RestMethod -Uri "${{ secrets.GOOGLE_CHAT_WEBHOOK }}" `
@@ -131,8 +151,9 @@ jobs:
         if: failure()
         shell: pwsh
         run: |
+          $branch = "${{ github.event.inputs.branch || github.ref_name }}"
           $body = @{
-            text = "❌ BUILD FAILED`nProject: ClientExtras`nVersion: $env:BUILD_VERSION`nBranch: $env:GITHUB_REF_NAME`nRun: $env:GITHUB_RUN_NUMBER"
+            text = "❌ BUILD FAILED`nProject: ClientExtras`nVersion: $env:BUILD_VERSION`nBranch: $branch`nRun: $env:GITHUB_RUN_NUMBER"
           } | ConvertTo-Json -Depth 3
 
           Invoke-RestMethod -Uri "${{ secrets.GOOGLE_CHAT_WEBHOOK }}" `
