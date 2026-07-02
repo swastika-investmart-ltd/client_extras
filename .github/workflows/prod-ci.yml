@@ -1,0 +1,69 @@
+name: Client Extras PROD CI Build
+
+on:
+  push:
+    branches:
+      - main
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    env:
+      CONFIGURATION: Release
+      PROJECT_NAME: ClientExtras
+      S3_BUCKET: mybucketp03-prod
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '5.0.x'
+
+      - name: Generate Build Version (IST)
+        shell: pwsh
+        run: |
+          $ist = [System.TimeZoneInfo]::ConvertTimeBySystemTimeZoneId((Get-Date),'India Standard Time')
+          $version = $ist.ToString("yyyyMMdd_HHmmss")
+          echo "BUILD_VERSION=$version" >> $env:GITHUB_ENV
+
+      - name: Restore Dependencies
+        run: dotnet restore .\trunk\ClientExtras.sln
+
+      - name: Build Solution
+        run: dotnet build .\trunk\ClientExtras.sln --configuration ${{ env.CONFIGURATION }} --no-restore
+
+      - name: Publish Web API
+        run: |
+          dotnet publish .\trunk\Services\Client.WebApi\Client.WebApi.csproj `
+            --configuration ${{ env.CONFIGURATION }} `
+            --no-build `
+            --output .\publish
+
+      - name: Rename Output
+        shell: pwsh
+        run: Rename-Item -Path .\publish -NewName "publish_$env:BUILD_VERSION"
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Create ZIP
+        shell: pwsh
+        run: |
+          Compress-Archive -Path "publish_$env:BUILD_VERSION\*" -DestinationPath "ClientExtras_PROD_$env:BUILD_VERSION.zip"
+
+      - name: Upload to S3 (PROD)
+        shell: pwsh
+        run: |
+          aws s3 cp "ClientExtras_PROD_$env:BUILD_VERSION.zip" "s3://$env:S3_BUCKET/ClientExtras/prod/"
