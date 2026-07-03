@@ -1,4 +1,4 @@
-name: DEV CI Build - Dynamic Branch Support
+name: Dev-CI-Build
 on:
   push:
     branches:
