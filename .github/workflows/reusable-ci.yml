@@ -44,14 +44,6 @@ jobs:
         with:
           dotnet-version: '5.0.x'
 
-      - name: Generate Build Version (IST)
-        shell: pwsh
-        run: |
-          $ist = [System.TimeZoneInfo]::ConvertTimeBySystemTimeZoneId((Get-Date),'India Standard Time')
-          $version = $ist.ToString("yyyyMMdd_HHmmss")
-          echo "BUILD_VERSION=$version" >> $env:GITHUB_ENV
-          Write-Host "Build Version: $version"
-
       - name: Extract Branch Name
         shell: pwsh
         run: |
@@ -75,12 +67,57 @@ jobs:
           Write-Host "✅ Extracted Branch Name: $branch"
           echo "BRANCH_NAME=$branch" >> $env:GITHUB_ENV
 
+      - name: Generate Build Date and Number
+        shell: pwsh
+        run: |
+          # Get current date (IST)
+          $ist = [System.TimeZoneInfo]::ConvertTimeBySystemTimeZoneId((Get-Date),'India Standard Time')
+          $buildDate = $ist.ToString("yyyyMMdd")
+          
+          # Get S3 folder and branch name
+          $s3Folder = "${{ inputs.s3_folder }}"
+          $branchName = $env:BRANCH_NAME
+          
+          Write-Host "Checking S3 for existing builds..."
+          Write-Host "S3 Bucket: $env:S3_BUCKET"
+          Write-Host "S3 Folder: $s3Folder"
+          Write-Host "Branch: $branchName"
+          Write-Host "Date: $buildDate"
+          
+          # List all artifacts for this branch from today
+          $artifacts = aws s3 ls "s3://$env:S3_BUCKET/ClientExtras/$s3Folder/" --region us-east-1 2>&1
+          
+          if ($LASTEXITCODE -eq 0) {
+            # Filter artifacts for today with same branch name
+            $todayArtifacts = $artifacts | Where-Object { $_ -match "${branchName}_${buildDate}_" }
+            $buildCount = @($todayArtifacts).Count
+            
+            if ($buildCount -lt 1) {
+              $buildCount = 0
+            }
+            
+            Write-Host "Builds today for this branch: $buildCount"
+          } else {
+            Write-Host "S3 folder is empty or first build"
+            $buildCount = 0
+          }
+          
+          # Next build number for today
+          $nextBuildNumber = $buildCount + 1
+          
+          echo "BUILD_DATE=$buildDate" >> $env:GITHUB_ENV
+          echo "BUILD_NUMBER=$nextBuildNumber" >> $env:GITHUB_ENV
+          
+          Write-Host "✅ Build Date: $buildDate"
+          Write-Host "✅ Build Number: $nextBuildNumber"
+
       - name: Verify Environment Variables
         shell: pwsh
         run: |
           Write-Host "Verification:"
           Write-Host "  BRANCH_NAME: $env:BRANCH_NAME"
-          Write-Host "  BUILD_VERSION: $env:BUILD_VERSION"
+          Write-Host "  BUILD_DATE: $env:BUILD_DATE"
+          Write-Host "  BUILD_NUMBER: $env:BUILD_NUMBER"
 
       - name: Restore Dependencies
         run: dotnet restore .\trunk\ClientExtras.sln
@@ -97,7 +134,7 @@ jobs:
 
       - name: Rename Output
         shell: pwsh
-        run: Rename-Item -Path .\publish -NewName "publish_$env:BUILD_VERSION"
+        run: Rename-Item -Path .\publish -NewName "publish_$($env:BUILD_DATE)_$($env:BUILD_NUMBER)"
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -106,22 +143,24 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Create ZIP with Branch Name
+      - name: Create ZIP with Build Number
         shell: pwsh
         run: |
           Write-Host "Variables before ZIP creation:"
           Write-Host "  BRANCH_NAME: $env:BRANCH_NAME"
-          Write-Host "  BUILD_VERSION: $env:BUILD_VERSION"
+          Write-Host "  BUILD_DATE: $env:BUILD_DATE"
+          Write-Host "  BUILD_NUMBER: $env:BUILD_NUMBER"
           
           if (-not $env:BRANCH_NAME) {
             Write-Host "❌ ERROR: BRANCH_NAME not set!"
             exit 1
           }
           
-          $zipName = "ClientExtras_$($env:BRANCH_NAME)_$($env:BUILD_VERSION).zip"
+          # Format: BRANCHNAME_DATE_BUILDNUMBER.zip
+          $zipName = "$($env:BRANCH_NAME)_$($env:BUILD_DATE)_$($env:BUILD_NUMBER).zip"
           Write-Host "Creating ZIP: $zipName"
           
-          $publishPath = "publish_$($env:BUILD_VERSION)"
+          $publishPath = "publish_$($env:BUILD_DATE)_$($env:BUILD_NUMBER)"
           if (-not (Test-Path $publishPath)) {
             Write-Host "❌ ERROR: Publish path not found: $publishPath"
             exit 1
@@ -138,7 +177,7 @@ jobs:
         run: |
           Write-Host "Uploading: $env:ZIP_FILE_NAME"
           Write-Host "S3 Path: s3://$env:S3_BUCKET/ClientExtras/${{ inputs.s3_folder }}/"
-          aws s3 cp "$env:ZIP_FILE_NAME" "s3://$env:S3_BUCKET/ClientExtras/${{ inputs.s3_folder }}/"
+          aws s3 cp "$env:ZIP_FILE_NAME" "s3://$env:S3_BUCKET/ClientExtras/${{ inputs.s3_folder }}/" --region us-east-1
           Write-Host "✅ Upload complete"
 
       - name: Build Summary
@@ -150,7 +189,8 @@ jobs:
           Write-Host "====================================" -ForegroundColor Cyan
           Write-Host "Environment: ${{ inputs.environment_name }}" -ForegroundColor Green
           Write-Host "Branch: $env:BRANCH_NAME" -ForegroundColor Green
-          Write-Host "Build Version: $env:BUILD_VERSION" -ForegroundColor Green
+          Write-Host "Build Date: $env:BUILD_DATE" -ForegroundColor Green
+          Write-Host "Build Number: $env:BUILD_NUMBER" -ForegroundColor Green
           Write-Host "ZIP File: $env:ZIP_FILE_NAME" -ForegroundColor Green
           Write-Host "S3 Location: s3://$env:S3_BUCKET/ClientExtras/${{ inputs.s3_folder }}/" -ForegroundColor Green
           Write-Host "====================================" -ForegroundColor Cyan
