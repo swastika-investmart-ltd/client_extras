@@ -163,7 +163,7 @@ jobs:
       # Summary
       # -----------------------
       - name: Build Summary
-        if: always()
+        if: always() 
         run: |
           Write-Host "===================================="
           Write-Host "BUILD COMPLETED"
