@@ -51,6 +51,15 @@ jobs:
           $version = $ist.ToString("yyyyMMdd_HHmmss")
           echo "BUILD_VERSION=$version" >> $env:GITHUB_ENV
 
+      - name: Extract Branch Name
+        shell: pwsh
+        run: |
+          $branch = "${{ inputs.branch_ref }}" -replace "refs/heads/", ""
+          # Clean branch name (replace / with -)
+          $branch = $branch -replace "/", "-"
+          echo "BRANCH_NAME=$branch" >> $env:GITHUB_ENV
+          Write-Host "Branch Name: $branch"
+
       - name: Restore Dependencies
         run: dotnet restore .\trunk\ClientExtras.sln
 
@@ -75,23 +84,30 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Create ZIP
+      - name: Create ZIP with Branch Name
         shell: pwsh
         run: |
-          Compress-Archive -Path "publish_$env:BUILD_VERSION\*" -DestinationPath "ClientExtras_${{ inputs.environment_name }}_$env:BUILD_VERSION.zip"
+          $zipName = "ClientExtras_$env:BRANCH_NAME_$env:BUILD_VERSION.zip"
+          Write-Host "Creating ZIP: $zipName"
+          Compress-Archive -Path "publish_$env:BUILD_VERSION\*" -DestinationPath $zipName
+          echo "ZIP_FILE_NAME=$zipName" >> $env:GITHUB_ENV
 
       - name: Upload to S3
         shell: pwsh
         run: |
-          aws s3 cp "ClientExtras_${{ inputs.environment_name }}_$env:BUILD_VERSION.zip" "s3://$env:S3_BUCKET/ClientExtras/${{ inputs.s3_folder }}/"
+          Write-Host "Uploading: $env:ZIP_FILE_NAME"
+          Write-Host "S3 Path: s3://$env:S3_BUCKET/ClientExtras/${{ inputs.s3_folder }}/"
+          aws s3 cp "$env:ZIP_FILE_NAME" "s3://$env:S3_BUCKET/ClientExtras/${{ inputs.s3_folder }}/"
 
       - name: Build Summary
         if: always()
         run: |
-          Write-Host "==================================="
+          Write-Host "===================================="
           Write-Host "Build Summary"
-          Write-Host "==================================="
+          Write-Host "===================================="
           Write-Host "Environment: ${{ inputs.environment_name }}"
-          Write-Host "Branch: ${{ inputs.branch_ref }}"
+          Write-Host "Branch: $env:BRANCH_NAME"
           Write-Host "Build Version: $env:BUILD_VERSION"
+          Write-Host "ZIP File: $env:ZIP_FILE_NAME"
           Write-Host "S3 Location: s3://$env:S3_BUCKET/ClientExtras/${{ inputs.s3_folder }}/"
+          Write-Host "===================================="
