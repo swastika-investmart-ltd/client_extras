@@ -1,4 +1,4 @@
-name: Reusable CI Pipeline
+name: Reusable-CI-Pipeline
 
 on:
   workflow_call:
@@ -75,7 +75,7 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       # -----------------------
-      # Build Date + Build Number
+      # Build Date + Build Number (S3 BASED)
       # -----------------------
       - name: Generate Build Info
         shell: pwsh
@@ -83,11 +83,33 @@ jobs:
           $ist = [System.TimeZoneInfo]::ConvertTimeBySystemTimeZoneId((Get-Date),'India Standard Time')
           $buildDate = $ist.ToString("yyyyMMdd")
 
+          $branchName = $env:BRANCH_NAME
+          $s3Folder = "${{ inputs.s3_folder }}"
+          $s3Path = "s3://$env:S3_BUCKET/ClientExtras/$s3Folder"
+
+          Write-Host "Checking S3: $s3Path"
+          Write-Host "Pattern: ${branchName}_${buildDate}_*.zip"
+
+          $files = aws s3 ls "$s3Path/" --region "${{ secrets.AWS_REGION }}"
+
+          $count = 0
+
+          if ($LASTEXITCODE -eq 0 -and $files) {
+              $fileList = $files | ForEach-Object {
+                  $parts = $_ -split '\s+'
+                  $parts[-1]
+              } | Where-Object { $_ -match "^${branchName}_${buildDate}_" }
+
+              $count = @($fileList).Count
+          }
+
+          $buildNumber = $count + 1
+
           echo "BUILD_DATE=$buildDate" >> $env:GITHUB_ENV
-          echo "BUILD_NUMBER=$env:GITHUB_RUN_NUMBER" >> $env:GITHUB_ENV
+          echo "BUILD_NUMBER=$buildNumber" >> $env:GITHUB_ENV
 
           Write-Host "Build Date: $buildDate"
-          Write-Host "Build Number: $env:GITHUB_RUN_NUMBER"
+          Write-Host "Build Number: $buildNumber"
 
       # -----------------------
       # Restore
@@ -116,9 +138,9 @@ jobs:
       - name: Create ZIP
         shell: pwsh
         run: |
-          $zipName = "$env:BRANCH_NAME_$env:BUILD_DATE_$env:BUILD_NUMBER.zip"
+          $zipName = "$env:BRANCH_NAME" + "_" + "$env:BUILD_DATE" + "_" + "$env:BUILD_NUMBER" + ".zip"
 
-          Write-Host "Creating ZIP: $zipName"
+          Write-Host "ZIP Name: $zipName"
 
           Compress-Archive -Path .\publish\* -DestinationPath $zipName
 
@@ -151,5 +173,5 @@ jobs:
           Write-Host "Build Date: $env:BUILD_DATE"
           Write-Host "Build Number: $env:BUILD_NUMBER"
           Write-Host "ZIP File: $env:ZIP_FILE"
-          Write-Host "S3: s3://$env:S3_BUCKET/ClientExtras/${{ inputs.s3_folder }}/"
+          Write-Host "S3 Path: s3://$env:S3_BUCKET/ClientExtras/${{ inputs.s3_folder }}/"
           Write-Host "===================================="
