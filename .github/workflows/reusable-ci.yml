@@ -47,25 +47,11 @@ jobs:
       - name: Extract Branch Name
         shell: pwsh
         run: |
-          $branch = "${{ inputs.branch_ref }}"
-          Write-Host "Raw branch_ref: $branch"
-          
-          # Remove refs/heads/ if present
-          if ($branch -like "refs/heads/*") {
-            $branch = $branch -replace "refs/heads/", ""
-          }
-          
-          # Remove refs/pull/ if present (for PRs)
-          if ($branch -like "refs/pull/*") {
-            $branch = $branch -replace "refs/pull/", "pr-"
-            $branch = $branch -replace "/merge", ""
-          }
-          
+          $branch = "${{ inputs.branch_ref }}" -replace "refs/heads/", ""
           # Clean branch name (replace / with -)
           $branch = $branch -replace "/", "-"
-          
-          Write-Host "✅ Extracted Branch Name: $branch"
           echo "BRANCH_NAME=$branch" >> $env:GITHUB_ENV
+          Write-Host "Branch Name: $branch"
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -105,7 +91,6 @@ jobs:
             if ($fileList) {
               $buildCount = @($fileList).Count
               Write-Host "Found $buildCount builds today"
-              Write-Host "Files: $($fileList -join ', ')"
             } else {
               $buildCount = 0
               Write-Host "No builds today yet"
@@ -121,19 +106,8 @@ jobs:
           echo "BUILD_DATE=$buildDate" >> $env:GITHUB_ENV
           echo "BUILD_NUMBER=$nextBuildNumber" >> $env:GITHUB_ENV
           
-          Write-Host ""
           Write-Host "✅ Build Date: $buildDate"
           Write-Host "✅ Build Number: $nextBuildNumber"
-          Write-Host "✅ File Name: ${branchName}_${buildDate}_${nextBuildNumber}.zip"
-          Write-Host "✅ S3 Folder: $s3Folder"
-
-      - name: Verify Environment Variables
-        shell: pwsh
-        run: |
-          Write-Host "Verification:"
-          Write-Host "  BRANCH_NAME: $env:BRANCH_NAME"
-          Write-Host "  BUILD_DATE: $env:BUILD_DATE"
-          Write-Host "  BUILD_NUMBER: $env:BUILD_NUMBER"
 
       - name: Restore Dependencies
         run: dotnet restore .\trunk\ClientExtras.sln
@@ -155,51 +129,28 @@ jobs:
       - name: Create ZIP with Build Number
         shell: pwsh
         run: |
-          Write-Host "Variables before ZIP creation:"
-          Write-Host "  BRANCH_NAME: $env:BRANCH_NAME"
-          Write-Host "  BUILD_DATE: $env:BUILD_DATE"
-          Write-Host "  BUILD_NUMBER: $env:BUILD_NUMBER"
-          
-          if (-not $env:BRANCH_NAME) {
-            Write-Host "❌ ERROR: BRANCH_NAME not set!"
-            exit 1
-          }
-          
-          # Format: BRANCHNAME_DATE_BUILDNUMBER.zip
           $zipName = "$($env:BRANCH_NAME)_$($env:BUILD_DATE)_$($env:BUILD_NUMBER).zip"
           Write-Host "Creating ZIP: $zipName"
-          
-          $publishPath = "publish_$($env:BUILD_DATE)_$($env:BUILD_NUMBER)"
-          if (-not (Test-Path $publishPath)) {
-            Write-Host "❌ ERROR: Publish path not found: $publishPath"
-            exit 1
-          }
-          
-          Compress-Archive -Path "$publishPath\*" -DestinationPath $zipName -Force
+          Compress-Archive -Path "publish_$($env:BUILD_DATE)_$($env:BUILD_NUMBER)\*" -DestinationPath $zipName
           echo "ZIP_FILE_NAME=$zipName" >> $env:GITHUB_ENV
-          
-          Write-Host "✅ ZIP Created Successfully: $zipName"
-          Write-Host "ZIP Size: $([math]::Round((Get-Item $zipName).Length / 1MB, 2)) MB"
 
       - name: Upload to S3
         shell: pwsh
         run: |
           Write-Host "Uploading: $env:ZIP_FILE_NAME"
           Write-Host "S3 Path: s3://$env:S3_BUCKET/ClientExtras/${{ inputs.s3_folder }}/"
-          aws s3 cp "$env:ZIP_FILE_NAME" "s3://$env:S3_BUCKET/ClientExtras/${{ inputs.s3_folder }}/" --region us-east-1
-          Write-Host "✅ Upload complete"
+          aws s3 cp "$env:ZIP_FILE_NAME" "s3://$env:S3_BUCKET/ClientExtras/${{ inputs.s3_folder }}/"
 
       - name: Build Summary
         if: always()
-        shell: pwsh
         run: |
-          Write-Host "====================================" -ForegroundColor Cyan
-          Write-Host "Build Summary" -ForegroundColor Cyan
-          Write-Host "====================================" -ForegroundColor Cyan
-          Write-Host "Environment: ${{ inputs.environment_name }}" -ForegroundColor Green
-          Write-Host "Branch: $env:BRANCH_NAME" -ForegroundColor Green
-          Write-Host "Build Date: $env:BUILD_DATE" -ForegroundColor Green
-          Write-Host "Build Number: $env:BUILD_NUMBER" -ForegroundColor Green
-          Write-Host "ZIP File: $env:ZIP_FILE_NAME" -ForegroundColor Green
-          Write-Host "S3 Location: s3://$env:S3_BUCKET/ClientExtras/${{ inputs.s3_folder }}/" -ForegroundColor Green
-          Write-Host "====================================" -ForegroundColor Cyan
+          Write-Host "===================================="
+          Write-Host "Build Summary"
+          Write-Host "===================================="
+          Write-Host "Environment: ${{ inputs.environment_name }}"
+          Write-Host "Branch: $env:BRANCH_NAME"
+          Write-Host "Build Date: $env:BUILD_DATE"
+          Write-Host "Build Number: $env:BUILD_NUMBER"
+          Write-Host "ZIP File: $env:ZIP_FILE_NAME"
+          Write-Host "S3 Location: s3://$env:S3_BUCKET/ClientExtras/${{ inputs.s3_folder }}/"
+          Write-Host "===================================="
