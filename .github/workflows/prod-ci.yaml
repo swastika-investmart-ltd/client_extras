@@ -2,24 +2,13 @@ name: PROD CI
 
 on:
   workflow_dispatch:
-    inputs:
-      confirm:
-        description: Deploy Main Branch to Production?
-        required: true
-        default: yes
-        type: choice
-        options:
-          - yes
 
 jobs:
   prod-build:
-    name: Build and Deploy to PROD
-
     uses: ./.github/workflows/reusable-ci.yml
 
     with:
-      environment_name: prod
-      branch_ref: refs/heads/main
-      s3_environment: prod
+      branch_name: main
+      s3_env: prod
 
     secrets: inherit
