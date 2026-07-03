@@ -8,7 +8,8 @@ jobs:
     uses: ./.github/workflows/reusable-ci.yml
 
     with:
-      branch_name: main
-      s3_env: prod
+      environment_name: prod
+      branch_ref: refs/heads/main
+      s3_folder: prod
 
     secrets: inherit
