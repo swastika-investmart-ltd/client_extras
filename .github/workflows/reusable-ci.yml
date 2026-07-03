@@ -32,32 +32,41 @@ jobs:
 
     env:
       CONFIGURATION: Release
-      PROJECT_NAME: ClientExtras
       S3_BUCKET: mybucketp03
 
     steps:
 
+      # -----------------------
       # Checkout Code
+      # -----------------------
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
           ref: ${{ inputs.branch_ref }}
 
+      # -----------------------
       # Setup .NET
+      # -----------------------
       - name: Setup .NET SDK
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '5.0.x'
 
-      # Extract branch name
+      # -----------------------
+      # Extract Branch Name
+      # -----------------------
       - name: Extract Branch Name
         shell: pwsh
         run: |
           $branch = "${{ inputs.branch_ref }}" -replace "refs/heads/", ""
+          $branch = $branch -replace "/", "-"
+
           echo "BRANCH_NAME=$branch" >> $env:GITHUB_ENV
           Write-Host "Branch: $branch"
 
+      # -----------------------
       # AWS Credentials
+      # -----------------------
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -65,65 +74,82 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
+      # -----------------------
       # Build Date + Build Number
+      # -----------------------
       - name: Generate Build Info
         shell: pwsh
         run: |
           $ist = [System.TimeZoneInfo]::ConvertTimeBySystemTimeZoneId((Get-Date),'India Standard Time')
           $buildDate = $ist.ToString("yyyyMMdd")
 
-          $s3Path = "s3://$env:S3_BUCKET/ClientExtras/${{ inputs.s3_folder }}/"
-
-          $files = aws s3 ls $s3Path --region "${{ secrets.AWS_REGION }}"
-
-          if ($LASTEXITCODE -eq 0 -and $files) {
-            $count = ($files | Where-Object { $_ -match "$env:BRANCH_NAME_$buildDate" }).Count
-          } else {
-            $count = 0
-          }
-
-          $buildNumber = $count + 1
-
           echo "BUILD_DATE=$buildDate" >> $env:GITHUB_ENV
-          echo "BUILD_NUMBER=$buildNumber" >> $env:GITHUB_ENV
+          echo "BUILD_NUMBER=$env:GITHUB_RUN_NUMBER" >> $env:GITHUB_ENV
 
+          Write-Host "Build Date: $buildDate"
+          Write-Host "Build Number: $env:GITHUB_RUN_NUMBER"
+
+      # -----------------------
       # Restore
+      # -----------------------
       - name: Restore
         run: dotnet restore .\trunk\ClientExtras.sln
 
+      # -----------------------
       # Build
+      # -----------------------
       - name: Build
         run: dotnet build .\trunk\ClientExtras.sln --configuration ${{ env.CONFIGURATION }} --no-restore
 
+      # -----------------------
       # Publish
+      # -----------------------
       - name: Publish
         run: |
           dotnet publish .\trunk\Services\Client.WebApi\Client.WebApi.csproj `
             --configuration ${{ env.CONFIGURATION }} `
             --output .\publish
 
-      # Rename folder
-      - name: Rename Output
-        shell: pwsh
-        run: Rename-Item .\publish "publish_$env:BUILD_DATE_$env:BUILD_NUMBER"
-
-      # ZIP
+      # -----------------------
+      # Create ZIP (FINAL NAME)
+      # -----------------------
       - name: Create ZIP
         shell: pwsh
         run: |
-          $zip = "$env:BRANCH_NAME_$env:BUILD_DATE_$env:BUILD_NUMBER.zip"
-          Compress-Archive -Path "publish_*" -DestinationPath $zip
-          echo "ZIP_FILE=$zip" >> $env:GITHUB_ENV
+          $zipName = "$env:BRANCH_NAME_$env:BUILD_DATE_$env:BUILD_NUMBER.zip"
 
+          Write-Host "Creating ZIP: $zipName"
+
+          Compress-Archive -Path .\publish\* -DestinationPath $zipName
+
+          echo "ZIP_FILE=$zipName" >> $env:GITHUB_ENV
+
+      # -----------------------
       # Upload to S3
-      - name: Upload
+      # -----------------------
+      - name: Upload to S3
         shell: pwsh
         run: |
-          aws s3 cp "$env:ZIP_FILE" "s3://$env:S3_BUCKET/ClientExtras/${{ inputs.s3_folder }}/"
+          $s3Path = "s3://$env:S3_BUCKET/ClientExtras/${{ inputs.s3_folder }}/"
 
+          Write-Host "Uploading: $env:ZIP_FILE"
+          Write-Host "To: $s3Path"
+
+          aws s3 cp "$env:ZIP_FILE" $s3Path
+
+      # -----------------------
       # Summary
-      - name: Summary
+      # -----------------------
+      - name: Build Summary
+        if: always()
         run: |
-          Write-Host "Env: ${{ inputs.environment_name }}"
+          Write-Host "===================================="
+          Write-Host "BUILD COMPLETED"
+          Write-Host "===================================="
+          Write-Host "Environment: ${{ inputs.environment_name }}"
           Write-Host "Branch: $env:BRANCH_NAME"
-          Write-Host "File: $env:ZIP_FILE"
+          Write-Host "Build Date: $env:BUILD_DATE"
+          Write-Host "Build Number: $env:BUILD_NUMBER"
+          Write-Host "ZIP File: $env:ZIP_FILE"
+          Write-Host "S3: s3://$env:S3_BUCKET/ClientExtras/${{ inputs.s3_folder }}/"
+          Write-Host "===================================="
