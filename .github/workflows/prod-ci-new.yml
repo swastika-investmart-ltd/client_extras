@@ -1,17 +1,10 @@
 name: PROD CI Build - Main Branch Deploy
 
 on:
-  push:
-    branches:
-      - main
-    paths-ignore:
-      - '.github/workflows/dev-ci-new.yml'
-      - 'README.md'
-      - '.gitignore'
   workflow_dispatch:
     inputs:
       confirm:
-        description: 'Deploy to PROD (main branch only)?'
+        description: 'Deploy to PROD?'
         required: true
         default: 'yes'
         type: choice
@@ -20,7 +13,7 @@ on:
 
 jobs:
   prod-build:
-    name: Build and Deploy to PROD
+    name: Build and Upload to S3
     uses: ./.github/workflows/reusable-ci.yml
     with:
       environment_name: 'prod'
