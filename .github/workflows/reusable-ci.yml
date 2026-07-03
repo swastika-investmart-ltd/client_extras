@@ -88,15 +88,25 @@ jobs:
 
           $count = 0
 
-          $files = & aws s3 ls "$s3Path/" --region "${{ secrets.AWS_REGION }}" 2>$null
-
-          if ($files) {
-              $fileList = $files | ForEach-Object {
-                  $parts = $_ -split '\s+'
-                  $parts[-1]
-              } | Where-Object { $_ -match "^${branchName}_${buildDate}_" }
-
-              $count = @($fileList).Count
+          try {
+              $files = & aws s3 ls "$s3Path/" --region "${{ secrets.AWS_REGION }}" 2>$null
+          
+              if ($LASTEXITCODE -ne 0) {
+                  Write-Host "AWS returned error - treating as empty folder"
+                  $files = $null
+              }
+          
+              if ($files) {
+                  $fileList = $files | ForEach-Object {
+                      ($_ -split '\s+')[-1]
+                  } | Where-Object { $_ -match "^${branchName}_${buildDate}_" }
+          
+                  $count = @($fileList).Count
+              }
+          }
+          catch {
+              Write-Host "Exception occurred - safe fallback"
+              $count = 0
           }
 
           $buildNumber = $count + 1
