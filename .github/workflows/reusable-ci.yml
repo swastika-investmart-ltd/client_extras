@@ -76,7 +76,7 @@ jobs:
 
       # -----------------------
       # Build Date + Build Number (S3 BASED)
-      # -----------------------
+
       - name: Generate Build Info
         shell: pwsh
         run: |
@@ -90,11 +90,12 @@ jobs:
           Write-Host "Checking S3: $s3Path"
           Write-Host "Pattern: ${branchName}_${buildDate}_*.zip"
 
-          $files = aws s3 ls "$s3Path/" --region "${{ secrets.AWS_REGION }}"
-
           $count = 0
 
-          if ($LASTEXITCODE -eq 0 -and $files) {
+          # SAFE AWS CALL (NO PIPELINE FAIL)
+          $files = & aws s3 ls "$s3Path/" --region "${{ secrets.AWS_REGION }}" 2>$null
+
+          if ($files) {
               $fileList = $files | ForEach-Object {
                   $parts = $_ -split '\s+'
                   $parts[-1]
@@ -110,6 +111,42 @@ jobs:
 
           Write-Host "Build Date: $buildDate"
           Write-Host "Build Number: $buildNumber"
+
+
+      # -----------------------
+      # - name: Generate Build Info
+      #   shell: pwsh
+      #   run: |
+      #     $ist = [System.TimeZoneInfo]::ConvertTimeBySystemTimeZoneId((Get-Date),'India Standard Time')
+      #     $buildDate = $ist.ToString("yyyyMMdd")
+
+      #     $branchName = $env:BRANCH_NAME
+      #     $s3Folder = "${{ inputs.s3_folder }}"
+      #     $s3Path = "s3://$env:S3_BUCKET/ClientExtras/$s3Folder"
+
+      #     Write-Host "Checking S3: $s3Path"
+      #     Write-Host "Pattern: ${branchName}_${buildDate}_*.zip"
+
+      #     $files = aws s3 ls "$s3Path/" --region "${{ secrets.AWS_REGION }}"
+
+      #     $count = 0
+
+      #     if ($LASTEXITCODE -eq 0 -and $files) {
+      #         $fileList = $files | ForEach-Object {
+      #             $parts = $_ -split '\s+'
+      #             $parts[-1]
+      #         } | Where-Object { $_ -match "^${branchName}_${buildDate}_" }
+
+      #         $count = @($fileList).Count
+      #     }
+
+      #     $buildNumber = $count + 1
+
+      #     echo "BUILD_DATE=$buildDate" >> $env:GITHUB_ENV
+      #     echo "BUILD_NUMBER=$buildNumber" >> $env:GITHUB_ENV
+
+      #     Write-Host "Build Date: $buildDate"
+      #     Write-Host "Build Number: $buildNumber"
 
       # -----------------------
       # Restore
@@ -163,7 +200,7 @@ jobs:
       # Summary
       # -----------------------
       - name: Build Summary
-        if: always() 
+        if: always()
         run: |
           Write-Host "===================================="
           Write-Host "BUILD COMPLETED"
