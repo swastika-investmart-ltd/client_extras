@@ -74,42 +74,51 @@ jobs:
           $ist = [System.TimeZoneInfo]::ConvertTimeBySystemTimeZoneId((Get-Date),'India Standard Time')
           $buildDate = $ist.ToString("yyyyMMdd")
           
-          # Get S3 folder and branch name
-          $s3Folder = "${{ inputs.s3_folder }}"
+          # Get branch name and S3 folder
           $branchName = $env:BRANCH_NAME
+          $s3Folder = "${{ inputs.s3_folder }}"
+          $s3BucketPath = "s3://$env:S3_BUCKET/ClientExtras/$s3Folder"
           
           Write-Host "Checking S3 for existing builds..."
-          Write-Host "S3 Bucket: $env:S3_BUCKET"
-          Write-Host "S3 Folder: $s3Folder"
-          Write-Host "Branch: $branchName"
-          Write-Host "Date: $buildDate"
+          Write-Host "S3 Path: $s3BucketPath"
+          Write-Host "Looking for files: ${branchName}_${buildDate}_*.zip"
           
-          # List all artifacts for this branch from today
-          $artifacts = aws s3 ls "s3://$env:S3_BUCKET/ClientExtras/$s3Folder/" --region us-east-1 2>&1
+          # List all artifacts in S3 folder
+          $artifacts = aws s3 ls "$s3BucketPath/" --region us-east-1
           
-          if ($LASTEXITCODE -eq 0) {
-            # Filter artifacts for today with same branch name
-            $todayArtifacts = $artifacts | Where-Object { $_ -match "${branchName}_${buildDate}_" }
-            $buildCount = @($todayArtifacts).Count
+          if ($LASTEXITCODE -eq 0 -and $artifacts) {
+            Write-Host "S3 Contents Found"
             
-            if ($buildCount -lt 1) {
+            # Extract just filenames (last column) and filter for today with same branch
+            $fileList = $artifacts | ForEach-Object { 
+              $parts = $_ -split '\s+'
+              $parts[-1]  # Get filename only
+            } | Where-Object { $_ -match "^${branchName}_${buildDate}_" }
+            
+            if ($fileList) {
+              $buildCount = @($fileList).Count
+              Write-Host "Found $buildCount builds today"
+              Write-Host "Files: $($fileList -join ', ')"
+            } else {
               $buildCount = 0
+              Write-Host "No builds today yet"
             }
-            
-            Write-Host "Builds today for this branch: $buildCount"
           } else {
-            Write-Host "S3 folder is empty or first build"
+            Write-Host "First build or S3 folder empty"
             $buildCount = 0
           }
           
-          # Next build number for today
+          # Next build number
           $nextBuildNumber = $buildCount + 1
           
           echo "BUILD_DATE=$buildDate" >> $env:GITHUB_ENV
           echo "BUILD_NUMBER=$nextBuildNumber" >> $env:GITHUB_ENV
           
+          Write-Host ""
           Write-Host "✅ Build Date: $buildDate"
           Write-Host "✅ Build Number: $nextBuildNumber"
+          Write-Host "✅ File Name: ${branchName}_${buildDate}_${nextBuildNumber}.zip"
+          Write-Host "✅ S3 Folder: $s3Folder"
 
       - name: Verify Environment Variables
         shell: pwsh
