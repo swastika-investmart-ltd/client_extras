@@ -1,4 +1,5 @@
-name: Pord-CI
+name: Prod-CI
+
 on:
   workflow_dispatch:
 
@@ -9,6 +10,5 @@ jobs:
     with:
       environment_name: prod
       branch_ref: refs/heads/main
-      s3_folder: prod
 
     secrets: inherit
