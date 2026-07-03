@@ -9,6 +9,14 @@ on:
       - 'README.md'
       - '.gitignore'
   workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Deploy to PROD (main branch only)?'
+        required: true
+        default: 'yes'
+        type: choice
+        options:
+          - 'yes'
 
 jobs:
   prod-build:
