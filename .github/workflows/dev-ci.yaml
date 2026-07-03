@@ -11,7 +11,8 @@ jobs:
     uses: ./.github/workflows/reusable-ci.yml
 
     with:
-      branch_name: dev
-      s3_env: dev
+      environment_name: dev
+      branch_ref: ${{ github.ref }}
+      s3_folder: dev
 
     secrets: inherit
