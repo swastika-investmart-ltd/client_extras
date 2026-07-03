@@ -77,7 +77,7 @@ jobs:
           Write-Host "Looking for files: ${branchName}_${buildDate}_*.zip"
           
           # List all artifacts in S3 folder
-          $artifacts = aws s3 ls "$s3BucketPath/" --region us-east-1
+          $artifacts = aws s3 ls "$s3BucketPath/" --region "${{ secrets.AWS_REGION }}"
           
           if ($LASTEXITCODE -eq 0 -and $artifacts) {
             Write-Host "S3 Contents Found"
