@@ -50,15 +50,37 @@ jobs:
           $ist = [System.TimeZoneInfo]::ConvertTimeBySystemTimeZoneId((Get-Date),'India Standard Time')
           $version = $ist.ToString("yyyyMMdd_HHmmss")
           echo "BUILD_VERSION=$version" >> $env:GITHUB_ENV
+          Write-Host "Build Version: $version"
 
       - name: Extract Branch Name
         shell: pwsh
         run: |
-          $branch = "${{ inputs.branch_ref }}" -replace "refs/heads/", ""
+          $branch = "${{ inputs.branch_ref }}"
+          Write-Host "Raw branch_ref: $branch"
+          
+          # Remove refs/heads/ if present
+          if ($branch -like "refs/heads/*") {
+            $branch = $branch -replace "refs/heads/", ""
+          }
+          
+          # Remove refs/pull/ if present (for PRs)
+          if ($branch -like "refs/pull/*") {
+            $branch = $branch -replace "refs/pull/", "pr-"
+            $branch = $branch -replace "/merge", ""
+          }
+          
           # Clean branch name (replace / with -)
           $branch = $branch -replace "/", "-"
+          
+          Write-Host "✅ Extracted Branch Name: $branch"
           echo "BRANCH_NAME=$branch" >> $env:GITHUB_ENV
-          Write-Host "Branch Name: $branch"
+
+      - name: Verify Environment Variables
+        shell: pwsh
+        run: |
+          Write-Host "Verification:"
+          Write-Host "  BRANCH_NAME: $env:BRANCH_NAME"
+          Write-Host "  BUILD_VERSION: $env:BUILD_VERSION"
 
       - name: Restore Dependencies
         run: dotnet restore .\trunk\ClientExtras.sln
@@ -87,10 +109,29 @@ jobs:
       - name: Create ZIP with Branch Name
         shell: pwsh
         run: |
-          $zipName = "ClientExtras_$env:BRANCH_NAME_$env:BUILD_VERSION.zip"
+          Write-Host "Variables before ZIP creation:"
+          Write-Host "  BRANCH_NAME: $env:BRANCH_NAME"
+          Write-Host "  BUILD_VERSION: $env:BUILD_VERSION"
+          
+          if (-not $env:BRANCH_NAME) {
+            Write-Host "❌ ERROR: BRANCH_NAME not set!"
+            exit 1
+          }
+          
+          $zipName = "ClientExtras_$($env:BRANCH_NAME)_$($env:BUILD_VERSION).zip"
           Write-Host "Creating ZIP: $zipName"
-          Compress-Archive -Path "publish_$env:BUILD_VERSION\*" -DestinationPath $zipName
+          
+          $publishPath = "publish_$($env:BUILD_VERSION)"
+          if (-not (Test-Path $publishPath)) {
+            Write-Host "❌ ERROR: Publish path not found: $publishPath"
+            exit 1
+          }
+          
+          Compress-Archive -Path "$publishPath\*" -DestinationPath $zipName -Force
           echo "ZIP_FILE_NAME=$zipName" >> $env:GITHUB_ENV
+          
+          Write-Host "✅ ZIP Created Successfully: $zipName"
+          Write-Host "ZIP Size: $([math]::Round((Get-Item $zipName).Length / 1MB, 2)) MB"
 
       - name: Upload to S3
         shell: pwsh
@@ -98,16 +139,18 @@ jobs:
           Write-Host "Uploading: $env:ZIP_FILE_NAME"
           Write-Host "S3 Path: s3://$env:S3_BUCKET/ClientExtras/${{ inputs.s3_folder }}/"
           aws s3 cp "$env:ZIP_FILE_NAME" "s3://$env:S3_BUCKET/ClientExtras/${{ inputs.s3_folder }}/"
+          Write-Host "✅ Upload complete"
 
       - name: Build Summary
         if: always()
+        shell: pwsh
         run: |
-          Write-Host "===================================="
-          Write-Host "Build Summary"
-          Write-Host "===================================="
-          Write-Host "Environment: ${{ inputs.environment_name }}"
-          Write-Host "Branch: $env:BRANCH_NAME"
-          Write-Host "Build Version: $env:BUILD_VERSION"
-          Write-Host "ZIP File: $env:ZIP_FILE_NAME"
-          Write-Host "S3 Location: s3://$env:S3_BUCKET/ClientExtras/${{ inputs.s3_folder }}/"
-          Write-Host "===================================="
+          Write-Host "====================================" -ForegroundColor Cyan
+          Write-Host "Build Summary" -ForegroundColor Cyan
+          Write-Host "====================================" -ForegroundColor Cyan
+          Write-Host "Environment: ${{ inputs.environment_name }}" -ForegroundColor Green
+          Write-Host "Branch: $env:BRANCH_NAME" -ForegroundColor Green
+          Write-Host "Build Version: $env:BUILD_VERSION" -ForegroundColor Green
+          Write-Host "ZIP File: $env:ZIP_FILE_NAME" -ForegroundColor Green
+          Write-Host "S3 Location: s3://$env:S3_BUCKET/ClientExtras/${{ inputs.s3_folder }}/" -ForegroundColor Green
+          Write-Host "====================================" -ForegroundColor Cyan
