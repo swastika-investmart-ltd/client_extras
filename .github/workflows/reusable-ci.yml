@@ -75,6 +75,13 @@ jobs:
           Write-Host "✅ Extracted Branch Name: $branch"
           echo "BRANCH_NAME=$branch" >> $env:GITHUB_ENV
 
+      - name: Verify Environment Variables
+        shell: pwsh
+        run: |
+          Write-Host "Verification:"
+          Write-Host "  BRANCH_NAME: $env:BRANCH_NAME"
+          Write-Host "  BUILD_VERSION: $env:BUILD_VERSION"
+
       - name: Restore Dependencies
         run: dotnet restore .\trunk\ClientExtras.sln
 
@@ -102,10 +109,29 @@ jobs:
       - name: Create ZIP with Branch Name
         shell: pwsh
         run: |
-          $zipName = "ClientExtras_$env:BRANCH_NAME_$env:BUILD_VERSION.zip"
+          Write-Host "Variables before ZIP creation:"
+          Write-Host "  BRANCH_NAME: $env:BRANCH_NAME"
+          Write-Host "  BUILD_VERSION: $env:BUILD_VERSION"
+          
+          if (-not $env:BRANCH_NAME) {
+            Write-Host "❌ ERROR: BRANCH_NAME not set!"
+            exit 1
+          }
+          
+          $zipName = "ClientExtras_$($env:BRANCH_NAME)_$($env:BUILD_VERSION).zip"
           Write-Host "Creating ZIP: $zipName"
-          Compress-Archive -Path "publish_$env:BUILD_VERSION\*" -DestinationPath $zipName
+          
+          $publishPath = "publish_$($env:BUILD_VERSION)"
+          if (-not (Test-Path $publishPath)) {
+            Write-Host "❌ ERROR: Publish path not found: $publishPath"
+            exit 1
+          }
+          
+          Compress-Archive -Path "$publishPath\*" -DestinationPath $zipName -Force
           echo "ZIP_FILE_NAME=$zipName" >> $env:GITHUB_ENV
+          
+          Write-Host "✅ ZIP Created Successfully: $zipName"
+          Write-Host "ZIP Size: $([math]::Round((Get-Item $zipName).Length / 1MB, 2)) MB"
 
       - name: Upload to S3
         shell: pwsh
