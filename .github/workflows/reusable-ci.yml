@@ -1,4 +1,4 @@
-name: Reusable CI Pipeline
+name: Reusable-CI-Pipeline
 
 on:
   workflow_call:
@@ -113,16 +113,26 @@ jobs:
       # -----------------------
       # Create ZIP (FINAL NAME)
       # -----------------------
+      # - name: Create ZIP
+      #   shell: pwsh
+      #   run: |
+      #     $zipName = "$env:BRANCH_NAME_$env:BUILD_DATE_$env:BUILD_NUMBER.zip"
+
+      #     Write-Host "Creating ZIP: $zipName"
+
+      #     Compress-Archive -Path .\publish\* -DestinationPath $zipName
+
+      #     echo "ZIP_FILE=$zipName" >> $env:GITHUB_ENV
       - name: Create ZIP
         shell: pwsh
         run: |
-          $zipName = "$env:BRANCH_NAME_$env:BUILD_DATE_$env:BUILD_NUMBER.zip"
-
-          Write-Host "Creating ZIP: $zipName"
-
-          Compress-Archive -Path .\publish\* -DestinationPath $zipName
-
-          echo "ZIP_FILE=$zipName" >> $env:GITHUB_ENV
+            $zipName = "$env:BRANCH_NAME" + "_" + "$env:BUILD_DATE" + "_" + "$env:BUILD_NUMBER" + ".zip"
+        
+            Write-Host "ZIP Name: $zipName"
+        
+            Compress-Archive -Path .\publish\* -DestinationPath $zipName
+        
+            echo "ZIP_FILE=$zipName" >> $env:GITHUB_ENV
 
       # -----------------------
       # Upload to S3
