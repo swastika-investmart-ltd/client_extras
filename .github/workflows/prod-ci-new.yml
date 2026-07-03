@@ -1,10 +1,10 @@
-name: Prod-CI-Build-Main-Branch
+name: PROD CI Build - Main Branch Deploy
 
 on:
   workflow_dispatch:
     inputs:
       confirm:
-        description: 'Deploy to PROD?'
+        description: 'Deploy to PROD (main branch only)?'
         required: true
         default: 'yes'
         type: choice
@@ -17,7 +17,7 @@ jobs:
     uses: ./.github/workflows/reusable-ci.yml
     with:
       environment_name: 'prod'
-      branch_ref: refs/heads/main
+      branch_ref: refs/heads/main          # ← Ye hardcoded है
       s3_folder: 'prod'
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
