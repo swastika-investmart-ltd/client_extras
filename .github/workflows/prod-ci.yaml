@@ -1,5 +1,4 @@
-name: PROD CI
-
+name: Pord-CI
 on:
   workflow_dispatch:
 
