@@ -1,5 +1,4 @@
 name: DEV CI
-
 on:
   push:
     branches:
