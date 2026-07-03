@@ -1,0 +1,66 @@
+name: PROD Deploy to Windows Server
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_version:
+        description: 'Build version to deploy (e.g., 20260702_091125)'
+        required: true
+        type: string
+
+jobs:
+  deploy:
+    name: Deploy to Windows Server
+    runs-on: ubuntu-latest
+    environment: prod
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Verify Artifact in S3
+        run: |
+          aws s3 ls s3://mybucketp03/ClientExtras/prod/ClientExtras_prod_${{ inputs.build_version }}.zip
+          echo "✅ Artifact found in S3"
+
+      - name: Deploy to Windows Server
+        env:
+          DEPLOY_KEY: ${{ secrets.WINDOWS_SERVER_SSH_KEY }}
+          SERVER_IP: ${{ secrets.WINDOWS_SERVER_IP }}
+          SERVER_USER: ${{ secrets.WINDOWS_SERVER_USER }}
+          BUILD_VERSION: ${{ inputs.build_version }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$DEPLOY_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          
+          ssh -i ~/.ssh/deploy_key \
+              -o StrictHostKeyChecking=no \
+              -o UserKnownHostsFile=/dev/null \
+              $SERVER_USER@$SERVER_IP \
+              "powershell.exe -NoProfile -ExecutionPolicy Bypass -File C:\Apps\ClientExtras\deploy.ps1 -BuildVersion $BUILD_VERSION"
+
+      - name: Verify Deployment
+        env:
+          DEPLOY_KEY: ${{ secrets.WINDOWS_SERVER_SSH_KEY }}
+          SERVER_IP: ${{ secrets.WINDOWS_SERVER_IP }}
+          SERVER_USER: ${{ secrets.WINDOWS_SERVER_USER }}
+        run: |
+          ssh -i ~/.ssh/deploy_key \
+              -o StrictHostKeyChecking=no \
+              -o UserKnownHostsFile=/dev/null \
+              $SERVER_USER@$SERVER_IP \
+              "powershell.exe -Command 'Get-Service ClientExtrasService | Select-Object Name, Status'"
+
+      - name: Deployment Complete
+        run: |
+          echo "✅ Deployment to Windows Server Completed"
+          echo "Build Version: ${{ inputs.build_version }}"
+          echo "Server: ${{ secrets.WINDOWS_SERVER_IP }}"
