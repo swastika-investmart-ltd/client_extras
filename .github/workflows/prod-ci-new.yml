@@ -1,4 +1,4 @@
-name: Prod-CI-Build
+name: Prod-CI-Build-Main-Branch
 
 on:
   workflow_dispatch:
@@ -17,7 +17,7 @@ jobs:
     uses: ./.github/workflows/reusable-ci.yml
     with:
       environment_name: 'prod'
-      branch_ref: 'main'
+      branch_ref: refs/heads/main
       s3_folder: 'prod'
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
