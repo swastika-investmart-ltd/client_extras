@@ -1,4 +1,4 @@
-name: PROD CI Build - Main Branch Deploy
+name: Prod-CI-Build
 
 on:
   workflow_dispatch:
