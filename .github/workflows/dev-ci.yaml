@@ -5,7 +5,7 @@ on:
       - dev
       - stage
       - feature/**
-    
+
 jobs:
   dev-build:
     uses: ./.github/workflows/reusable-ci.yml
