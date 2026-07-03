@@ -55,6 +55,14 @@ jobs:
       # -----------------------
       # Extract Branch Name
       # -----------------------
+      # - name: Extract Branch Name
+      #   shell: pwsh
+      #   run: |
+      #     $branch = "${{ inputs.branch_ref }}" -replace "refs/heads/", ""
+      #     $branch = $branch -replace "/", "-"
+
+      #     echo "BRANCH_NAME=$branch" >> $env:GITHUB_ENV
+      #     Write-Host "Branch: $branch"
       - name: Extract Branch Name
         shell: pwsh
         run: |
@@ -111,28 +119,21 @@ jobs:
             --output .\publish
 
       # -----------------------
-      # Create ZIP (FINAL NAME)
-      # -----------------------
-      # - name: Create ZIP
-      #   shell: pwsh
-      #   run: |
-      #     $zipName = "$env:BRANCH_NAME_$env:BUILD_DATE_$env:BUILD_NUMBER.zip"
-
-      #     Write-Host "Creating ZIP: $zipName"
-
-      #     Compress-Archive -Path .\publish\* -DestinationPath $zipName
-
-      #     echo "ZIP_FILE=$zipName" >> $env:GITHUB_ENV
       - name: Create ZIP
         shell: pwsh
         run: |
-            $zipName = "$env:BRANCH_NAME" + "_" + "$env:BUILD_DATE" + "_" + "$env:BUILD_NUMBER" + ".zip"
-        
-            Write-Host "ZIP Name: $zipName"
-        
-            Compress-Archive -Path .\publish\* -DestinationPath $zipName
-        
-            echo "ZIP_FILE=$zipName" >> $env:GITHUB_ENV
+          $branch = $env:BRANCH_NAME
+          $date = $env:BUILD_DATE
+          $build = $env:BUILD_NUMBER
+
+          # FINAL SAFE NAME
+          $zipName = "$($branch)_$($date)_$($build).zip"
+
+          Write-Host "ZIP Name: $zipName"
+
+          Compress-Archive -Path .\publish\* -DestinationPath $zipName
+
+          echo "ZIP_FILE=$zipName" >> $env:GITHUB_ENV
 
       # -----------------------
       # Upload to S3
