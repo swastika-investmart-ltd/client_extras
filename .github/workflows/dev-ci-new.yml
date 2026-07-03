@@ -25,6 +25,7 @@ jobs:
       branch_ref: ${{ github.event.inputs.branch || github.ref }}
       s3_folder: 'dev'
     secrets:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      AWS_REGION: ${{ secrets.AWS_REGION }}
+      AWS_ACCESS_KEY_ID: AKIAYCCDYV2X3SFUEGHR # ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY:  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
+ #${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION:  us-east-1 #${{ secrets.AWS_REGION }}
