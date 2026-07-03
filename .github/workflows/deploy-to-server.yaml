@@ -1,4 +1,4 @@
-name: PROD Deploy to Windows Server
+name: Deploy to Server
 
 on:
   workflow_dispatch:
