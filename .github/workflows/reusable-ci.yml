@@ -1,0 +1,42 @@
+name: Reusable-CI
+
+on:
+  workflow_call:
+    inputs:
+      environment_name:
+        required: true
+        type: string
+      branch_ref:
+        required: true
+        type: string
+      repo_name:
+        required: true
+        type: string
+      run_version:
+        required: true
+        type: string
+
+jobs:
+  build-and-upload:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # ... (Your build steps that create build.zip) ...
+
+      - name: Rename Zip for S3
+        run: |
+          mv build.zip ${{ inputs.branch_ref }}_build_${{ inputs.run_version }}.zip
+
+      # NEW STEP: Authenticate with AWS using your GitHub Secrets
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-south-1 
+
+      - name: Upload to S3
+        run: |
+          aws s3 cp ${{ inputs.branch_ref }}_build_${{ inputs.run_version }}.zip s3://YOUR_BUCKET_NAME/${{ inputs.repo_name }}/ClientExtras/${{ inputs.environment_name }}/${{ inputs.branch_ref }}_build_${{ inputs.run_version }}.zip
