@@ -4,8 +4,7 @@ on:
     branches:
       - dev
       - stage
-      - feature/**
-      
+      - feature/**  
 jobs:
   dev-build:
     uses: ./.github/workflows/reusable-ci.yml
