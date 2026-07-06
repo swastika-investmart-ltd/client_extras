@@ -1,4 +1,4 @@
-name: PROD CI
+name: PROD-CI
 
 on:
   workflow_dispatch: # This is the key for manual triggers
