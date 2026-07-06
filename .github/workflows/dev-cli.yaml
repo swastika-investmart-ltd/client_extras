@@ -1,0 +1,19 @@
+name: DEV CI
+
+on:
+  push:
+    branches:
+      - dev
+      - stage
+      - 'feature/**' 
+
+jobs:
+  dev-build:
+    uses: ./.github/workflows/reusable-ci.yml
+    with:
+      environment_name: dev
+      # github.ref_name gives just 'dev' instead of 'refs/heads/dev'
+      branch_ref: ${{ github.ref_name }} 
+      repo_name: ${{ github.event.repository.name }}
+      run_version: ${{ github.run_number }}
+    secrets: inherit
